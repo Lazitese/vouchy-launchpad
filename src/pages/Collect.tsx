@@ -58,15 +58,21 @@ const Collect = () => {
     name: "",
     email: "",
     company: "",
+    title: "",
+    rating: 5,
   });
   
   const [textForm, setTextForm] = useState({
     name: "",
     email: "",
     company: "",
+    title: "",
     testimonial: "",
     rating: 5,
   });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const questions = space?.questions || [
@@ -192,7 +198,9 @@ const Collect = () => {
       name: videoFormData.name.trim(),
       email: videoFormData.email.trim(),
       company: videoFormData.company.trim() || undefined,
+      title: videoFormData.title.trim() || undefined,
       videoBlob: recordedBlob,
+      rating: videoFormData.rating,
     });
 
     if (error) {
@@ -233,8 +241,10 @@ const Collect = () => {
       name: textForm.name.trim(),
       email: textForm.email.trim(),
       company: textForm.company.trim() || undefined,
+      title: textForm.title.trim() || undefined,
       content: textForm.testimonial.trim(),
       rating: textForm.rating,
+      avatarFile: avatarFile || undefined,
     });
 
     if (error) {
@@ -436,7 +446,31 @@ const Collect = () => {
                 {recordedBlob && (
                   <div className="mt-6 p-6 bg-card border border-border/[0.08] rounded-[12px]">
                     <h3 className="font-semibold text-primary mb-4">Almost done! Tell us about yourself</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    
+                    {/* Star Rating */}
+                    <div className="flex justify-center gap-2 mb-6">
+                      <p className="text-sm text-subtext mr-3">Your rating:</p>
+                      {[1, 2, 3, 4, 5].map((rating) => (
+                        <motion.button
+                          key={rating}
+                          type="button"
+                          onClick={() => setVideoFormData({ ...videoFormData, rating })}
+                          whileHover={{ scale: 1.15 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="p-1 transition-transform"
+                        >
+                          <Star
+                            className={`w-7 h-7 transition-all duration-200 ${
+                              rating <= videoFormData.rating
+                                ? "text-amber-400 fill-amber-400"
+                                : "text-border/30 hover:text-amber-300"
+                            }`}
+                          />
+                        </motion.button>
+                      ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Input
                         placeholder="Your name *"
                         value={videoFormData.name}
@@ -449,6 +483,12 @@ const Collect = () => {
                         value={videoFormData.email}
                         onChange={(e) => setVideoFormData({ ...videoFormData, email: e.target.value })}
                         maxLength={255}
+                      />
+                      <Input
+                        placeholder="Job title (optional)"
+                        value={videoFormData.title}
+                        onChange={(e) => setVideoFormData({ ...videoFormData, title: e.target.value })}
+                        maxLength={100}
                       />
                       <Input
                         placeholder="Company (optional)"
@@ -533,25 +573,102 @@ const Collect = () => {
                 Share what you loved about your experience
               </p>
 
-              <form onSubmit={submitText} className="space-y-4">
-                {/* Rating */}
-                <div className="flex justify-center gap-2 mb-6">
-                  {[1, 2, 3, 4, 5].map((rating) => (
-                    <button
-                      key={rating}
-                      type="button"
-                      onClick={() => setTextForm({ ...textForm, rating })}
-                      className="p-1 transition-transform hover:scale-110"
+              <form onSubmit={submitText} className="space-y-5">
+                {/* Star Rating */}
+                <div className="flex flex-col items-center gap-3 mb-2">
+                  <p className="text-sm text-subtext">How would you rate your experience?</p>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <motion.button
+                        key={rating}
+                        type="button"
+                        onClick={() => setTextForm({ ...textForm, rating })}
+                        whileHover={{ scale: 1.15, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="p-1"
+                      >
+                        <Star
+                          className={`w-9 h-9 transition-all duration-200 ${
+                            rating <= textForm.rating
+                              ? "text-amber-400 fill-amber-400 drop-shadow-sm"
+                              : "text-border/30 hover:text-amber-300"
+                          }`}
+                        />
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Photo Upload */}
+                <div className="flex flex-col items-center gap-3 p-5 bg-slate rounded-xl border border-border/[0.08]">
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        if (file.size > 5 * 1024 * 1024) {
+                          toast({
+                            variant: "destructive",
+                            title: "File too large",
+                            description: "Please upload an image under 5MB.",
+                          });
+                          return;
+                        }
+                        setAvatarFile(file);
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setAvatarPreview(reader.result as string);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                  
+                  <div className="flex items-center gap-4">
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="relative w-20 h-20 rounded-full bg-primary/10 border-2 border-dashed border-primary/30 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary/50 transition-colors"
                     >
-                      <Star
-                        className={`w-8 h-8 transition-colors ${
-                          rating <= textForm.rating
-                            ? "text-primary fill-primary"
-                            : "text-border/20"
-                        }`}
-                      />
-                    </button>
-                  ))}
+                      {avatarPreview ? (
+                        <>
+                          <img
+                            src={avatarPreview}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Camera className="w-5 h-5 text-white" />
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center">
+                          <Camera className="w-6 h-6 text-primary/50 group-hover:text-primary transition-colors" />
+                        </div>
+                      )}
+                    </motion.div>
+                    
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-foreground">Add your photo</p>
+                      <p className="text-xs text-subtext">Optional • JPG, PNG up to 5MB</p>
+                      {avatarPreview && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAvatarFile(null);
+                            setAvatarPreview(null);
+                          }}
+                          className="text-xs text-red-500 hover:text-red-600 mt-1"
+                        >
+                          Remove photo
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -570,6 +687,32 @@ const Collect = () => {
                     )}
                   </div>
                   <Input
+                    placeholder="Job title (optional)"
+                    value={textForm.title}
+                    onChange={(e) =>
+                      setTextForm({ ...textForm, title: e.target.value })
+                    }
+                    maxLength={100}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Input
+                      type="email"
+                      placeholder="Email address *"
+                      value={textForm.email}
+                      onChange={(e) =>
+                        setTextForm({ ...textForm, email: e.target.value })
+                      }
+                      className={errors.email ? "border-red-500" : ""}
+                      maxLength={255}
+                    />
+                    {errors.email && (
+                      <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+                    )}
+                  </div>
+                  <Input
                     placeholder="Company (optional)"
                     value={textForm.company}
                     onChange={(e) =>
@@ -580,25 +723,9 @@ const Collect = () => {
                 </div>
 
                 <div>
-                  <Input
-                    type="email"
-                    placeholder="Email address *"
-                    value={textForm.email}
-                    onChange={(e) =>
-                      setTextForm({ ...textForm, email: e.target.value })
-                    }
-                    className={errors.email ? "border-red-500" : ""}
-                    maxLength={255}
-                  />
-                  {errors.email && (
-                    <p className="text-xs text-red-500 mt-1">{errors.email}</p>
-                  )}
-                </div>
-
-                <div>
                   <Textarea
                     placeholder="Share your experience..."
-                    className={`min-h-[150px] resize-none ${errors.testimonial ? "border-red-500" : ""}`}
+                    className={`min-h-[120px] resize-none ${errors.testimonial ? "border-red-500" : ""}`}
                     value={textForm.testimonial}
                     onChange={(e) =>
                       setTextForm({ ...textForm, testimonial: e.target.value })

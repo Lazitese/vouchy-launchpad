@@ -57,11 +57,20 @@ const features = [
         {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
           <motion.div
             key={i}
-            className="flex-1 bg-primary/20 rounded-t-sm"
-            initial={{ height: 0 }}
-            whileInView={{ height: `${height}%` }}
+            className="flex-1 bg-primary/20 rounded-t-sm origin-bottom"
+            initial={{ height: 0, opacity: 0 }}
+            whileInView={{ height: `${height}%`, opacity: 1 }}
+            whileHover={{ 
+              height: `${Math.min(height + 15, 100)}%`,
+              backgroundColor: "hsl(var(--primary) / 0.4)",
+            }}
             viewport={{ once: true }}
-            transition={{ delay: 0.2 + i * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ 
+              delay: 0.2 + i * 0.08, 
+              duration: 0.6, 
+              ease: [0.22, 1, 0.36, 1],
+              height: { type: "spring", stiffness: 300, damping: 20 }
+            }}
           />
         ))}
       </div>

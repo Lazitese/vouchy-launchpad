@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Check, Sparkles } from "lucide-react";
+import { ArrowRight, Play, Check, Sparkles, FileText, Link2, Inbox, Code2 } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -118,13 +118,33 @@ const Hero = () => {
                   </div>
                 </div>
 
-                {/* Steps - Compact */}
+                {/* Steps - Compact with animated icons */}
                 <div className="space-y-2 mb-4">
                   {[
-                    { label: "Create form", done: true },
-                    { label: "Share link", done: true },
-                    { label: "Collect", active: true },
-                    { label: "Embed", done: false },
+                    { 
+                      label: "Create form", 
+                      done: true,
+                      icon: FileText,
+                      animation: { rotate: [0, -5, 5, 0], scale: [1, 1.1, 1] }
+                    },
+                    { 
+                      label: "Share link", 
+                      done: true,
+                      icon: Link2,
+                      animation: { x: [0, 3, -3, 0], rotate: [0, 10, -10, 0] }
+                    },
+                    { 
+                      label: "Collect", 
+                      active: true,
+                      icon: Inbox,
+                      animation: { y: [0, -3, 0], scale: [1, 1.15, 1] }
+                    },
+                    { 
+                      label: "Embed", 
+                      done: false,
+                      icon: Code2,
+                      animation: { opacity: [0.4, 1, 0.4] }
+                    },
                   ].map((item, i) => (
                     <motion.div
                       key={i}
@@ -137,20 +157,61 @@ const Hero = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.5 + i * 0.1 }}
                     >
-                      <div className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold ${
+                      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
                         item.done 
                           ? "bg-primary text-primary-foreground" 
                           : item.active 
                             ? "bg-primary/20 text-primary" 
                             : "bg-foreground/5 text-foreground/30"
                       }`}>
-                        {item.done ? "✓" : i + 1}
+                        {item.done ? (
+                          <motion.div
+                            animate={item.animation}
+                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                          >
+                            <item.icon className="w-3.5 h-3.5" />
+                          </motion.div>
+                        ) : item.active ? (
+                          <motion.div
+                            animate={item.animation}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                          >
+                            <item.icon className="w-3.5 h-3.5" />
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            animate={item.animation}
+                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                          >
+                            <item.icon className="w-3.5 h-3.5" />
+                          </motion.div>
+                        )}
                       </div>
                       <span className={`text-xs font-medium ${
                         item.active ? "text-primary" : item.done ? "text-foreground/70" : "text-foreground/30"
                       }`}>
                         {item.label}
                       </span>
+                      {item.active && (
+                        <motion.div
+                          className="ml-auto flex items-center gap-1"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                        >
+                          <motion.div
+                            className="w-1.5 h-1.5 rounded-full bg-primary"
+                            animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+                            transition={{ duration: 1, repeat: Infinity }}
+                          />
+                          <motion.span 
+                            className="text-[9px] text-primary font-medium"
+                            animate={{ opacity: [0.7, 1, 0.7] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          >
+                            Active
+                          </motion.span>
+                        </motion.div>
+                      )}
                     </motion.div>
                   ))}
                 </div>

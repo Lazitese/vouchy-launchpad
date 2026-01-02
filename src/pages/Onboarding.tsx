@@ -1,9 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, ArrowLeft, Check, Upload, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Upload, Sparkles, Loader2 } from "lucide-react";
+import { useWorkspace } from "@/hooks/useWorkspace";
+import { useToast } from "@/hooks/use-toast";
 import logoPrimary from "@/assets/logo-primary.svg";
 
 const colorOptions = [
@@ -18,32 +20,92 @@ const colorOptions = [
 const Onboarding = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { workspace, loading: workspaceLoading, createWorkspace, uploadLogo } = useWorkspace();
+  const { toast } = useToast();
   const plan = location.state?.plan || "Starter";
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [step, setStep] = useState(1);
-  const [workspace, setWorkspace] = useState({
+  const [loading, setLoading] = useState(false);
+  const [workspaceData, setWorkspaceData] = useState({
     name: "",
     color: colorOptions[0].value,
-    logo: null as string | null,
+    logoFile: null as File | null,
+    logoPreview: null as string | null,
   });
+
+  // If user already has a workspace, redirect to dashboard
+  useEffect(() => {
+    if (!workspaceLoading && workspace) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [workspace, workspaceLoading, navigate]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: "Logo must be less than 2MB",
+        });
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = (e) => {
-        setWorkspace({ ...workspace, logo: e.target?.result as string });
+        setWorkspaceData({ 
+          ...workspaceData, 
+          logoFile: file,
+          logoPreview: e.target?.result as string 
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < 3) {
       setStep(step + 1);
     } else {
-      navigate("/dashboard", { state: { workspace, plan } });
+      // Create workspace
+      setLoading(true);
+      try {
+        let logoUrl: string | undefined;
+        
+        if (workspaceData.logoFile) {
+          const { url, error } = await uploadLogo(workspaceData.logoFile);
+          if (error) {
+            toast({
+              variant: "destructive",
+              title: "Logo upload failed",
+              description: "Could not upload logo. Please try again.",
+            });
+            return;
+          }
+          logoUrl = url || undefined;
+        }
+        
+        const { error } = await createWorkspace(
+          workspaceData.name,
+          workspaceData.color,
+          logoUrl
+        );
+        
+        if (error) {
+          toast({
+            variant: "destructive",
+            title: "Failed to create workspace",
+            description: "Please try again.",
+          });
+          return;
+        }
+        
+        navigate("/dashboard", { state: { plan } });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -58,6 +120,14 @@ const Onboarding = () => {
     { number: 2, label: "Brand Color" },
     { number: 3, label: "Logo" },
   ];
+
+  if (workspaceLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -114,11 +184,12 @@ const Onboarding = () => {
                     type="text"
                     placeholder="e.g., Acme Inc."
                     className="h-14 text-lg"
-                    value={workspace.name}
+                    value={workspaceData.name}
                     onChange={(e) =>
-                      setWorkspace({ ...workspace, name: e.target.value })
+                      setWorkspaceData({ ...workspaceData, name: e.target.value })
                     }
                     autoFocus
+                    maxLength={100}
                   />
                 </motion.div>
               )}
@@ -142,10 +213,10 @@ const Onboarding = () => {
                       <button
                         key={color.value}
                         onClick={() =>
-                          setWorkspace({ ...workspace, color: color.value })
+                          setWorkspaceData({ ...workspaceData, color: color.value })
                         }
                         className={`p-4 rounded-[12px] border-2 transition-all duration-300 ${
-                          workspace.color === color.value
+                          workspaceData.color === color.value
                             ? "border-primary shadow-lg"
                             : "border-border/[0.08] hover:border-primary/30"
                         }`}
@@ -188,9 +259,9 @@ const Onboarding = () => {
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full p-8 border-2 border-dashed border-border/20 rounded-[12px] hover:border-primary/40 transition-all duration-300 group"
                   >
-                    {workspace.logo ? (
+                    {workspaceData.logoPreview ? (
                       <img
-                        src={workspace.logo}
+                        src={workspaceData.logoPreview}
                         alt="Logo preview"
                         className="max-h-24 mx-auto"
                       />
@@ -223,7 +294,7 @@ const Onboarding = () => {
               <Button
                 variant="ghost"
                 onClick={handleBack}
-                disabled={step === 1}
+                disabled={step === 1 || loading}
                 className="opacity-0 pointer-events-none data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto transition-opacity"
                 data-visible={step > 1}
               >
@@ -233,11 +304,17 @@ const Onboarding = () => {
               <Button
                 variant="hero"
                 onClick={handleNext}
-                disabled={step === 1 && !workspace.name}
+                disabled={(step === 1 && !workspaceData.name) || loading}
                 className="group"
               >
-                {step === 3 ? "Launch Dashboard" : "Continue"}
-                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    {step === 3 ? "Launch Dashboard" : "Continue"}
+                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </>
+                )}
               </Button>
             </div>
           </div>
@@ -261,13 +338,13 @@ const Onboarding = () => {
 
           <div
             className="bg-background rounded-[16px] p-8 border border-border/[0.08] shadow-[0_32px_64px_-16px_rgba(26,63,100,0.15)] transition-all duration-500"
-            style={{ borderTopColor: workspace.color, borderTopWidth: 4 }}
+            style={{ borderTopColor: workspaceData.color, borderTopWidth: 4 }}
           >
             {/* Logo */}
             <div className="h-10 mb-6 flex items-center">
-              {workspace.logo ? (
+              {workspaceData.logoPreview ? (
                 <img
-                  src={workspace.logo}
+                  src={workspaceData.logoPreview}
                   alt="Logo"
                   className="max-h-full object-contain"
                 />
@@ -277,8 +354,8 @@ const Onboarding = () => {
             </div>
 
             {/* Content */}
-            <h3 className="text-xl font-bold mb-2" style={{ color: workspace.color }}>
-              {workspace.name || "Your Workspace"}
+            <h3 className="text-xl font-bold mb-2" style={{ color: workspaceData.color }}>
+              {workspaceData.name || "Your Workspace"}
             </h3>
             <p className="text-sm text-subtext mb-6">
               Share your experience with us
@@ -290,7 +367,7 @@ const Onboarding = () => {
               <div className="h-24 bg-slate rounded-[8px]" />
               <div
                 className="h-10 rounded-[8px]"
-                style={{ backgroundColor: workspace.color }}
+                style={{ backgroundColor: workspaceData.color }}
               />
             </div>
           </div>

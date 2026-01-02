@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { WidgetPreview } from "@/components/WidgetPreview";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -604,56 +605,14 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* Preview */}
+                {/* Widget Preview */}
                 <div className="p-6 bg-slate rounded-[12px]">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-medium text-primary uppercase tracking-wider">
-                      Widget Preview
-                    </span>
-                  </div>
-                  <div
-                    className={`p-6 rounded-[12px] ${
-                      widgetSettings?.dark_mode ? "bg-gray-900" : "bg-background"
-                    }`}
-                  >
-                    <div
-                      className={`grid gap-4 ${
-                        widgetSettings?.layout === "grid" ? "grid-cols-2" : "grid-cols-1"
-                      }`}
-                    >
-                      {testimonials
-                        .filter((t) => t.status === "approved")
-                        .slice(0, 4)
-                        .map((t) => (
-                          <div
-                            key={t.id}
-                            className={`p-4 rounded-[8px] ${
-                              widgetSettings?.dark_mode
-                                ? "bg-gray-800"
-                                : "bg-slate border border-border/[0.08]"
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-8 h-8 rounded-full bg-primary/20" />
-                              <div>
-                                <p className={`text-xs font-medium ${widgetSettings?.dark_mode ? "text-white" : "text-foreground"}`}>
-                                  {t.author_name}
-                                </p>
-                              </div>
-                            </div>
-                            <p className={`text-xs ${widgetSettings?.dark_mode ? "text-gray-400" : "text-subtext"}`}>
-                              {t.content?.slice(0, 60)}...
-                            </p>
-                          </div>
-                        ))}
-                      {testimonials.filter((t) => t.status === "approved").length === 0 && (
-                        <p className="text-sm text-subtext col-span-2 text-center py-8">
-                          Approve testimonials to see preview
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  <WidgetPreview
+                    testimonials={testimonials}
+                    darkMode={widgetSettings?.dark_mode || false}
+                    layout={widgetSettings?.layout || "grid"}
+                    showVideoFirst={widgetSettings?.show_video_first || false}
+                  />
                 </div>
               </div>
             </motion.div>

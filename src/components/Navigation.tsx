@@ -12,9 +12,8 @@ const Navigation = () => {
     >
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          <a href="/" className="flex items-center gap-2.5">
-            <img src={logoPrimary} alt="Vouchy" className="h-7 w-7" />
-            <span className="font-heading font-bold text-base tracking-tight text-primary">Vouchy</span>
+          <a href="/" className="flex items-center">
+            <img src={logoPrimary} alt="Vouchy" className="h-8 w-auto" />
           </a>
           
           <ul className="hidden md:flex items-center gap-10">

@@ -4,7 +4,7 @@ import { ArrowRight, Play, Check, Sparkles, FileText, Link2, Inbox, Code2, Star 
 
 const Hero = () => {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
       {/* Subtle gradient orb */}
       <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-3xl pointer-events-none" />
       
@@ -110,7 +110,7 @@ const Hero = () => {
                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                       <span className="text-xs font-bold text-primary">V</span>
                     </div>
-                    <span className="text-sm font-medium text-foreground">Vouchy Dashboard</span>
+                    <span className="text-sm font-medium text-foreground">Dashboard</span>
                   </div>
                 </div>
 

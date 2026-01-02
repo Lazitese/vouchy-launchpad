@@ -22,6 +22,8 @@ import {
   LogOut,
   Loader2,
   Trash2,
+  Play,
+  Crown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -33,12 +35,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useSpaces } from "@/hooks/useSpaces";
 import { useTestimonials, Testimonial } from "@/hooks/useTestimonials";
 import { useToast } from "@/hooks/use-toast";
-import logoPrimary from "@/assets/logo-primary.svg";
+import logoIcon from "@/assets/logo-icon.svg";
 
 type View = "spaces" | "analytics" | "wall" | "settings" | "widget";
 
@@ -143,9 +146,9 @@ const Dashboard = () => {
         {/* Logo */}
         <div className="p-6 flex items-center justify-between">
           <img
-            src={logoPrimary}
+            src={logoIcon}
             alt="Vouchy"
-            className={`transition-all duration-300 ${sidebarOpen ? "h-7" : "h-6"}`}
+            className={`transition-all duration-300 ${sidebarOpen ? "h-12 w-12" : "h-10 w-10"}`}
           />
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -419,18 +422,38 @@ const Dashboard = () => {
                   .map((testimonial) => (
                     <div
                       key={testimonial.id}
-                      className="p-6 bg-card border border-border/[0.08] rounded-[12px]"
+                      className="p-6 bg-card border border-border/[0.08] rounded-[12px] relative overflow-hidden"
                     >
+                      {/* Video badge */}
+                      {testimonial.type === "video" && (
+                        <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full">
+                          <Play className="w-3 h-3 text-primary fill-current" />
+                          <span className="text-[10px] font-medium text-primary">Video</span>
+                        </div>
+                      )}
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-sm font-bold text-primary">
-                            {testimonial.author_name.charAt(0)}
-                          </span>
+                        <div className="relative">
+                          <Avatar className="w-12 h-12 ring-2 ring-primary/20">
+                            {testimonial.author_avatar_url ? (
+                              <AvatarImage src={testimonial.author_avatar_url} alt={testimonial.author_name} />
+                            ) : null}
+                            <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                              {testimonial.author_name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          {testimonial.type === "video" && (
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm">
+                              <Play className="w-2.5 h-2.5 text-primary-foreground fill-current" />
+                            </div>
+                          )}
                         </div>
                         <div>
                           <p className="font-semibold text-primary text-sm">
                             {testimonial.author_name}
                           </p>
+                          {testimonial.author_title && (
+                            <p className="text-xs text-subtext">{testimonial.author_title}</p>
+                          )}
                           {testimonial.author_company && (
                             <p className="text-xs text-subtext">{testimonial.author_company}</p>
                           )}
@@ -439,13 +462,21 @@ const Dashboard = () => {
                       {testimonial.rating && (
                         <div className="flex gap-0.5 mb-2">
                           {[...Array(testimonial.rating)].map((_, i) => (
-                            <span key={i} className="text-primary text-sm">★</span>
+                            <span key={i} className="text-amber-400 text-sm">★</span>
                           ))}
                         </div>
                       )}
-                      <p className="text-foreground/80 text-sm leading-relaxed">
-                        {testimonial.content}
-                      </p>
+                      {testimonial.type === "video" && testimonial.video_url ? (
+                        <video
+                          src={testimonial.video_url}
+                          controls
+                          className="w-full rounded-lg mt-2"
+                        />
+                      ) : (
+                        <p className="text-foreground/80 text-sm leading-relaxed">
+                          {testimonial.content}
+                        </p>
+                      )}
                     </div>
                   ))}
               </div>
@@ -646,20 +677,53 @@ const TestimonialCard = ({
     return `${days}d ago`;
   };
 
+  const { toast } = useToast();
+  
+  const handleShare = () => {
+    const shareText = testimonial.type === "video" 
+      ? `Check out this video testimonial from ${testimonial.author_name}!`
+      : `"${testimonial.content}" - ${testimonial.author_name}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: `Testimonial from ${testimonial.author_name}`,
+        text: shareText,
+      });
+    } else {
+      navigator.clipboard.writeText(shareText);
+      toast({ title: "Copied to clipboard!" });
+    }
+  };
+
   return (
     <motion.div
-      className="p-6 bg-card border border-border/[0.08] rounded-[12px] hover:shadow-lg transition-shadow duration-300"
+      className="p-6 bg-card border border-border/[0.08] rounded-[12px] hover:shadow-lg transition-shadow duration-300 relative overflow-hidden"
       layout
     >
+      {/* Video badge */}
+      {testimonial.type === "video" && (
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-primary rounded-full shadow-sm">
+          <Play className="w-3 h-3 text-primary-foreground fill-current" />
+          <span className="text-[10px] font-bold text-primary-foreground uppercase tracking-wide">Video</span>
+          <Crown className="w-3 h-3 text-amber-300" />
+        </div>
+      )}
+      
       <div className="flex items-start gap-4">
         {/* Avatar */}
-        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-          {testimonial.type === "video" ? (
-            <Video className="w-5 h-5 text-primary" />
-          ) : (
-            <span className="text-lg font-bold text-primary">
+        <div className="relative shrink-0">
+          <Avatar className="w-14 h-14 ring-2 ring-primary/20">
+            {testimonial.author_avatar_url ? (
+              <AvatarImage src={testimonial.author_avatar_url} alt={testimonial.author_name} />
+            ) : null}
+            <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
               {testimonial.author_name.charAt(0)}
-            </span>
+            </AvatarFallback>
+          </Avatar>
+          {testimonial.type === "video" && (
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm">
+              <Play className="w-2.5 h-2.5 text-primary-foreground fill-current" />
+            </div>
           )}
         </div>
 
@@ -669,10 +733,18 @@ const TestimonialCard = ({
             <h3 className="font-semibold text-primary">
               {testimonial.author_name}
             </h3>
-            {testimonial.author_company && (
+            {testimonial.author_title && (
               <span className="text-xs text-subtext">
-                {testimonial.author_company}
+                {testimonial.author_title}
               </span>
+            )}
+            {testimonial.author_company && (
+              <>
+                <span className="text-xs text-subtext/60">at</span>
+                <span className="text-xs text-subtext">
+                  {testimonial.author_company}
+                </span>
+              </>
             )}
             <span className="text-xs text-subtext/60">•</span>
             <span className="text-xs text-subtext/60">
@@ -682,7 +754,7 @@ const TestimonialCard = ({
           {testimonial.rating && (
             <div className="flex gap-0.5 mb-2">
               {[...Array(testimonial.rating)].map((_, i) => (
-                <span key={i} className="text-primary text-sm">★</span>
+                <span key={i} className="text-amber-400 text-sm">★</span>
               ))}
             </div>
           )}
@@ -731,15 +803,15 @@ const TestimonialCard = ({
           )}
           <button 
             className="p-2 rounded-lg hover:bg-slate transition-colors"
-            onClick={() => {
-              navigator.clipboard.writeText(testimonial.content || testimonial.video_url || "");
-            }}
+            onClick={handleShare}
+            title="Share testimonial"
           >
             <Share2 className="w-4 h-4 text-subtext" />
           </button>
           <button 
             className="p-2 rounded-lg hover:bg-red-500/10 transition-colors"
             onClick={() => onDelete(testimonial.id)}
+            title="Delete"
           >
             <Trash2 className="w-4 h-4 text-subtext hover:text-red-500" />
           </button>

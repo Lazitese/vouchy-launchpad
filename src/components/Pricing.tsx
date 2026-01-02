@@ -1,8 +1,11 @@
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { Check, ArrowRight, Sparkles } from "lucide-react";
+import { useRef, useState } from "react";
+import { Check, ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const plans = [
   {
@@ -10,6 +13,7 @@ const plans = [
     price: "Free",
     period: "",
     description: "Perfect for trying out Vouchy",
+    productId: null, // Free plan, no payment
     features: [
       "1 collection space",
       "Up to 10 testimonials",
@@ -24,6 +28,7 @@ const plans = [
     price: "$29",
     period: "/mo",
     description: "For growing businesses",
+    productId: "prod_pro_monthly", // Replace with your Dodo product ID
     features: [
       "Unlimited spaces",
       "Unlimited testimonials",
@@ -40,6 +45,7 @@ const plans = [
     price: "$99",
     period: "/mo",
     description: "For teams & agencies",
+    productId: "prod_agency_monthly", // Replace with your Dodo product ID
     features: [
       "Everything in Pro",
       "White-label solution",
@@ -57,9 +63,56 @@ const Pricing = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
-  const handleSelectPlan = (planName: string) => {
-    navigate("/auth", { state: { plan: planName, mode: "signup" } });
+  const handleSelectPlan = async (plan: typeof plans[0]) => {
+    // Free plan - just navigate to auth/dashboard
+    if (!plan.productId) {
+      if (user) {
+        navigate("/dashboard");
+      } else {
+        navigate("/auth", { state: { plan: plan.name, mode: "signup" } });
+      }
+      return;
+    }
+
+    // Paid plan - need user to be logged in first
+    if (!user) {
+      navigate("/auth", { state: { plan: plan.name, mode: "signup" } });
+      return;
+    }
+
+    // Create checkout session
+    setLoadingPlan(plan.name);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: {
+          productId: plan.productId,
+          customerEmail: user.email,
+          customerName: user.user_metadata?.full_name || user.email,
+          returnUrl: `${window.location.origin}/dashboard?payment=success`,
+        },
+      });
+
+      if (error) throw error;
+      
+      if (data?.paymentLink) {
+        window.location.href = data.paymentLink;
+      } else {
+        throw new Error('No payment link received');
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      toast({
+        variant: "destructive",
+        title: "Payment Error",
+        description: "Failed to create checkout session. Please try again.",
+      });
+    } finally {
+      setLoadingPlan(null);
+    }
   };
 
   return (
@@ -153,13 +206,20 @@ const Pricing = () => {
 
               {/* CTA */}
               <Button
-                onClick={() => handleSelectPlan(plan.name)}
+                onClick={() => handleSelectPlan(plan)}
                 variant={plan.popular ? "hero" : "heroOutline"}
                 className="w-full group"
                 size="lg"
+                disabled={loadingPlan === plan.name}
               >
-                {plan.cta}
-                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                {loadingPlan === plan.name ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    {plan.cta}
+                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </>
+                )}
               </Button>
             </motion.div>
           ))}

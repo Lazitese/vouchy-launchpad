@@ -11,7 +11,6 @@ const Hero = () => {
   });
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   return (
     <section ref={containerRef} className="relative min-h-screen pt-24 overflow-hidden">
@@ -44,7 +43,7 @@ const Hero = () => {
         />
       </div>
 
-      <motion.div style={{ y, opacity }} className="container mx-auto px-6 relative z-10">
+      <motion.div style={{ y }} className="container mx-auto px-6 relative z-10">
         {/* Top label */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}

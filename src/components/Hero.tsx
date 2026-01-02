@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Check, Sparkles, FileText, Link2, Inbox, Code2 } from "lucide-react";
+import { ArrowRight, Play, Check, Sparkles, FileText, Link2, Inbox, Code2, Star } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -94,7 +94,7 @@ const Hero = () => {
             </motion.div>
           </div>
 
-          {/* Right: Compact Product Card */}
+          {/* Right: Interactive Demo Card */}
           <motion.div
             className="order-1 lg:order-2"
             initial={{ opacity: 0, x: 40 }}
@@ -105,143 +105,198 @@ const Hero = () => {
               {/* Main card */}
               <div className="bg-slate/50 backdrop-blur-sm border border-border/10 rounded-2xl p-5 shadow-2xl shadow-primary/5">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                       <span className="text-xs font-bold text-primary">V</span>
                     </div>
-                    <span className="text-sm font-medium text-foreground">Vouchy</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 rounded-full">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[10px] font-medium text-green-600">Live</span>
+                    <span className="text-sm font-medium text-foreground">Vouchy Dashboard</span>
                   </div>
                 </div>
 
-                {/* Steps - Compact with animated icons */}
-                <div className="space-y-2 mb-4">
-                  {[
-                    { 
-                      label: "Create form", 
-                      done: true,
-                      icon: FileText,
-                      animation: { rotate: [0, -5, 5, 0], scale: [1, 1.1, 1] }
-                    },
-                    { 
-                      label: "Share link", 
-                      done: true,
-                      icon: Link2,
-                      animation: { x: [0, 3, -3, 0], rotate: [0, 10, -10, 0] }
-                    },
-                    { 
-                      label: "Collect", 
-                      active: true,
-                      icon: Inbox,
-                      animation: { y: [0, -3, 0], scale: [1, 1.15, 1] }
-                    },
-                    { 
-                      label: "Embed", 
-                      done: false,
-                      icon: Code2,
-                      animation: { opacity: [0.4, 1, 0.4] }
-                    },
-                  ].map((item, i) => (
-                    <motion.div
-                      key={i}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
-                        item.active 
-                          ? "bg-primary/10 border border-primary/20" 
-                          : "bg-background/50"
-                      }`}
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.5 + i * 0.1 }}
-                    >
-                      <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
-                        item.done 
-                          ? "bg-primary text-primary-foreground" 
-                          : item.active 
-                            ? "bg-primary/20 text-primary" 
-                            : "bg-foreground/5 text-foreground/30"
-                      }`}>
-                        {item.done ? (
+                {/* Workflow visualization */}
+                <div className="space-y-3 mb-5">
+                  {/* Step 1: Create - Form being built */}
+                  <motion.div
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-background/50"
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-foreground/70">Create form</p>
+                      <div className="flex gap-1 mt-1">
+                        {[...Array(3)].map((_, i) => (
                           <motion.div
-                            animate={item.animation}
-                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                          >
-                            <item.icon className="w-3.5 h-3.5" />
-                          </motion.div>
-                        ) : item.active ? (
-                          <motion.div
-                            animate={item.animation}
-                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                          >
-                            <item.icon className="w-3.5 h-3.5" />
-                          </motion.div>
-                        ) : (
-                          <motion.div
-                            animate={item.animation}
-                            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                          >
-                            <item.icon className="w-3.5 h-3.5" />
-                          </motion.div>
-                        )}
-                      </div>
-                      <span className={`text-xs font-medium ${
-                        item.active ? "text-primary" : item.done ? "text-foreground/70" : "text-foreground/30"
-                      }`}>
-                        {item.label}
-                      </span>
-                      {item.active && (
-                        <motion.div
-                          className="ml-auto flex items-center gap-1"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                        >
-                          <motion.div
-                            className="w-1.5 h-1.5 rounded-full bg-primary"
-                            animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-                            transition={{ duration: 1, repeat: Infinity }}
+                            key={i}
+                            className="h-1 rounded-full bg-primary"
+                            initial={{ width: 0 }}
+                            animate={{ width: [0, 20, 20] }}
+                            transition={{ delay: 0.8 + i * 0.2, duration: 0.5 }}
                           />
-                          <motion.span 
-                            className="text-[9px] text-primary font-medium"
-                            animate={{ opacity: [0.7, 1, 0.7] }}
-                            transition={{ duration: 1.5, repeat: Infinity }}
-                          >
-                            Active
-                          </motion.span>
-                        </motion.div>
-                      )}
+                        ))}
+                      </div>
+                    </div>
+                    <Check className="w-4 h-4 text-primary" />
+                  </motion.div>
+
+                  {/* Step 2: Share - Link being sent out */}
+                  <motion.div
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-background/50"
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center relative overflow-hidden">
+                      <Link2 className="w-4 h-4 relative z-10" />
+                      <motion.div
+                        className="absolute inset-0 bg-primary-foreground/20"
+                        animate={{ x: ["-100%", "100%"] }}
+                        transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 1 }}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-foreground/70">Share link</p>
+                      <p className="text-[10px] text-subtext">vouchy.app/c/abc123</p>
+                    </div>
+                    <Check className="w-4 h-4 text-primary" />
+                  </motion.div>
+
+                  {/* Step 3: Collect - Testimonials flowing in (ACTIVE) */}
+                  <motion.div
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 border border-primary/20 relative overflow-hidden"
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.7 }}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center relative">
+                      <Inbox className="w-4 h-4" />
+                      {/* Testimonials flowing in */}
+                      <motion.div
+                        className="absolute -top-2 left-1/2 -translate-x-1/2"
+                        animate={{ y: [0, 8], opacity: [1, 0] }}
+                        transition={{ duration: 0.8, repeat: Infinity }}
+                      >
+                        <Star className="w-2 h-2 text-primary fill-primary" />
+                      </motion.div>
+                      <motion.div
+                        className="absolute -top-1 left-0"
+                        animate={{ y: [0, 6], x: [0, 4], opacity: [1, 0] }}
+                        transition={{ duration: 0.9, repeat: Infinity, delay: 0.3 }}
+                      >
+                        <Star className="w-1.5 h-1.5 text-primary fill-primary" />
+                      </motion.div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-primary">Collecting...</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <motion.span
+                          className="text-lg font-bold text-primary"
+                          animate={{ opacity: [1, 0.5, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          247
+                        </motion.span>
+                        <span className="text-[10px] text-primary/60">testimonials</span>
+                      </div>
+                    </div>
+                    <motion.div
+                      className="flex items-center gap-1 px-2 py-0.5 bg-primary/20 rounded-full"
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <motion.div
+                        className="w-1.5 h-1.5 rounded-full bg-primary"
+                        animate={{ opacity: [1, 0.4, 1] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      />
+                      <span className="text-[9px] font-medium text-primary">Live</span>
                     </motion.div>
-                  ))}
+                  </motion.div>
+
+                  {/* Step 4: Embed - Code waiting */}
+                  <motion.div
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-background/30"
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.8 }}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-foreground/5 text-foreground/30 flex items-center justify-center">
+                      <motion.div
+                        animate={{ opacity: [0.3, 0.6, 0.3] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <Code2 className="w-4 h-4" />
+                      </motion.div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-foreground/30">Embed</p>
+                      <p className="text-[10px] text-foreground/20">Ready when you are</p>
+                    </div>
+                  </motion.div>
                 </div>
 
-                {/* Stats row */}
-                <div className="flex items-center justify-between pt-3 border-t border-border/10">
-                  <div>
-                    <p className="text-lg font-bold text-primary">247</p>
-                    <p className="text-[10px] text-subtext">Collected</p>
+                {/* Mini testimonial preview */}
+                <motion.div
+                  className="p-3 bg-background/50 rounded-lg border border-border/10"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 }}
+                >
+                  <div className="flex items-start gap-2">
+                    <motion.div
+                      className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                    >
+                      JD
+                    </motion.div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-1 mb-1">
+                        {[...Array(5)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 1.2 + i * 0.1 }}
+                          >
+                            <Star className="w-2.5 h-2.5 text-yellow-500 fill-yellow-500" />
+                          </motion.div>
+                        ))}
+                      </div>
+                      <motion.p
+                        className="text-[10px] text-foreground/60 leading-relaxed"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1.5 }}
+                      >
+                        "This tool changed how we collect feedback..."
+                      </motion.p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-foreground">98%</p>
-                    <p className="text-[10px] text-subtext">Completion</p>
-                  </div>
-                </div>
+                </motion.div>
               </div>
 
-              {/* Floating accent */}
+              {/* Floating notification */}
               <motion.div
-                className="absolute -bottom-3 -right-3 bg-background border border-border/10 rounded-xl px-3 py-2 shadow-lg"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.9 }}
+                className="absolute -top-3 -right-3 bg-background border border-border/10 rounded-xl px-3 py-2 shadow-lg"
+                initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 1.2, type: "spring" }}
               >
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center">
-                    <span className="text-[8px] font-bold text-primary">{"</>"}</span>
+                <motion.div
+                  className="flex items-center gap-2"
+                  animate={{ y: [0, -2, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <div className="w-5 h-5 rounded-full bg-green-500/10 flex items-center justify-center">
+                    <Check className="w-3 h-3 text-green-500" />
                   </div>
-                  <span className="text-[10px] font-medium text-foreground/70">Ready to embed</span>
-                </div>
+                  <span className="text-[10px] font-medium text-foreground/70">+3 new today</span>
+                </motion.div>
               </motion.div>
             </div>
           </motion.div>

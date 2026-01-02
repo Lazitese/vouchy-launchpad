@@ -1,45 +1,44 @@
 import { motion } from "framer-motion";
-import { Star, Quote } from "lucide-react";
 
 interface TestimonialCardProps {
   name: string;
   role: string;
   company: string;
   content: string;
-  rating: number;
-  avatar: string;
+  index: number;
 }
 
-const TestimonialCard = ({ name, role, company, content, rating, avatar }: TestimonialCardProps) => {
+const TestimonialCard = ({ name, role, company, content, index }: TestimonialCardProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="bg-card p-8 rounded-2xl testimonial-card border border-border/50"
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.7, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      className="editorial-card p-8 h-full flex flex-col"
     >
-      <div className="flex items-start gap-4 mb-6">
-        <Quote className="w-10 h-10 text-primary/20 flex-shrink-0" />
-        <div className="flex gap-1">
-          {Array.from({ length: rating }).map((_, i) => (
-            <Star key={i} className="w-5 h-5 fill-primary text-primary" />
-          ))}
-        </div>
-      </div>
+      {/* Editorial number */}
+      <span className="text-[11px] font-medium text-foreground/30 uppercase tracking-widest mb-8">
+        0{index + 1}
+      </span>
       
-      <p className="text-foreground text-lg leading-relaxed mb-8">
+      {/* Quote */}
+      <p className="text-lg text-foreground leading-relaxed flex-grow mb-8">
         "{content}"
       </p>
       
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-primary font-bold text-lg">
-          {avatar}
-        </div>
+      {/* Divider */}
+      <div className="w-8 h-px bg-border/[0.15] mb-6" />
+      
+      {/* Author */}
+      <div className="flex items-center justify-between">
         <div>
-          <p className="font-semibold text-foreground">{name}</p>
-          <p className="text-sm text-subtext">{role} at {company}</p>
+          <p className="font-semibold text-primary text-sm tracking-tight">{name}</p>
+          <p className="text-[13px] text-subtext">{role}</p>
         </div>
+        <span className="text-[11px] font-medium text-foreground/40 uppercase tracking-widest">
+          {company}
+        </span>
       </div>
     </motion.div>
   );

@@ -84,7 +84,6 @@ const HowItWorks = () => {
                   <div className="absolute inset-0 bg-primary/5 rounded-xl" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     {index === 0 && (
-                      // Create form - writing animation
                       <motion.div className="relative">
                         <step.icon className="w-6 h-6 text-primary" />
                         <motion.div
@@ -103,7 +102,6 @@ const HowItWorks = () => {
                       </motion.div>
                     )}
                     {index === 1 && (
-                      // Share link - ripple/broadcast animation
                       <motion.div className="relative">
                         <step.icon className="w-6 h-6 text-primary relative z-10" />
                         <motion.div
@@ -125,7 +123,6 @@ const HowItWorks = () => {
                       </motion.div>
                     )}
                     {index === 2 && (
-                      // Collect - items flowing in animation
                       <motion.div className="relative">
                         <step.icon className="w-6 h-6 text-primary" />
                         <motion.div
@@ -158,7 +155,6 @@ const HowItWorks = () => {
                       </motion.div>
                     )}
                     {index === 3 && (
-                      // Embed - code typing animation
                       <motion.div className="relative">
                         <step.icon className="w-6 h-6 text-primary" />
                         <motion.div

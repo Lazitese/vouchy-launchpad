@@ -1,10 +1,20 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
+import { useRef } from "react";
 
 const Hero = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
   return (
-    <section className="relative min-h-screen pt-24 overflow-hidden">
+    <section ref={containerRef} className="relative min-h-screen pt-24 overflow-hidden">
       {/* Animated grid lines background */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 grid grid-cols-12 gap-0">
@@ -34,7 +44,7 @@ const Hero = () => {
         />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
+      <motion.div style={{ y, opacity }} className="container mx-auto px-6 relative z-10">
         {/* Top label */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -263,7 +273,7 @@ const Hero = () => {
             </div>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Bottom scroll indicator */}
       <motion.div

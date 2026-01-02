@@ -18,20 +18,31 @@ import {
   Camera,
   CameraOff,
   Check,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
+import { useSpaceBySlug } from "@/hooks/useSpaces";
+import { useSubmitTestimonial } from "@/hooks/useTestimonials";
+import { useToast } from "@/hooks/use-toast";
 import logoPrimary from "@/assets/logo-primary.svg";
+import { z } from "zod";
 
 type Mode = "select" | "video" | "text" | "success";
 
-const teleprompterQuestions = [
-  "What problem were you trying to solve?",
-  "How has our product helped you?",
-  "What results have you seen?",
-  "Would you recommend us to others?",
-];
+const textFormSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(100),
+  email: z.string().email("Invalid email address").max(255),
+  company: z.string().max(100).optional(),
+  testimonial: z.string().min(10, "Please write at least 10 characters").max(2000),
+  rating: z.number().min(1).max(5),
+});
 
 const Collect = () => {
-  const { spaceId } = useParams();
+  const { slug } = useParams();
+  const { space, loading: spaceLoading, error: spaceError } = useSpaceBySlug(slug);
+  const { submitTextTestimonial, submitVideoTestimonial, loading: submitting } = useSubmitTestimonial();
+  const { toast } = useToast();
+  
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -43,6 +54,11 @@ const Collect = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const [micEnabled, setMicEnabled] = useState(true);
+  const [videoFormData, setVideoFormData] = useState({
+    name: "",
+    email: "",
+    company: "",
+  });
   
   const [textForm, setTextForm] = useState({
     name: "",
@@ -51,6 +67,14 @@ const Collect = () => {
     testimonial: "",
     rating: 5,
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const questions = space?.questions || [
+    "What problem were you trying to solve?",
+    "How has our product helped you?",
+    "What results have you seen?",
+    "Would you recommend us to others?",
+  ];
 
   // Initialize camera
   useEffect(() => {
@@ -76,6 +100,11 @@ const Collect = () => {
       }
     } catch (err) {
       console.error("Error accessing camera:", err);
+      toast({
+        variant: "destructive",
+        title: "Camera access denied",
+        description: "Please allow camera access to record a video testimonial.",
+      });
     }
   };
 
@@ -121,7 +150,7 @@ const Collect = () => {
     // Auto-cycle through questions
     const interval = setInterval(() => {
       setCurrentQuestion((prev) => {
-        if (prev < teleprompterQuestions.length - 1) {
+        if (prev < questions.length - 1) {
           return prev + 1;
         }
         clearInterval(interval);
@@ -145,15 +174,102 @@ const Collect = () => {
     }
   };
 
-  const submitVideo = () => {
-    // Handle video submission
+  const submitVideo = async () => {
+    if (!space || !recordedBlob) return;
+    
+    // Validate video form
+    if (!videoFormData.name.trim() || !videoFormData.email.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Missing information",
+        description: "Please enter your name and email.",
+      });
+      return;
+    }
+
+    const { error } = await submitVideoTestimonial({
+      spaceId: space.id,
+      name: videoFormData.name.trim(),
+      email: videoFormData.email.trim(),
+      company: videoFormData.company.trim() || undefined,
+      videoBlob: recordedBlob,
+    });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Submission failed",
+        description: "Please try again.",
+      });
+      return;
+    }
+
     setMode("success");
   };
 
-  const submitText = (e: React.FormEvent) => {
+  const submitText = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!space) return;
+
+    // Validate
+    try {
+      textFormSchema.parse(textForm);
+      setErrors({});
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const newErrors: Record<string, string> = {};
+        err.errors.forEach((e) => {
+          if (e.path[0]) {
+            newErrors[e.path[0] as string] = e.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return;
+    }
+
+    const { error } = await submitTextTestimonial({
+      spaceId: space.id,
+      name: textForm.name.trim(),
+      email: textForm.email.trim(),
+      company: textForm.company.trim() || undefined,
+      content: textForm.testimonial.trim(),
+      rating: textForm.rating,
+    });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Submission failed",
+        description: "Please try again.",
+      });
+      return;
+    }
+
     setMode("success");
   };
+
+  // Loading state
+  if (spaceLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Error or not found
+  if (spaceError || !space) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+        <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
+        <h1 className="text-2xl font-bold text-primary mb-2">Collection Not Found</h1>
+        <p className="text-subtext text-center max-w-md">
+          This collection link is invalid or has been deactivated.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -239,13 +355,21 @@ const Collect = () => {
               <div className="relative">
                 {/* Video Container */}
                 <div className="relative aspect-video bg-gray-900 rounded-[16px] overflow-hidden">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover"
-                  />
+                  {recordedBlob ? (
+                    <video
+                      src={URL.createObjectURL(recordedBlob)}
+                      controls
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      muted
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
+                  )}
 
                   {/* Teleprompter Overlay */}
                   {isRecording && (
@@ -255,7 +379,7 @@ const Collect = () => {
                       animate={{ opacity: 1, y: 0 }}
                     >
                       <p className="text-xs text-white/60 uppercase tracking-wider mb-2">
-                        Question {currentQuestion + 1} of {teleprompterQuestions.length}
+                        Question {currentQuestion + 1} of {questions.length}
                       </p>
                       <motion.p
                         key={currentQuestion}
@@ -264,7 +388,7 @@ const Collect = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4 }}
                       >
-                        {teleprompterQuestions[currentQuestion]}
+                        {questions[currentQuestion]}
                       </motion.p>
                     </motion.div>
                   )}
@@ -278,33 +402,63 @@ const Collect = () => {
                   )}
 
                   {/* Camera controls */}
-                  <div className="absolute bottom-6 left-6 flex gap-2">
-                    <button
-                      onClick={toggleCamera}
-                      className={`p-3 rounded-full transition-colors ${
-                        cameraEnabled ? "bg-white/20" : "bg-red-500"
-                      }`}
-                    >
-                      {cameraEnabled ? (
-                        <Camera className="w-5 h-5 text-white" />
-                      ) : (
-                        <CameraOff className="w-5 h-5 text-white" />
-                      )}
-                    </button>
-                    <button
-                      onClick={toggleMic}
-                      className={`p-3 rounded-full transition-colors ${
-                        micEnabled ? "bg-white/20" : "bg-red-500"
-                      }`}
-                    >
-                      {micEnabled ? (
-                        <Mic className="w-5 h-5 text-white" />
-                      ) : (
-                        <MicOff className="w-5 h-5 text-white" />
-                      )}
-                    </button>
-                  </div>
+                  {!recordedBlob && (
+                    <div className="absolute bottom-6 left-6 flex gap-2">
+                      <button
+                        onClick={toggleCamera}
+                        className={`p-3 rounded-full transition-colors ${
+                          cameraEnabled ? "bg-white/20" : "bg-red-500"
+                        }`}
+                      >
+                        {cameraEnabled ? (
+                          <Camera className="w-5 h-5 text-white" />
+                        ) : (
+                          <CameraOff className="w-5 h-5 text-white" />
+                        )}
+                      </button>
+                      <button
+                        onClick={toggleMic}
+                        className={`p-3 rounded-full transition-colors ${
+                          micEnabled ? "bg-white/20" : "bg-red-500"
+                        }`}
+                      >
+                        {micEnabled ? (
+                          <Mic className="w-5 h-5 text-white" />
+                        ) : (
+                          <MicOff className="w-5 h-5 text-white" />
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
+
+                {/* Video form for name/email after recording */}
+                {recordedBlob && (
+                  <div className="mt-6 p-6 bg-card border border-border/[0.08] rounded-[12px]">
+                    <h3 className="font-semibold text-primary mb-4">Almost done! Tell us about yourself</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Input
+                        placeholder="Your name *"
+                        value={videoFormData.name}
+                        onChange={(e) => setVideoFormData({ ...videoFormData, name: e.target.value })}
+                        maxLength={100}
+                      />
+                      <Input
+                        type="email"
+                        placeholder="Email address *"
+                        value={videoFormData.email}
+                        onChange={(e) => setVideoFormData({ ...videoFormData, email: e.target.value })}
+                        maxLength={255}
+                      />
+                      <Input
+                        placeholder="Company (optional)"
+                        value={videoFormData.company}
+                        onChange={(e) => setVideoFormData({ ...videoFormData, company: e.target.value })}
+                        maxLength={100}
+                      />
+                    </div>
+                  </div>
+                )}
 
                 {/* Controls */}
                 <div className="flex items-center justify-center gap-4 mt-6">
@@ -314,9 +468,20 @@ const Collect = () => {
                         <RotateCcw className="w-4 h-4" />
                         Retake
                       </Button>
-                      <Button variant="hero" onClick={submitVideo} className="gap-2">
-                        <Send className="w-4 h-4" />
-                        Submit Video
+                      <Button 
+                        variant="hero" 
+                        onClick={submitVideo} 
+                        className="gap-2"
+                        disabled={submitting}
+                      >
+                        {submitting ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4" />
+                            Submit Video
+                          </>
+                        )}
                       </Button>
                     </>
                   ) : (
@@ -338,7 +503,11 @@ const Collect = () => {
                 </div>
 
                 <button
-                  onClick={() => setMode("select")}
+                  onClick={() => {
+                    setMode("select");
+                    setRecordedBlob(null);
+                    setCurrentQuestion(0);
+                  }}
                   className="block mx-auto mt-6 text-sm text-subtext hover:text-primary transition-colors"
                 >
                   ← Back to options
@@ -386,46 +555,75 @@ const Collect = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Input
-                    placeholder="Your name"
-                    value={textForm.name}
-                    onChange={(e) =>
-                      setTextForm({ ...textForm, name: e.target.value })
-                    }
-                    required
-                  />
+                  <div>
+                    <Input
+                      placeholder="Your name *"
+                      value={textForm.name}
+                      onChange={(e) =>
+                        setTextForm({ ...textForm, name: e.target.value })
+                      }
+                      className={errors.name ? "border-red-500" : ""}
+                      maxLength={100}
+                    />
+                    {errors.name && (
+                      <p className="text-xs text-red-500 mt-1">{errors.name}</p>
+                    )}
+                  </div>
                   <Input
                     placeholder="Company (optional)"
                     value={textForm.company}
                     onChange={(e) =>
                       setTextForm({ ...textForm, company: e.target.value })
                     }
+                    maxLength={100}
                   />
                 </div>
 
-                <Input
-                  type="email"
-                  placeholder="Email address"
-                  value={textForm.email}
-                  onChange={(e) =>
-                    setTextForm({ ...textForm, email: e.target.value })
-                  }
-                  required
-                />
+                <div>
+                  <Input
+                    type="email"
+                    placeholder="Email address *"
+                    value={textForm.email}
+                    onChange={(e) =>
+                      setTextForm({ ...textForm, email: e.target.value })
+                    }
+                    className={errors.email ? "border-red-500" : ""}
+                    maxLength={255}
+                  />
+                  {errors.email && (
+                    <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+                  )}
+                </div>
 
-                <Textarea
-                  placeholder="Share your experience..."
-                  className="min-h-[150px] resize-none"
-                  value={textForm.testimonial}
-                  onChange={(e) =>
-                    setTextForm({ ...textForm, testimonial: e.target.value })
-                  }
-                  required
-                />
+                <div>
+                  <Textarea
+                    placeholder="Share your experience..."
+                    className={`min-h-[150px] resize-none ${errors.testimonial ? "border-red-500" : ""}`}
+                    value={textForm.testimonial}
+                    onChange={(e) =>
+                      setTextForm({ ...textForm, testimonial: e.target.value })
+                    }
+                    maxLength={2000}
+                  />
+                  {errors.testimonial && (
+                    <p className="text-xs text-red-500 mt-1">{errors.testimonial}</p>
+                  )}
+                </div>
 
-                <Button variant="hero" className="w-full gap-2" type="submit">
-                  <Send className="w-4 h-4" />
-                  Submit Review
+                <Button 
+                  variant="hero" 
+                  className="w-full gap-2" 
+                  type="submit"
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      Submit Review
+                    </>
+                  )}
                 </Button>
               </form>
 

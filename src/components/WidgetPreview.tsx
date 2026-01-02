@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Star, Quote, Play, ChevronLeft, ChevronRight } from "lucide-react";
+import { Sparkles, Star, Quote, Play, ChevronLeft, ChevronRight, Crown, Lock } from "lucide-react";
 import { useState } from "react";
 import { Tables } from "@/integrations/supabase/types";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 type Testimonial = Tables<"testimonials">;
 
@@ -13,11 +14,11 @@ interface WidgetPreviewProps {
 }
 
 const widgetStyles = [
-  { id: "minimal", name: "Minimal", description: "Clean & subtle" },
-  { id: "cards", name: "Cards", description: "Modern cards" },
-  { id: "masonry", name: "Masonry", description: "Pinterest-style" },
-  { id: "marquee", name: "Marquee", description: "Auto-scroll" },
-  { id: "spotlight", name: "Spotlight", description: "Featured focus" },
+  { id: "minimal", name: "Minimal", description: "Clean & subtle", isPro: false },
+  { id: "cards", name: "Cards", description: "Modern cards", isPro: false },
+  { id: "masonry", name: "Masonry", description: "Pinterest-style", isPro: true },
+  { id: "marquee", name: "Marquee", description: "Auto-scroll", isPro: true },
+  { id: "spotlight", name: "Spotlight", description: "Featured focus", isPro: true },
 ] as const;
 
 export const WidgetPreview = ({
@@ -48,6 +49,37 @@ export const WidgetPreview = ({
   const nextSlide = () => setCarouselIndex((i) => (i + 1) % Math.max(displayItems.length, 1));
   const prevSlide = () => setCarouselIndex((i) => (i - 1 + displayItems.length) % Math.max(displayItems.length, 1));
 
+  const renderAvatar = (t: Testimonial, size: "sm" | "md" | "lg" = "md") => {
+    const sizeClasses = {
+      sm: "w-7 h-7",
+      md: "w-10 h-10",
+      lg: "w-16 h-16"
+    };
+    const textSizes = {
+      sm: "text-[10px]",
+      md: "text-sm",
+      lg: "text-xl"
+    };
+
+    return (
+      <div className="relative">
+        <Avatar className={`${sizeClasses[size]} ring-2 ring-primary/20`}>
+          {t.author_avatar_url ? (
+            <AvatarImage src={t.author_avatar_url} alt={t.author_name} />
+          ) : null}
+          <AvatarFallback className="bg-primary/10 text-primary font-bold">
+            <span className={textSizes[size]}>{t.author_name.charAt(0)}</span>
+          </AvatarFallback>
+        </Avatar>
+        {t.type === "video" && (
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center shadow-sm">
+            <Play className="w-2 h-2 text-primary-foreground fill-current" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Render different widget styles
   const renderWidget = () => {
     if (displayItems.length === 0) {
@@ -73,21 +105,7 @@ export const WidgetPreview = ({
                 className={`p-5 rounded-xl border backdrop-blur-sm ${cardClasses} hover:scale-[1.01] transition-transform duration-300`}
               >
                 <div className="flex items-start gap-4">
-                  <div className="relative">
-                    <motion.div 
-                      className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center"
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      <span className="text-sm font-semibold text-primary">
-                        {t.author_name.charAt(0)}
-                      </span>
-                    </motion.div>
-                    {t.type === "video" && (
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
-                        <Play className="w-2 h-2 text-primary-foreground" />
-                      </div>
-                    )}
-                  </div>
+                  {renderAvatar(t, "md")}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-sm font-medium truncate">{t.author_name}</p>
@@ -129,14 +147,7 @@ export const WidgetPreview = ({
                   "{t.content?.slice(0, 80)}..."
                 </p>
                 <div className="flex items-center gap-3 pt-3 border-t border-current/10">
-                  <motion.div 
-                    className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center ring-2 ring-primary/20"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    <span className="text-xs font-bold text-primary">
-                      {t.author_name.charAt(0)}
-                    </span>
-                  </motion.div>
+                  {renderAvatar(t, "sm")}
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold truncate">{t.author_name}</p>
                     {t.author_company && (
@@ -170,11 +181,7 @@ export const WidgetPreview = ({
                 style={{ minHeight: i % 2 === 0 ? "140px" : "100px" }}
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="text-[10px] font-bold text-primary">
-                      {t.author_name.charAt(0)}
-                    </span>
-                  </div>
+                  {renderAvatar(t, "sm")}
                   <div className="flex-1 min-w-0">
                     <p className="text-[11px] font-semibold truncate">{t.author_name}</p>
                     {t.rating && (
@@ -209,11 +216,7 @@ export const WidgetPreview = ({
                   whileHover={{ scale: 1.03 }}
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-xs font-bold text-primary">
-                        {t.author_name.charAt(0)}
-                      </span>
-                    </div>
+                    {renderAvatar(t, "sm")}
                     <div>
                       <p className="text-xs font-semibold">{t.author_name}</p>
                       <div className="flex gap-0.5">
@@ -249,14 +252,12 @@ export const WidgetPreview = ({
                 className={`p-8 rounded-2xl border ${cardClasses} text-center`}
               >
                 <motion.div
-                  className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center ring-4 ring-primary/10"
+                  className="mx-auto mb-4"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
                 >
-                  <span className="text-xl font-bold text-primary">
-                    {current?.author_name.charAt(0)}
-                  </span>
+                  {renderAvatar(current, "lg")}
                 </motion.div>
                 
                 <div className="flex justify-center gap-1 mb-4">
@@ -361,10 +362,24 @@ export const WidgetPreview = ({
                   : "bg-slate hover:bg-slate/80 text-foreground"
               }`}
             >
-              <p className="text-xs font-semibold">{style.name}</p>
-              <p className={`text-[10px] ${activeStyle === style.id ? 'text-primary-foreground/70' : 'text-subtext'}`}>
-                {style.description}
-              </p>
+              <div className="flex items-center gap-2">
+                <div>
+                  <p className="text-xs font-semibold">{style.name}</p>
+                  <p className={`text-[10px] ${activeStyle === style.id ? 'text-primary-foreground/70' : 'text-subtext'}`}>
+                    {style.description}
+                  </p>
+                </div>
+                {style.isPro && (
+                  <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                    activeStyle === style.id 
+                      ? 'bg-primary-foreground/20 text-primary-foreground' 
+                      : 'bg-amber-500/10 text-amber-600'
+                  }`}>
+                    <Crown className="w-2.5 h-2.5" />
+                    PRO
+                  </div>
+                )}
+              </div>
               {activeStyle === style.id && (
                 <motion.div
                   layoutId="activeIndicator"

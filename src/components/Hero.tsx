@@ -142,65 +142,133 @@ const Hero = () => {
             transition={{ duration: 1, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="relative">
-              {/* Main card */}
+              {/* How it works preview */}
               <div className="bg-slate border border-border/[0.08] rounded-[8px] p-6 md:p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <span className="text-sm font-bold text-primary">JD</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-primary">Jane Doe</p>
-                      <p className="text-[12px] text-subtext">CEO, TechCorp</p>
-                    </div>
+                {/* Browser header */}
+                <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border/[0.08]">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-foreground/10" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-foreground/10" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-foreground/10" />
                   </div>
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <motion.span
-                        key={i}
-                        className="text-primary"
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 1.4 + i * 0.1 }}
-                      >
-                        ★
-                      </motion.span>
-                    ))}
+                  <div className="flex-1 mx-4">
+                    <div className="h-5 bg-background border border-border/[0.08] rounded-full px-3 flex items-center">
+                      <span className="text-[10px] text-subtext">vouchy.app/collect</span>
+                    </div>
                   </div>
                 </div>
-                <motion.p
-                  className="text-foreground/80 leading-relaxed"
+
+                {/* Step flow */}
+                <div className="space-y-4">
+                  {[
+                    { step: "01", label: "Create form", done: true },
+                    { step: "02", label: "Share link", done: true },
+                    { step: "03", label: "Collect", active: true },
+                    { step: "04", label: "Embed", done: false },
+                  ].map((item, i) => (
+                    <motion.div
+                      key={item.step}
+                      className={`flex items-center gap-4 p-3 rounded-[6px] transition-all ${
+                        item.active 
+                          ? "bg-primary/5 border border-primary/20" 
+                          : "bg-background border border-border/[0.08]"
+                      }`}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1.3 + i * 0.15 }}
+                    >
+                      <motion.div
+                        className={`w-8 h-8 rounded-[4px] flex items-center justify-center text-[11px] font-bold ${
+                          item.done 
+                            ? "bg-primary text-primary-foreground" 
+                            : item.active 
+                              ? "bg-primary/20 text-primary border border-primary/30" 
+                              : "bg-foreground/5 text-foreground/40"
+                        }`}
+                        animate={item.active ? { scale: [1, 1.05, 1] } : {}}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        {item.done ? "✓" : item.step}
+                      </motion.div>
+                      <span className={`text-sm font-medium ${
+                        item.active ? "text-primary" : item.done ? "text-foreground/70" : "text-foreground/40"
+                      }`}>
+                        {item.label}
+                      </span>
+                      {item.active && (
+                        <motion.div
+                          className="ml-auto flex items-center gap-2"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 1.8 }}
+                        >
+                          <motion.div
+                            className="w-2 h-2 rounded-full bg-primary"
+                            animate={{ scale: [1, 1.3, 1], opacity: [1, 0.5, 1] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          />
+                          <span className="text-[11px] text-primary font-medium">Live</span>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Progress bar */}
+                <motion.div
+                  className="mt-6 pt-4 border-t border-border/[0.08]"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 1.6 }}
+                  transition={{ delay: 1.9 }}
                 >
-                  "This platform transformed how we collect customer feedback. 
-                  The video testimonials have been absolute game-changers for our sales team."
-                </motion.p>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-[11px] text-subtext">Collection progress</span>
+                    <span className="text-[11px] font-medium text-primary">75%</span>
+                  </div>
+                  <div className="h-1.5 bg-foreground/5 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-primary rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: "75%" }}
+                      transition={{ delay: 2, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  </div>
+                </motion.div>
               </div>
 
-              {/* Decorative floating elements */}
+              {/* Floating stats card */}
               <motion.div
-                className="absolute -top-4 -right-4 w-24 h-24 border border-border/[0.08] rounded-[8px] bg-background"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.3 }}
+                className="absolute -top-4 -right-4 w-28 border border-border/[0.08] rounded-[8px] bg-background p-3"
+                initial={{ opacity: 0, x: 20, rotate: 3 }}
+                animate={{ opacity: 1, x: 0, rotate: 3 }}
+                transition={{ delay: 1.5 }}
               >
-                <div className="h-full flex items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-2xl font-black text-primary">4.9</p>
-                    <p className="text-[10px] text-subtext uppercase tracking-wider">Rating</p>
-                  </div>
+                <div className="text-center">
+                  <motion.p 
+                    className="text-2xl font-black text-primary"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.7 }}
+                  >
+                    247
+                  </motion.p>
+                  <p className="text-[10px] text-subtext uppercase tracking-wider">Collected</p>
                 </div>
               </motion.div>
 
+              {/* Floating embed preview */}
               <motion.div
-                className="absolute -bottom-6 -left-6 px-4 py-2 border border-border/[0.08] rounded-full bg-background"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5 }}
+                className="absolute -bottom-4 -left-4 border border-border/[0.08] rounded-[8px] bg-background px-4 py-3"
+                initial={{ opacity: 0, y: 20, rotate: -2 }}
+                animate={{ opacity: 1, y: 0, rotate: -2 }}
+                transition={{ delay: 1.6 }}
               >
-                <span className="text-[12px] font-medium text-primary">+12 new this week</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-[8px] font-bold text-primary">{"</>"}</span>
+                  </div>
+                  <span className="text-[11px] font-medium text-primary">Ready to embed</span>
+                </div>
               </motion.div>
             </div>
           </motion.div>

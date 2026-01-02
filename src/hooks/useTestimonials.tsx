@@ -92,16 +92,45 @@ export const useTestimonials = (spaceIds: string[]) => {
 export const useSubmitTestimonial = () => {
   const [loading, setLoading] = useState(false);
 
+  const uploadAvatar = async (spaceId: string, file: File): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${spaceId}/avatars/${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from("testimonials")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("testimonials")
+        .getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      return null;
+    }
+  };
+
   const submitTextTestimonial = async (data: {
     spaceId: string;
     name: string;
     email: string;
     company?: string;
+    title?: string;
     content: string;
     rating: number;
+    avatarFile?: File;
   }) => {
     setLoading(true);
     try {
+      let avatarUrl: string | null = null;
+      
+      if (data.avatarFile) {
+        avatarUrl = await uploadAvatar(data.spaceId, data.avatarFile);
+      }
+
       const { error } = await supabase
         .from("testimonials")
         .insert({
@@ -111,6 +140,8 @@ export const useSubmitTestimonial = () => {
           author_name: data.name,
           author_email: data.email,
           author_company: data.company || null,
+          author_title: data.title || null,
+          author_avatar_url: avatarUrl,
           rating: data.rating,
           status: "pending",
         });
@@ -129,7 +160,9 @@ export const useSubmitTestimonial = () => {
     name: string;
     email: string;
     company?: string;
+    title?: string;
     videoBlob: Blob;
+    rating: number;
   }) => {
     setLoading(true);
     try {
@@ -155,6 +188,8 @@ export const useSubmitTestimonial = () => {
           author_name: data.name,
           author_email: data.email,
           author_company: data.company || null,
+          author_title: data.title || null,
+          rating: data.rating,
           status: "pending",
         });
 

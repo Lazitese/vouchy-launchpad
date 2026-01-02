@@ -1,59 +1,88 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Play, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import MaskText from "./MaskText";
+
+const stats = [
+  { value: "5,000+", label: "Businesses" },
+  { value: "2.4M", label: "Testimonials" },
+  { value: "98%", label: "Satisfaction" },
+];
 
 const Hero = () => {
   return (
-    <section className="pt-32 pb-20 px-6">
-      <div className="container mx-auto max-w-5xl">
-        <div className="text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            >
-              <span className="inline-flex items-center gap-2 px-4 py-2 bg-secondary rounded-full text-sm font-medium text-primary mb-6">
-                <span className="w-2 h-2 bg-primary rounded-full" />
-                Trusted by 5,000+ businesses
+    <section className="pt-32 pb-24 px-6 border-b border-border/[0.08]">
+      <div className="container mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-6 items-end">
+          {/* Left: Headline */}
+          <div className="lg:col-span-7">
+            <MaskText delay={0.1}>
+              <span className="text-[13px] font-medium text-foreground/50 uppercase tracking-widest mb-6 block">
+                Testimonial Platform
               </span>
-            </motion.div>
+            </MaskText>
             
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold text-primary mb-6 leading-[1.1]"
-            >
-              Turn customer voices
-              <br />
-              into growth
-            </motion.h1>
+            <MaskText delay={0.2}>
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] text-primary mb-8">
+                Turn customer
+                <br />
+                voices into
+                <br />
+                growth
+              </h1>
+            </MaskText>
             
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="text-lg md:text-xl text-subtext max-w-2xl mx-auto mb-10 leading-relaxed"
-            >
-              Collect, manage, and showcase authentic testimonials that convert. 
-              Video reviews, text feedback, and powerful analytics in one platform.
-            </motion.p>
+            <MaskText delay={0.4}>
+              <p className="text-lg text-subtext max-w-md leading-relaxed mb-10">
+                Collect, manage, and showcase authentic testimonials 
+                that convert visitors into customers.
+              </p>
+            </MaskText>
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="flex items-center gap-4"
             >
-              <Button variant="hero" size="xl">
+              <Button 
+                size="lg" 
+                className="rounded-[4px] text-[13px] uppercase tracking-wide h-12 px-8"
+              >
                 Start Free Trial
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-              <Button variant="heroOutline" size="xl">
-                <Play className="w-5 h-5" />
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="rounded-[4px] text-[13px] uppercase tracking-wide h-12 px-8 border-border/[0.08]"
+              >
                 Watch Demo
               </Button>
             </motion.div>
+          </div>
+          
+          {/* Right: Stats */}
+          <div className="lg:col-span-5 lg:border-l lg:border-border/[0.08] lg:pl-12">
+            <div className="grid grid-cols-3 gap-6">
+              {stats.map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
+                  className="text-center lg:text-left"
+                >
+                  <p className="text-3xl md:text-4xl font-black text-primary tracking-tight mb-1">
+                    {stat.value}
+                  </p>
+                  <p className="text-[13px] text-subtext uppercase tracking-wide">
+                    {stat.label}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

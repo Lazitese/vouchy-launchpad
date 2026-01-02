@@ -1,58 +1,84 @@
+import { motion } from "framer-motion";
 import logoPrimary from "@/assets/logo-primary.svg";
 
 const Footer = () => {
   return (
-    <footer className="py-16 px-6 border-t border-border">
+    <footer className="py-20 px-6">
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-          <div className="md:col-span-1">
-            <a href="/" className="flex items-center gap-2 mb-4">
-              <img src={logoPrimary} alt="Vouchy" className="h-8 w-8" />
-              <span className="font-heading font-bold text-lg text-primary">Vouchy</span>
-            </a>
-            <p className="text-subtext text-sm leading-relaxed">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 pb-16 border-b border-border/[0.08]">
+          <div className="lg:col-span-4">
+            <motion.a 
+              href="/" 
+              className="flex items-center gap-2.5 mb-6"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <img src={logoPrimary} alt="Vouchy" className="h-7 w-7" />
+              <span className="font-heading font-bold text-base tracking-tight text-primary">Vouchy</span>
+            </motion.a>
+            <motion.p 
+              className="text-subtext text-[15px] leading-relaxed max-w-xs"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
               Turn customer voices into your most powerful growth engine.
-            </p>
+            </motion.p>
           </div>
           
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Product</h4>
-            <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Features</a></li>
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Pricing</a></li>
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Integrations</a></li>
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Changelog</a></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Company</h4>
-            <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">About</a></li>
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Blog</a></li>
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Careers</a></li>
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Contact</a></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Legal</h4>
-            <ul className="space-y-3">
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Privacy</a></li>
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Terms</a></li>
-              <li><a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Security</a></li>
-            </ul>
+          <div className="lg:col-span-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {[
+                { title: "Product", links: ["Features", "Pricing", "Integrations", "Changelog"] },
+                { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
+                { title: "Resources", links: ["Documentation", "Help Center", "API", "Status"] },
+                { title: "Legal", links: ["Privacy", "Terms", "Security"] },
+              ].map((group, groupIndex) => (
+                <motion.div
+                  key={group.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: groupIndex * 0.1 }}
+                >
+                  <h4 className="text-[11px] font-medium text-foreground/40 uppercase tracking-widest mb-5">
+                    {group.title}
+                  </h4>
+                  <ul className="space-y-3">
+                    {group.links.map((link) => (
+                      <li key={link}>
+                        <a 
+                          href="#" 
+                          className="text-[14px] text-foreground/70 hover:text-primary transition-colors"
+                        >
+                          {link}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
         
-        <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-subtext">
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-[13px] text-foreground/40">
             © 2026 Vouchy. All rights reserved.
           </p>
-          <div className="flex items-center gap-6">
-            <a href="#" className="text-sm text-subtext hover:text-primary transition-colors">Twitter</a>
-            <a href="#" className="text-sm text-subtext hover:text-primary transition-colors">LinkedIn</a>
-            <a href="#" className="text-sm text-subtext hover:text-primary transition-colors">GitHub</a>
+          <div className="flex items-center gap-8">
+            {["Twitter", "LinkedIn", "GitHub"].map((social) => (
+              <a 
+                key={social}
+                href="#" 
+                className="text-[13px] text-foreground/40 hover:text-primary transition-colors"
+              >
+                {social}
+              </a>
+            ))}
           </div>
         </div>
       </div>

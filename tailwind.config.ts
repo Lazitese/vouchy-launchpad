@@ -52,6 +52,7 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         subtext: "hsl(var(--subtext))",
+        slate: "hsl(var(--slate))",
       },
       borderRadius: {
         lg: "var(--radius)",

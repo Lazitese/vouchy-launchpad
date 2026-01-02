@@ -5,45 +5,41 @@ import logoPrimary from "@/assets/logo-primary.svg";
 const Navigation = () => {
   return (
     <motion.nav
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 glass"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+      className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/[0.08]"
     >
       <div className="container mx-auto px-6">
-        <div className="grid-12 items-center h-16">
-          <div className="col-span-2">
-            <a href="/" className="flex items-center gap-2">
-              <img src={logoPrimary} alt="Vouchy" className="h-8 w-8" />
-              <span className="font-heading font-bold text-lg text-primary">Vouchy</span>
-            </a>
-          </div>
+        <div className="flex items-center justify-between h-16">
+          <a href="/" className="flex items-center gap-2.5">
+            <img src={logoPrimary} alt="Vouchy" className="h-7 w-7" />
+            <span className="font-heading font-bold text-base tracking-tight text-primary">Vouchy</span>
+          </a>
           
-          <div className="col-span-8 flex justify-center">
-            <ul className="flex items-center gap-8">
-              <li>
-                <a href="#features" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-                  Features
-                </a>
-              </li>
-              <li>
-                <a href="#testimonials" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-                  Testimonials
-                </a>
-              </li>
-              <li>
-                <a href="#pricing" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
-                  Pricing
-                </a>
-              </li>
-            </ul>
-          </div>
+          <ul className="hidden md:flex items-center gap-10">
+            <li>
+              <a href="#features" className="text-[13px] font-medium text-foreground/60 hover:text-primary transition-colors tracking-wide uppercase">
+                Features
+              </a>
+            </li>
+            <li>
+              <a href="#testimonials" className="text-[13px] font-medium text-foreground/60 hover:text-primary transition-colors tracking-wide uppercase">
+                Testimonials
+              </a>
+            </li>
+            <li>
+              <a href="#pricing" className="text-[13px] font-medium text-foreground/60 hover:text-primary transition-colors tracking-wide uppercase">
+                Pricing
+              </a>
+            </li>
+          </ul>
           
-          <div className="col-span-2 flex justify-end gap-3">
-            <Button variant="ghost" size="sm">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" className="text-[13px] uppercase tracking-wide">
               Log in
             </Button>
-            <Button variant="hero" size="sm">
+            <Button variant="default" size="sm" className="text-[13px] uppercase tracking-wide rounded-[4px]">
               Get Started
             </Button>
           </div>

@@ -1,26 +1,31 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { FileText, Share2, Inbox, Code2, ArrowRight } from "lucide-react";
 
 const steps = [
   {
     number: "01",
     title: "Create your form",
     description: "Design beautiful collection forms in minutes. Customize questions, branding, and style.",
+    icon: FileText,
   },
   {
     number: "02",
     title: "Share the link",
     description: "Send to customers via email, embed on your site, or share on social. One link, multiple channels.",
+    icon: Share2,
   },
   {
     number: "03",
     title: "Collect & curate",
     description: "Testimonials flow in automatically. Review, approve, and organize with smart tagging.",
+    icon: Inbox,
   },
   {
     number: "04",
     title: "Embed anywhere",
     description: "Showcase on your website, landing pages, and marketing materials with one click.",
+    icon: Code2,
   },
 ];
 
@@ -58,124 +63,150 @@ const HowItWorks = () => {
           </motion.h2>
         </div>
 
-        {/* Steps */}
-        <div className="relative">
-          {/* Connecting line that draws as you scroll */}
-          <motion.div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-px bg-primary/20 hidden lg:block"
-            initial={{ height: 0 }}
-            animate={isInView ? { height: "100%" } : {}}
-            transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
-          />
-          
-          {/* Animated progress line */}
-          <motion.div
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-px bg-primary hidden lg:block"
-            initial={{ height: 0 }}
-            animate={isInView ? { height: "100%" } : {}}
-            transition={{ duration: 3, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          />
+        {/* Steps - Clean horizontal flow */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((step, index) => (
+            <motion.div
+              key={step.number}
+              className="relative group"
+              initial={{ opacity: 0, y: 40 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.2 + index * 0.15, 
+                ease: [0.22, 1, 0.36, 1] 
+              }}
+            >
+              {/* Card */}
+              <div className="bg-background border border-border/[0.08] rounded-xl p-6 h-full hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+                {/* Icon with meaningful animation */}
+                <div className="relative w-14 h-14 mb-5">
+                  <div className="absolute inset-0 bg-primary/5 rounded-xl" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    {index === 0 && (
+                      // Create form - writing animation
+                      <motion.div className="relative">
+                        <step.icon className="w-6 h-6 text-primary" />
+                        <motion.div
+                          className="absolute -right-1 -bottom-1 w-2 h-2 bg-primary rounded-full"
+                          animate={{ 
+                            scale: [0, 1, 1, 0],
+                            opacity: [0, 1, 1, 0]
+                          }}
+                          transition={{ duration: 2, repeat: Infinity, times: [0, 0.2, 0.8, 1] }}
+                        />
+                        <motion.div
+                          className="absolute top-1 left-1 w-4 h-px bg-primary/50"
+                          animate={{ scaleX: [0, 1, 1, 0] }}
+                          transition={{ duration: 2, repeat: Infinity, times: [0, 0.3, 0.7, 1] }}
+                        />
+                      </motion.div>
+                    )}
+                    {index === 1 && (
+                      // Share link - ripple/broadcast animation
+                      <motion.div className="relative">
+                        <step.icon className="w-6 h-6 text-primary relative z-10" />
+                        <motion.div
+                          className="absolute inset-0 flex items-center justify-center"
+                          initial={{ scale: 1, opacity: 0 }}
+                          animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          <div className="w-6 h-6 rounded-full border border-primary" />
+                        </motion.div>
+                        <motion.div
+                          className="absolute inset-0 flex items-center justify-center"
+                          initial={{ scale: 1, opacity: 0 }}
+                          animate={{ scale: [1, 2.5], opacity: [0.3, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                        >
+                          <div className="w-6 h-6 rounded-full border border-primary" />
+                        </motion.div>
+                      </motion.div>
+                    )}
+                    {index === 2 && (
+                      // Collect - items flowing in animation
+                      <motion.div className="relative">
+                        <step.icon className="w-6 h-6 text-primary" />
+                        <motion.div
+                          className="absolute -top-3 left-1/2 w-1.5 h-1.5 bg-primary rounded-full"
+                          animate={{ 
+                            y: [0, 12],
+                            opacity: [1, 0],
+                            scale: [1, 0.5]
+                          }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "easeIn" }}
+                        />
+                        <motion.div
+                          className="absolute -top-2 left-0 w-1 h-1 bg-primary/60 rounded-full"
+                          animate={{ 
+                            y: [0, 10],
+                            x: [0, 4],
+                            opacity: [1, 0]
+                          }}
+                          transition={{ duration: 1.2, repeat: Infinity, delay: 0.4, ease: "easeIn" }}
+                        />
+                        <motion.div
+                          className="absolute -top-2 right-0 w-1 h-1 bg-primary/60 rounded-full"
+                          animate={{ 
+                            y: [0, 10],
+                            x: [0, -4],
+                            opacity: [1, 0]
+                          }}
+                          transition={{ duration: 1.1, repeat: Infinity, delay: 0.7, ease: "easeIn" }}
+                        />
+                      </motion.div>
+                    )}
+                    {index === 3 && (
+                      // Embed - code typing animation
+                      <motion.div className="relative">
+                        <step.icon className="w-6 h-6 text-primary" />
+                        <motion.div
+                          className="absolute -right-2 top-1/2 -translate-y-1/2 text-[8px] font-mono text-primary/70 font-bold"
+                          animate={{ opacity: [0, 1, 1, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity, times: [0, 0.2, 0.8, 1] }}
+                        >
+                          {"</>"}
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-y-20">
-            {steps.map((step, index) => (
-              <motion.div
-                key={step.number}
-                className={`relative ${index % 2 === 1 ? "lg:mt-32" : ""}`}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -80 : 80, scale: 0.9 }}
-                animate={isInView ? { opacity: 1, x: 0, scale: 1 } : {}}
-                transition={{ 
-                  duration: 0.8, 
-                  delay: 0.3 + index * 0.4, 
-                  ease: [0.22, 1, 0.36, 1] 
-                }}
-              >
-                <motion.div 
-                  className={`bg-background border border-border/[0.08] rounded-[8px] p-8 ${index % 2 === 0 ? "lg:mr-12" : "lg:ml-12"}`}
-                  whileHover={{ 
-                    scale: 1.02, 
-                    boxShadow: "0 20px 40px -20px rgba(26, 63, 100, 0.15)",
-                    borderColor: "hsl(var(--primary) / 0.2)"
-                  }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  {/* Step number with pulse animation */}
-                  <motion.div
-                    className="absolute -top-4 left-8 px-4 py-1 bg-primary text-primary-foreground text-[12px] font-bold tracking-wider rounded-[4px]"
-                    initial={{ scale: 0, rotate: -10 }}
-                    animate={isInView ? { scale: 1, rotate: 0 } : {}}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: 0.5 + index * 0.4, 
-                      type: "spring", 
-                      stiffness: 400,
-                      damping: 15
-                    }}
-                  >
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={isInView ? { opacity: 1 } : {}}
-                      transition={{ delay: 0.7 + index * 0.4 }}
-                    >
-                      {step.number}
-                    </motion.span>
-                  </motion.div>
+                {/* Step number */}
+                <div className="text-[11px] font-bold text-primary/40 tracking-wider mb-2">
+                  STEP {step.number}
+                </div>
 
-                  <motion.h3 
-                    className="text-xl font-bold text-primary mb-3 mt-2"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.6 + index * 0.4, duration: 0.5 }}
-                  >
-                    {step.title}
-                  </motion.h3>
-                  <motion.p 
-                    className="text-subtext leading-relaxed"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.7 + index * 0.4, duration: 0.5 }}
-                  >
-                    {step.description}
-                  </motion.p>
-                </motion.div>
+                {/* Title */}
+                <h3 className="text-lg font-bold text-primary mb-2">
+                  {step.title}
+                </h3>
 
-                {/* Animated dot on timeline with ring effect */}
+                {/* Description */}
+                <p className="text-sm text-subtext leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+
+              {/* Arrow connector (except last) */}
+              {index < steps.length - 1 && (
                 <motion.div
-                  className={`absolute top-1/2 -translate-y-1/2 hidden lg:flex items-center justify-center ${
-                    index % 2 === 0 ? "right-0 translate-x-1/2 lg:-right-[1.5rem]" : "left-0 -translate-x-1/2 lg:-left-[1.5rem]"
-                  }`}
-                  initial={{ scale: 0 }}
-                  animate={isInView ? { scale: 1 } : {}}
-                  transition={{ duration: 0.5, delay: 0.8 + index * 0.4, type: "spring", stiffness: 300 }}
+                  className="hidden lg:flex absolute top-1/2 -right-3 -translate-y-1/2 z-10"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ delay: 0.5 + index * 0.15 }}
                 >
-                  {/* Outer ring */}
                   <motion.div
-                    className="absolute w-6 h-6 rounded-full border border-primary/30"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={isInView ? { scale: [0, 1.5, 1], opacity: [0, 0.5, 0] } : {}}
-                    transition={{ 
-                      delay: 0.9 + index * 0.4, 
-                      duration: 0.8,
-                      times: [0, 0.5, 1]
-                    }}
-                  />
-                  {/* Inner dot */}
-                  <div className="w-3 h-3 bg-primary rounded-full" />
-                </motion.div>
-
-                {/* Connector arrow for mobile */}
-                {index < steps.length - 1 && (
-                  <motion.div
-                    className="lg:hidden flex justify-center my-4"
-                    initial={{ opacity: 0, scaleY: 0 }}
-                    animate={isInView ? { opacity: 1, scaleY: 1 } : {}}
-                    transition={{ delay: 0.8 + index * 0.4, duration: 0.4 }}
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                   >
-                    <div className="w-px h-8 bg-primary/20" />
+                    <ArrowRight className="w-4 h-4 text-primary/30" />
                   </motion.div>
-                )}
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              )}
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

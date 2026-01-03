@@ -51,7 +51,7 @@ serve(async (req) => {
         payment_link: true,
         product_id: productId,
         quantity: 1,
-        return_url: returnUrl,
+        return_url: returnUrl || 'https://vouchy.click/dashboard?payment=success',
       }),
     });
 

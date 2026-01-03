@@ -13,7 +13,7 @@ const plans = [
     price: "Free",
     period: "",
     description: "Perfect for trying out Vouchy",
-    productId: null, // Free plan, no payment
+    productId: null,
     features: [
       "1 collection space",
       "Up to 10 testimonials",
@@ -25,10 +25,10 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "$29",
+    price: "$12",
     period: "/mo",
     description: "For growing businesses",
-    productId: "prod_pro_monthly", // Replace with your Dodo product ID
+    productId: "pdt_0NVVmIlZrdWC90xs1ZgOm",
     features: [
       "Unlimited spaces",
       "Unlimited testimonials",
@@ -42,10 +42,10 @@ const plans = [
   },
   {
     name: "Agency",
-    price: "$99",
+    price: "$45",
     period: "/mo",
     description: "For teams & agencies",
-    productId: "prod_agency_monthly", // Replace with your Dodo product ID
+    productId: "pdt_0NVVmba1bevOgK6sfV8Wx",
     features: [
       "Everything in Pro",
       "White-label solution",

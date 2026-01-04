@@ -29,36 +29,39 @@ serve(async (req) => {
 
     console.log('Creating checkout session for:', { productId, customerEmail, customerName });
 
-    // Create checkout session with Dodo Payments
-    const response = await fetch('https://api.dodopayments.com/subscriptions', {
+    // Use the correct Dodo Payments checkout endpoint
+    // Use live.dodopayments.com for production, test.dodopayments.com for testing
+    const apiBaseUrl = 'https://live.dodopayments.com';
+    
+    const response = await fetch(`${apiBaseUrl}/checkouts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${DODO_API_KEY}`,
       },
       body: JSON.stringify({
-        billing: {
-          city: '',
-          country: 'US',
-          state: '',
-          street: '',
-          zipcode: 0,
-        },
+        product_cart: [
+          {
+            product_id: productId,
+            quantity: 1,
+          }
+        ],
         customer: {
           email: customerEmail,
           name: customerName,
         },
         payment_link: true,
-        product_id: productId,
-        quantity: 1,
-        return_url: returnUrl || 'https://vouchy.click/dashboard?payment=success',
+        success_url: returnUrl || 'https://vouchy.click/dashboard?payment=success',
+        metadata: {
+          customer_email: customerEmail,
+        },
       }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      console.error('Dodo API error:', errorData);
-      throw new Error('Failed to create checkout session');
+      const errorText = await response.text();
+      console.error('Dodo API error:', response.status, errorText);
+      throw new Error(`Failed to create checkout session: ${response.status}`);
     }
 
     const data = await response.json();
@@ -66,8 +69,8 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ 
-        paymentLink: data.payment_link,
-        subscriptionId: data.subscription_id 
+        paymentLink: data.checkout_url,
+        sessionId: data.session_id 
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

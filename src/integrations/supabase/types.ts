@@ -16,27 +16,36 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          ai_credits_reset_at: string | null
+          ai_credits_used: number | null
           avatar_url: string | null
           created_at: string
           email: string | null
           full_name: string | null
           id: string
+          plan: string | null
           updated_at: string
         }
         Insert: {
+          ai_credits_reset_at?: string | null
+          ai_credits_used?: number | null
           avatar_url?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id: string
+          plan?: string | null
           updated_at?: string
         }
         Update: {
+          ai_credits_reset_at?: string | null
+          ai_credits_used?: number | null
           avatar_url?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          plan?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -84,6 +93,7 @@ export type Database = {
       }
       testimonials: {
         Row: {
+          ai_summary: string | null
           author_avatar_url: string | null
           author_company: string | null
           author_email: string | null
@@ -91,6 +101,7 @@ export type Database = {
           author_title: string | null
           content: string | null
           created_at: string
+          golden_quote: string | null
           id: string
           rating: number | null
           space_id: string
@@ -99,6 +110,7 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          ai_summary?: string | null
           author_avatar_url?: string | null
           author_company?: string | null
           author_email?: string | null
@@ -106,6 +118,7 @@ export type Database = {
           author_title?: string | null
           content?: string | null
           created_at?: string
+          golden_quote?: string | null
           id?: string
           rating?: number | null
           space_id: string
@@ -114,6 +127,7 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          ai_summary?: string | null
           author_avatar_url?: string | null
           author_company?: string | null
           author_email?: string | null
@@ -121,6 +135,7 @@ export type Database = {
           author_title?: string | null
           content?: string | null
           created_at?: string
+          golden_quote?: string | null
           id?: string
           rating?: number | null
           space_id?: string

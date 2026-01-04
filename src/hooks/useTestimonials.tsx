@@ -15,6 +15,8 @@ export interface Testimonial {
   rating: number | null;
   status: "pending" | "approved" | "rejected";
   created_at: string;
+  ai_summary: string | null;
+  golden_quote: string | null;
 }
 
 export const useTestimonials = (spaceIds: string[]) => {

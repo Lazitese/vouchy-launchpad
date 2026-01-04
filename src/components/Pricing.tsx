@@ -116,7 +116,7 @@ const Pricing = () => {
   };
 
   return (
-    <section className="py-32 px-6 bg-slate" ref={ref}>
+    <section id="pricing" className="py-32 px-6 bg-slate" ref={ref}>
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="text-center mb-16">

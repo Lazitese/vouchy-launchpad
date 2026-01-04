@@ -20,7 +20,7 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="mb-6"
             >
-              <div className="inline-flex items-center gap-2 bg-primary/5 border border-primary/10 rounded-full px-3 py-1.5">
+              <div className="inline-flex items-center gap-2 bg-primary/5 border border-primary/10 rounded-[4px] px-3 py-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-primary" />
                 <span className="text-xs font-medium text-primary">
                   Now in Public Beta
@@ -28,25 +28,32 @@ const Hero = () => {
               </div>
             </motion.div>
 
-            {/* Headline */}
+            {/* Headline with mask reveal */}
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ clipPath: "inset(0 0 100% 0)" }}
+              animate={{ clipPath: "inset(0 0 0% 0)" }}
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="mb-6"
             >
-              <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.1] tracking-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.0] tracking-[-0.06em]">
                 <span className="text-primary">Collect testimonials</span>
                 <br />
-                <span className="text-primary/40">that convert</span>
+                <motion.span 
+                  className="text-primary/40"
+                  initial={{ clipPath: "inset(0 0 100% 0)" }}
+                  animate={{ clipPath: "inset(0 0 0% 0)" }}
+                  transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  that convert
+                </motion.span>
               </h1>
             </motion.div>
 
-            {/* Description */}
+            {/* Description with mask reveal */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              initial={{ clipPath: "inset(0 0 100% 0)" }}
+              animate={{ clipPath: "inset(0 0 0% 0)" }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="text-lg text-subtext leading-relaxed mb-8 max-w-md"
             >
               The modern way to collect, manage and showcase video & text testimonials. Embed anywhere in minutes.
@@ -61,7 +68,7 @@ const Hero = () => {
             >
               <Button
                 size="lg"
-                className="group h-12 px-6 rounded-full text-sm font-semibold"
+                className="group h-12 px-6 rounded-[4px] text-sm font-semibold shadow-lg shadow-primary/20"
               >
                 Start free trial
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -69,7 +76,7 @@ const Hero = () => {
               <Button
                 variant="ghost"
                 size="lg"
-                className="group h-12 px-6 rounded-full text-sm font-medium text-foreground/60 hover:text-primary"
+                className="group h-12 px-6 rounded-[4px] text-sm font-medium text-foreground/60 hover:text-primary"
               >
                 <Play className="w-4 h-4 mr-2 fill-current" />
                 Watch demo
@@ -103,11 +110,11 @@ const Hero = () => {
           >
             <div className="relative max-w-sm mx-auto lg:ml-auto lg:mr-0">
               {/* Main card */}
-              <div className="bg-slate/50 backdrop-blur-sm border border-border/10 rounded-2xl p-5 shadow-2xl shadow-primary/5">
+              <div className="bg-slate/50 backdrop-blur-sm border border-border/10 rounded-[4px] p-5 shadow-2xl shadow-primary/5">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-[4px] bg-primary/10 flex items-center justify-center">
                       <span className="text-xs font-bold text-primary">V</span>
                     </div>
                     <span className="text-sm font-medium text-foreground">Dashboard</span>
@@ -118,12 +125,12 @@ const Hero = () => {
                 <div className="space-y-3 mb-5">
                   {/* Step 1: Create - Form being built */}
                   <motion.div
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-background/50"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-[4px] bg-background/50"
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.5 }}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-[4px] bg-primary text-primary-foreground flex items-center justify-center">
                       <FileText className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
@@ -132,7 +139,7 @@ const Hero = () => {
                         {[...Array(3)].map((_, i) => (
                           <motion.div
                             key={i}
-                            className="h-1 rounded-full bg-primary"
+                            className="h-1 rounded-[4px] bg-primary"
                             initial={{ width: 0 }}
                             animate={{ width: [0, 20, 20] }}
                             transition={{ delay: 0.8 + i * 0.2, duration: 0.5 }}
@@ -145,12 +152,12 @@ const Hero = () => {
 
                   {/* Step 2: Share - Link being sent out */}
                   <motion.div
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-background/50"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-[4px] bg-background/50"
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.6 }}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center relative overflow-hidden">
+                    <div className="w-8 h-8 rounded-[4px] bg-primary text-primary-foreground flex items-center justify-center relative overflow-hidden">
                       <Link2 className="w-4 h-4 relative z-10" />
                       <motion.div
                         className="absolute inset-0 bg-primary-foreground/20"
@@ -167,12 +174,12 @@ const Hero = () => {
 
                   {/* Step 3: Collect - Testimonials flowing in (ACTIVE) */}
                   <motion.div
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 border border-primary/20 relative overflow-hidden"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-[4px] bg-primary/10 border border-primary/20 relative overflow-hidden"
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.7 }}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center relative">
+                    <div className="w-8 h-8 rounded-[4px] bg-primary/20 text-primary flex items-center justify-center relative">
                       <Inbox className="w-4 h-4" />
                       {/* Testimonials flowing in */}
                       <motion.div
@@ -204,7 +211,7 @@ const Hero = () => {
                       </div>
                     </div>
                     <motion.div
-                      className="flex items-center gap-1 px-2 py-0.5 bg-primary/20 rounded-full"
+                      className="flex items-center gap-1 px-2 py-0.5 bg-primary/20 rounded-[4px]"
                       animate={{ scale: [1, 1.05, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
@@ -219,12 +226,12 @@ const Hero = () => {
 
                   {/* Step 4: Embed - Code waiting */}
                   <motion.div
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-background/30"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-[4px] bg-background/30"
                     initial={{ opacity: 0, x: 10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.8 }}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-foreground/5 text-foreground/30 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-[4px] bg-foreground/5 text-foreground/30 flex items-center justify-center">
                       <motion.div
                         animate={{ opacity: [0.3, 0.6, 0.3] }}
                         transition={{ duration: 2, repeat: Infinity }}
@@ -241,7 +248,7 @@ const Hero = () => {
 
                 {/* Mini testimonial preview */}
                 <motion.div
-                  className="p-3 bg-background/50 rounded-lg border border-border/10"
+                  className="p-3 bg-background/50 rounded-[4px] border border-border/10"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1 }}
@@ -282,7 +289,7 @@ const Hero = () => {
 
               {/* Floating notification */}
               <motion.div
-                className="absolute -top-3 -right-3 bg-background border border-border/10 rounded-xl px-3 py-2 shadow-lg"
+                className="absolute -top-3 -right-3 bg-background border border-border/10 rounded-[4px] px-3 py-2 shadow-lg"
                 initial={{ opacity: 0, scale: 0.8, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ delay: 1.2, type: "spring" }}

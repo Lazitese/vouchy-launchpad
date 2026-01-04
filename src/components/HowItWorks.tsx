@@ -18,7 +18,7 @@ const steps = [
   {
     number: "03",
     title: "Collect & curate",
-    description: "Testimonials flow in automatically. Review, approve, and organize with smart tagging.",
+    description: "Watch testimonials flow in real-time. Review, approve, and organize with smart tagging.",
     icon: Inbox,
   },
   {
@@ -51,16 +51,17 @@ const HowItWorks = () => {
             <div className="w-12 h-px bg-primary/30" />
           </motion.div>
 
-          <motion.h2
-            className="text-4xl md:text-5xl lg:text-6xl text-primary max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 40 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
+          <motion.div
+            initial={{ clipPath: "inset(0 0 100% 0)" }}
+            animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           >
-            Four steps to
-            <br />
-            <span className="text-primary/30">social proof</span>
-          </motion.h2>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-[-0.06em] text-primary max-w-2xl mx-auto">
+              Four steps to
+              <br />
+              <span className="text-primary/30">social proof</span>
+            </h2>
+          </motion.div>
         </div>
 
         {/* Steps - Clean horizontal flow */}
@@ -78,10 +79,10 @@ const HowItWorks = () => {
               }}
             >
               {/* Card */}
-              <div className="bg-background border border-border/[0.08] rounded-xl p-6 h-full hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+              <div className="bg-background border border-border/[0.08] rounded-[4px] p-6 h-full hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
                 {/* Icon with meaningful animation */}
                 <div className="relative w-14 h-14 mb-5">
-                  <div className="absolute inset-0 bg-primary/5 rounded-xl" />
+                  <div className="absolute inset-0 bg-primary/5 rounded-[4px]" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     {index === 0 && (
                       <motion.div className="relative">

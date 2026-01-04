@@ -47,21 +47,23 @@ const CTA = () => {
             </span>
           </motion.div>
 
-          <motion.h2
-            className="text-4xl md:text-5xl lg:text-6xl text-primary-foreground mb-8"
-            initial={{ opacity: 0, y: 40 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
+          <motion.div
+            initial={{ clipPath: "inset(0 0 100% 0)" }}
+            animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-8"
           >
-            Start collecting
-            <br />
-            testimonials today
-          </motion.h2>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-[-0.06em] text-primary-foreground">
+              Start collecting
+              <br />
+              testimonials today
+            </h2>
+          </motion.div>
 
           <motion.p
             className="text-lg text-primary-foreground/70 leading-relaxed mb-10 max-w-lg mx-auto"
-            initial={{ opacity: 0, y: 40 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            initial={{ clipPath: "inset(0 0 100% 0)" }}
+            animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
             transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             Join thousands of businesses using Vouchy to turn customer 

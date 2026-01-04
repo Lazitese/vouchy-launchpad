@@ -66,17 +66,17 @@ export const useUserPlan = () => {
     if (!user) return;
 
     try {
-      // Check profiles table for plan info
+      // Check profiles table for plan info - cast to any to handle type sync delay
       const { data, error } = await supabase
         .from("profiles")
-        .select("plan")
+        .select("*")
         .eq("id", user.id)
         .maybeSingle();
 
       if (error) throw error;
       
       // Default to free if no plan found
-      const userPlan = (data?.plan as PlanType) || "free";
+      const userPlan = ((data as any)?.plan as PlanType) || "free";
       setPlan(userPlan);
     } catch (error) {
       console.error("Error fetching user plan:", error);

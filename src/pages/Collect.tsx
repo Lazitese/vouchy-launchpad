@@ -20,12 +20,16 @@ import {
   Check,
   Loader2,
   AlertCircle,
+  X,
 } from "lucide-react";
 import { useSpaceBySlug } from "@/hooks/useSpaces";
 import { useSubmitTestimonial } from "@/hooks/useTestimonials";
 import { useToast } from "@/hooks/use-toast";
 import logoPrimary from "@/assets/logo-primary.svg";
 import { z } from "zod";
+import { AIScriptGenerator } from "@/components/AIScriptGenerator";
+import { TextMagic } from "@/components/TextMagic";
+import { supabase } from "@/integrations/supabase/client";
 
 type Mode = "select" | "video" | "text" | "success";
 
@@ -36,6 +40,8 @@ const textFormSchema = z.object({
   testimonial: z.string().min(10, "Please write at least 10 characters").max(2000),
   rating: z.number().min(1).max(5),
 });
+
+type PlanType = "free" | "pro" | "agency";
 
 const Collect = () => {
   const { slug } = useParams();
@@ -74,6 +80,11 @@ const Collect = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // AI Features state
+  const [generatedScript, setGeneratedScript] = useState<string | null>(null);
+  const [ownerPlan, setOwnerPlan] = useState<PlanType>("free");
+  const [planLoading, setPlanLoading] = useState(true);
 
   const questions = space?.questions || [
     "What problem were you trying to solve?",
@@ -81,6 +92,48 @@ const Collect = () => {
     "What results have you seen?",
     "Would you recommend us to others?",
   ];
+  
+  // Fetch space owner's plan to determine AI features availability
+  useEffect(() => {
+    const fetchOwnerPlan = async () => {
+      if (!space?.id) return;
+      
+      try {
+        // Get the space owner's user_id through the workspace
+        const { data: spaceData } = await supabase
+          .from("spaces")
+          .select("workspace_id")
+          .eq("id", space.id)
+          .single();
+          
+        if (spaceData?.workspace_id) {
+          const { data: workspaceData } = await supabase
+            .from("workspaces")
+            .select("user_id")
+            .eq("id", spaceData.workspace_id)
+            .single();
+            
+          if (workspaceData?.user_id) {
+            const { data: profileData } = await supabase
+              .from("profiles")
+              .select("*")
+              .eq("id", workspaceData.user_id)
+              .single();
+              
+            setOwnerPlan(((profileData as any)?.plan as PlanType) || "free");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching owner plan:", error);
+      } finally {
+        setPlanLoading(false);
+      }
+    };
+    
+    fetchOwnerPlan();
+  }, [space?.id]);
+  
+  const canUseAI = ownerPlan === "pro" || ownerPlan === "agency";
 
   // Initialize camera
   useEffect(() => {
@@ -362,6 +415,40 @@ const Collect = () => {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
+              {/* AI Script Generator - Above video */}
+              {!recordedBlob && !isRecording && (
+                <div className="mb-4 flex items-center justify-between">
+                  <p className="text-sm text-subtext">Need help with what to say?</p>
+                  <AIScriptGenerator
+                    questions={questions}
+                    onScriptGenerated={(script) => setGeneratedScript(script)}
+                    isLocked={!canUseAI}
+                  />
+                </div>
+              )}
+              
+              {/* Generated Script Display */}
+              {generatedScript && !recordedBlob && !isRecording && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="mb-4 p-4 bg-primary/5 border border-primary/20 rounded-xl relative"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-medium text-primary mb-2">Your AI-generated script:</p>
+                      <p className="text-sm text-foreground whitespace-pre-wrap">{generatedScript}</p>
+                    </div>
+                    <button
+                      onClick={() => setGeneratedScript(null)}
+                      className="p-1 hover:bg-primary/10 rounded-lg transition-colors flex-shrink-0"
+                    >
+                      <X className="w-4 h-4 text-subtext" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+              
               <div className="relative">
                 {/* Video Container */}
                 <div className="relative aspect-video bg-gray-900 rounded-[16px] overflow-hidden">
@@ -381,25 +468,34 @@ const Collect = () => {
                     />
                   )}
 
-                  {/* Teleprompter Overlay */}
+                  {/* Teleprompter Overlay - Shows generated script while recording if available */}
                   {isRecording && (
                     <motion.div
                       className="absolute inset-x-0 top-0 p-6 bg-gradient-to-b from-black/80 to-transparent"
                       initial={{ opacity: 0, y: -20 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
-                      <p className="text-xs text-white/60 uppercase tracking-wider mb-2">
-                        Question {currentQuestion + 1} of {questions.length}
-                      </p>
-                      <motion.p
-                        key={currentQuestion}
-                        className="text-xl md:text-2xl font-semibold text-white"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4 }}
-                      >
-                        {questions[currentQuestion]}
-                      </motion.p>
+                      {generatedScript ? (
+                        <div className="max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-white/30">
+                          <p className="text-xs text-white/60 uppercase tracking-wider mb-2">Your Script</p>
+                          <p className="text-lg text-white/90 whitespace-pre-wrap leading-relaxed">{generatedScript}</p>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-xs text-white/60 uppercase tracking-wider mb-2">
+                            Question {currentQuestion + 1} of {questions.length}
+                          </p>
+                          <motion.p
+                            key={currentQuestion}
+                            className="text-xl md:text-2xl font-semibold text-white"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4 }}
+                          >
+                            {questions[currentQuestion]}
+                          </motion.p>
+                        </>
+                      )}
                     </motion.div>
                   )}
 
@@ -723,6 +819,14 @@ const Collect = () => {
                 </div>
 
                 <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm text-subtext">Your testimonial</label>
+                    <TextMagic
+                      text={textForm.testimonial}
+                      onTextUpdated={(newText) => setTextForm({ ...textForm, testimonial: newText })}
+                      isLocked={!canUseAI}
+                    />
+                  </div>
                   <Textarea
                     placeholder="Share your experience..."
                     className={`min-h-[120px] resize-none ${errors.testimonial ? "border-red-500" : ""}`}

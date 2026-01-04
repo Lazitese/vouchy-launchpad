@@ -40,6 +40,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useSpaces } from "@/hooks/useSpaces";
 import { useTestimonials, Testimonial } from "@/hooks/useTestimonials";
+import { useUserPlan } from "@/hooks/useUserPlan";
 import { useToast } from "@/hooks/use-toast";
 import logoIcon from "@/assets/logo-icon.svg";
 
@@ -60,6 +61,7 @@ const Dashboard = () => {
   const { testimonials, loading: testimonialsLoading, updateStatus, deleteTestimonial } = useTestimonials(
     spaces.map((s) => s.id)
   );
+  const { plan, features, loading: planLoading } = useUserPlan();
   const { toast } = useToast();
 
   const [activeView, setActiveView] = useState<View>("spaces");
@@ -173,7 +175,7 @@ const Dashboard = () => {
                   <p className="text-sm font-medium text-primary truncate">
                     {workspace?.name || "My Workspace"}
                   </p>
-                  <p className="text-xs text-subtext">Free plan</p>
+                  <p className="text-xs text-subtext capitalize">{plan} plan</p>
                 </div>
                 <ChevronDown className="w-4 h-4 text-subtext" />
               </>
@@ -398,6 +400,73 @@ const Dashboard = () => {
                     <p className="text-3xl font-bold text-primary">{stat.value}</p>
                   </div>
                 ))}
+              </div>
+
+              {/* Usage Limits */}
+              <div className="p-6 bg-card border border-border/[0.08] rounded-[12px]">
+                <h3 className="font-semibold text-primary mb-4">Usage & Limits</h3>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm text-foreground">Testimonials</p>
+                      <p className="text-sm text-subtext">
+                        {testimonials.length} / {features.testimonialLimit}
+                      </p>
+                    </div>
+                    <div className="h-2 bg-slate rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary rounded-full transition-all"
+                        style={{ 
+                          width: `${Math.min((testimonials.length / features.testimonialLimit) * 100, 100)}%` 
+                        }}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm text-foreground">Active Spaces</p>
+                      <p className="text-sm text-subtext">
+                        {spaces.length} / {features.activeSpacesLimit}
+                      </p>
+                    </div>
+                    <div className="h-2 bg-slate rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary rounded-full transition-all"
+                        style={{ 
+                          width: `${Math.min((spaces.length / features.activeSpacesLimit) * 100, 100)}%` 
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-border/[0.08]">
+                    <p className="text-xs text-subtext mb-2">Your Plan Features:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full capitalize">
+                        {plan} Plan
+                      </span>
+                      <span className="px-2 py-1 bg-slate text-subtext text-xs rounded-full">
+                        {features.videoDurationSeconds}s max video
+                      </span>
+                      {features.hasTeleprompter && (
+                        <span className="px-2 py-1 bg-green-500/10 text-green-600 text-xs rounded-full">
+                          AI Teleprompter
+                        </span>
+                      )}
+                      {features.hasCustomBranding && (
+                        <span className="px-2 py-1 bg-green-500/10 text-green-600 text-xs rounded-full">
+                          Custom Branding
+                        </span>
+                      )}
+                      {features.hasWhiteLabel && (
+                        <span className="px-2 py-1 bg-green-500/10 text-green-600 text-xs rounded-full">
+                          White Label
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}

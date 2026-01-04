@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import logoPrimary from "@/assets/logo-primary.svg";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const authSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -15,10 +16,16 @@ const authSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters").max(100),
 });
 
+// Product IDs for paid plans
+const planProductIds: Record<string, string> = {
+  Pro: "pdt_0NVVmIlZrdWC90xs1ZgOm",
+  Agency: "pdt_0NVVmba1bevOgK6sfV8Wx",
+};
+
 const Auth = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signUp, signIn, signInWithGoogle } = useAuth();
+  const { user, session } = useAuth();
   const { toast } = useToast();
   
   const initialMode = location.state?.mode || "signup";
@@ -33,12 +40,54 @@ const Auth = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Redirect if already logged in
+  // Handle redirect when user is logged in
   useEffect(() => {
-    if (user) {
+    if (user && session) {
+      handlePostAuthRedirect();
+    }
+  }, [user, session]);
+
+  const handlePostAuthRedirect = async () => {
+    const productId = planProductIds[selectedPlan];
+    
+    // If a paid plan was selected, redirect to payment
+    if (productId && user) {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke('create-checkout', {
+          body: {
+            productId,
+            customerEmail: user.email,
+            customerName: user.user_metadata?.full_name || user.email,
+            returnUrl: `${window.location.origin}/dashboard?payment=success`,
+          },
+        });
+
+        if (error) throw error;
+        
+        if (data?.paymentLink) {
+          window.location.href = data.paymentLink;
+          return;
+        }
+      } catch (err) {
+        console.error('Checkout error:', err);
+        toast({
+          variant: "destructive",
+          title: "Payment Error",
+          description: "Failed to create checkout session. Redirecting to dashboard.",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    // Otherwise redirect to dashboard or onboarding
+    if (mode === "signup") {
+      navigate("/onboarding", { replace: true });
+    } else {
       navigate("/dashboard", { replace: true });
     }
-  }, [user, navigate]);
+  };
 
   const validateForm = () => {
     try {
@@ -72,7 +121,19 @@ const Auth = () => {
     
     try {
       if (mode === "signup") {
-        const { error } = await signUp(formData.email, formData.password, formData.name);
+        const redirectUrl = `${window.location.origin}/`;
+        
+        const { error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            emailRedirectTo: redirectUrl,
+            data: {
+              full_name: formData.name,
+            },
+          },
+        });
+        
         if (error) {
           if (error.message.includes("already registered")) {
             toast({
@@ -87,29 +148,42 @@ const Auth = () => {
               description: error.message,
             });
           }
+          setLoading(false);
           return;
         }
-        navigate("/onboarding", { state: { plan: selectedPlan } });
+        // The useEffect will handle redirect when user state updates
       } else {
-        const { error } = await signIn(formData.email, formData.password);
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+        
         if (error) {
           toast({
             variant: "destructive",
             title: "Login failed",
             description: "Invalid email or password. Please try again.",
           });
+          setLoading(false);
           return;
         }
-        navigate("/dashboard");
+        // The useEffect will handle redirect when user state updates
       }
-    } finally {
+    } catch (err) {
       setLoading(false);
     }
   };
 
   const handleGoogleAuth = async () => {
     setLoading(true);
-    const { error } = await signInWithGoogle();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: selectedPlan && planProductIds[selectedPlan] 
+          ? `${window.location.origin}/auth?plan=${selectedPlan}` 
+          : `${window.location.origin}/dashboard`,
+      },
+    });
     if (error) {
       toast({
         variant: "destructive",
@@ -119,6 +193,18 @@ const Auth = () => {
       setLoading(false);
     }
   };
+
+  // Show loading state if redirecting
+  if (user && session && loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-subtext">Preparing your checkout...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex">

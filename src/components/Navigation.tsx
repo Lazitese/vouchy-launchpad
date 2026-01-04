@@ -37,7 +37,7 @@ const Navigation = () => {
               variant="ghost" 
               size="sm" 
               className="text-[13px] uppercase tracking-wide"
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/auth", { state: { mode: "login" } })}
             >
               Log in
             </Button>
@@ -45,7 +45,7 @@ const Navigation = () => {
               variant="default" 
               size="sm" 
               className="text-[13px] uppercase tracking-wide rounded-[4px]"
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/auth", { state: { mode: "signup" } })}
             >
               Get Started
             </Button>

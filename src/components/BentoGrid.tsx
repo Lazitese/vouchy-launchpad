@@ -11,7 +11,7 @@ const features = [
     visual: (
       <div className="relative h-full min-h-[200px] flex items-center justify-center">
         <motion.div
-          className="w-32 h-32 rounded-[8px] bg-primary/5 border border-border/[0.08] flex items-center justify-center"
+          className="w-32 h-32 rounded-[4px] bg-primary/5 border border-border/[0.08] flex items-center justify-center"
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 300 }}
         >
@@ -36,7 +36,7 @@ const features = [
         {[85, 60, 75].map((width, i) => (
           <motion.div
             key={i}
-            className="h-2 bg-primary/10 rounded-full"
+            className="h-2 bg-primary/10 rounded-[4px]"
             style={{ width: `${width}%` }}
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
@@ -57,7 +57,7 @@ const features = [
         {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
           <motion.div
             key={i}
-            className="flex-1 bg-primary/20 rounded-t-sm origin-bottom"
+            className="flex-1 bg-primary/20 rounded-t-[2px] origin-bottom"
             initial={{ height: 0, opacity: 0 }}
             whileInView={{ height: `${height}%`, opacity: 1 }}
             whileHover={{ 
@@ -89,8 +89,8 @@ const features = [
     size: "small",
   },
   {
-    title: "Enterprise Security",
-    description: "SOC2 compliant. Your data is protected.",
+    title: "Enterprise Ready",
+    description: "Built for scale with enterprise-grade security.",
     icon: Shield,
     size: "small",
   },
@@ -118,20 +118,21 @@ const BentoGrid = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <motion.h2
-              className="text-4xl md:text-5xl lg:text-6xl text-primary"
-              initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+            <motion.div
+              initial={{ clipPath: "inset(0 0 100% 0)" }}
+              animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
               transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              Built for
-              <br />
-              <span className="text-primary/30">modern teams</span>
-            </motion.h2>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-[-0.06em] text-primary">
+                Built for
+                <br />
+                <span className="text-primary/30">modern teams</span>
+              </h2>
+            </motion.div>
             <motion.p
               className="text-lg text-subtext leading-relaxed self-end max-w-md"
-              initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              initial={{ clipPath: "inset(0 0 100% 0)" }}
+              animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
               Everything you need to collect, manage, and showcase authentic 
@@ -149,7 +150,7 @@ const BentoGrid = () => {
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="h-full bg-slate border border-border/[0.08] rounded-[8px] p-8 relative overflow-hidden transition-all duration-500 hover:border-border/[0.15]">
+            <div className="h-full bg-slate border border-border/[0.08] rounded-[4px] p-8 relative overflow-hidden transition-all duration-500 hover:border-border/[0.15]">
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-6">
                   <div className="w-10 h-10 border border-border/[0.08] rounded-[4px] flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
@@ -173,7 +174,7 @@ const BentoGrid = () => {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.4 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="h-full bg-slate border border-border/[0.08] rounded-[8px] p-6 relative overflow-hidden transition-all duration-500 hover:border-border/[0.15]">
+              <div className="h-full bg-slate border border-border/[0.08] rounded-[4px] p-6 relative overflow-hidden transition-all duration-500 hover:border-border/[0.15]">
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-9 h-9 border border-border/[0.08] rounded-[4px] flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
                     <feature.icon className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />
@@ -196,7 +197,7 @@ const BentoGrid = () => {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.6 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="h-full bg-background border border-border/[0.08] rounded-[8px] p-6 relative overflow-hidden transition-all duration-500 hover:bg-slate hover:border-border/[0.15]">
+              <div className="h-full bg-background border border-border/[0.08] rounded-[4px] p-6 relative overflow-hidden transition-all duration-500 hover:bg-slate hover:border-border/[0.15]">
                 <div className="flex items-center gap-4 mb-3">
                   <div className="w-9 h-9 border border-border/[0.08] rounded-[4px] flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
                     <feature.icon className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />

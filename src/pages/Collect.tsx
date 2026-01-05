@@ -99,32 +99,16 @@ const Collect = () => {
       if (!space?.id) return;
       
       try {
-        // Get the space owner's user_id through the workspace
-        const { data: spaceData } = await supabase
-          .from("spaces")
-          .select("workspace_id")
-          .eq("id", space.id)
-          .single();
-          
-        if (spaceData?.workspace_id) {
-          const { data: workspaceData } = await supabase
-            .from("workspaces")
-            .select("user_id")
-            .eq("id", spaceData.workspace_id)
-            .single();
-            
-          if (workspaceData?.user_id) {
-            const { data: profileData } = await supabase
-              .from("profiles")
-              .select("*")
-              .eq("id", workspaceData.user_id)
-              .single();
-              
-            setOwnerPlan(((profileData as any)?.plan as PlanType) || "free");
-          }
-        }
+        // Use the secure database function to get owner's plan
+        const { data, error } = await supabase.rpc('get_space_owner_plan', {
+          _space_id: space.id
+        });
+        
+        if (error) throw error;
+        setOwnerPlan((data as PlanType) || "free");
       } catch (error) {
         console.error("Error fetching owner plan:", error);
+        setOwnerPlan("free");
       } finally {
         setPlanLoading(false);
       }

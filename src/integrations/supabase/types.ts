@@ -248,6 +248,7 @@ export type Database = {
     }
     Functions: {
       get_space_owner: { Args: { _space_id: string }; Returns: string }
+      get_space_owner_plan: { Args: { _space_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

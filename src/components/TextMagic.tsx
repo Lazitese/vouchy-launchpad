@@ -66,6 +66,7 @@ export const TextMagic = ({ text, onTextUpdated, isLocked = false }: TextMagicPr
             <p className="text-xs text-subtext mb-2 px-1">Transform your text</p>
             <div className="space-y-1">
               <button
+                type="button"
                 onClick={() => handleEnhance('shorten')}
                 disabled={loading}
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate transition-colors text-left"
@@ -78,6 +79,7 @@ export const TextMagic = ({ text, onTextUpdated, isLocked = false }: TextMagicPr
               </button>
               
               <button
+                type="button"
                 onClick={() => handleEnhance('simplify')}
                 disabled={loading}
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate transition-colors text-left"
@@ -90,6 +92,7 @@ export const TextMagic = ({ text, onTextUpdated, isLocked = false }: TextMagicPr
               </button>
               
               <button
+                type="button"
                 onClick={() => handleEnhance('translate')}
                 disabled={loading}
                 className="w-full flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate transition-colors text-left"

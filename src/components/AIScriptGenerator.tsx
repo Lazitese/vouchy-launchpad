@@ -106,6 +106,7 @@ export const AIScriptGenerator = ({
               </div>
 
               <Button
+                type="button"
                 variant="hero"
                 className="w-full gap-2"
                 onClick={handleGenerate}

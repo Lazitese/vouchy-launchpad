@@ -244,7 +244,65 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_testimonials: {
+        Row: {
+          ai_summary: string | null
+          author_avatar_url: string | null
+          author_company: string | null
+          author_name: string | null
+          author_title: string | null
+          content: string | null
+          created_at: string | null
+          golden_quote: string | null
+          id: string | null
+          rating: number | null
+          space_id: string | null
+          status: Database["public"]["Enums"]["testimonial_status"] | null
+          type: Database["public"]["Enums"]["testimonial_type"] | null
+          video_url: string | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          author_avatar_url?: string | null
+          author_company?: string | null
+          author_name?: string | null
+          author_title?: string | null
+          content?: string | null
+          created_at?: string | null
+          golden_quote?: string | null
+          id?: string | null
+          rating?: number | null
+          space_id?: string | null
+          status?: Database["public"]["Enums"]["testimonial_status"] | null
+          type?: Database["public"]["Enums"]["testimonial_type"] | null
+          video_url?: string | null
+        }
+        Update: {
+          ai_summary?: string | null
+          author_avatar_url?: string | null
+          author_company?: string | null
+          author_name?: string | null
+          author_title?: string | null
+          content?: string | null
+          created_at?: string | null
+          golden_quote?: string | null
+          id?: string | null
+          rating?: number | null
+          space_id?: string | null
+          status?: Database["public"]["Enums"]["testimonial_status"] | null
+          type?: Database["public"]["Enums"]["testimonial_type"] | null
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "testimonials_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_space_owner: { Args: { _space_id: string }; Returns: string }

@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://vouchy.click/dashboard",
+        redirectTo: `${window.location.origin}/dashboard`,
       },
     });
     return { error };

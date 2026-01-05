@@ -41,6 +41,7 @@ export const TextMagic = ({ text, onTextUpdated, isLocked = false }: TextMagicPr
   return (
     <div className="relative">
       <Button
+        type="button"
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}

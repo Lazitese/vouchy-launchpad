@@ -244,67 +244,28 @@ export type Database = {
       }
     }
     Views: {
-      public_testimonials: {
-        Row: {
-          ai_summary: string | null
-          author_avatar_url: string | null
-          author_company: string | null
-          author_name: string | null
-          author_title: string | null
-          content: string | null
-          created_at: string | null
-          golden_quote: string | null
-          id: string | null
-          rating: number | null
-          space_id: string | null
-          status: Database["public"]["Enums"]["testimonial_status"] | null
-          type: Database["public"]["Enums"]["testimonial_type"] | null
-          video_url: string | null
-        }
-        Insert: {
-          ai_summary?: string | null
-          author_avatar_url?: string | null
-          author_company?: string | null
-          author_name?: string | null
-          author_title?: string | null
-          content?: string | null
-          created_at?: string | null
-          golden_quote?: string | null
-          id?: string | null
-          rating?: number | null
-          space_id?: string | null
-          status?: Database["public"]["Enums"]["testimonial_status"] | null
-          type?: Database["public"]["Enums"]["testimonial_type"] | null
-          video_url?: string | null
-        }
-        Update: {
-          ai_summary?: string | null
-          author_avatar_url?: string | null
-          author_company?: string | null
-          author_name?: string | null
-          author_title?: string | null
-          content?: string | null
-          created_at?: string | null
-          golden_quote?: string | null
-          id?: string | null
-          rating?: number | null
-          space_id?: string | null
-          status?: Database["public"]["Enums"]["testimonial_status"] | null
-          type?: Database["public"]["Enums"]["testimonial_type"] | null
-          video_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "testimonials_space_id_fkey"
-            columns: ["space_id"]
-            isOneToOne: false
-            referencedRelation: "spaces"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_public_testimonials: {
+        Args: { _space_id: string }
+        Returns: {
+          ai_summary: string
+          author_avatar_url: string
+          author_company: string
+          author_name: string
+          author_title: string
+          content: string
+          created_at: string
+          golden_quote: string
+          id: string
+          rating: number
+          space_id: string
+          status: string
+          type: string
+          video_url: string
+        }[]
+      }
       get_space_owner: { Args: { _space_id: string }; Returns: string }
       get_space_owner_plan: { Args: { _space_id: string }; Returns: string }
       has_role: {

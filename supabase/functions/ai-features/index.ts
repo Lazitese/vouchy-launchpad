@@ -5,37 +5,41 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
-async function callGemini(prompt: string): Promise<string> {
-  console.log('Calling Gemini API with prompt:', prompt.substring(0, 100) + '...');
+async function callAI(prompt: string): Promise<string> {
+  console.log('Calling Lovable AI with prompt:', prompt.substring(0, 100) + '...');
   
-  const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
     headers: {
+      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      contents: [{
-        parts: [{ text: prompt }]
-      }],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1024,
-      },
+      model: 'google/gemini-2.5-flash',
+      messages: [
+        { role: 'user', content: prompt }
+      ],
     }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('Gemini API error:', response.status, errorText);
-    throw new Error(`Gemini API error: ${response.status}`);
+    console.error('AI API error:', response.status, errorText);
+    
+    if (response.status === 429) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+    if (response.status === 402) {
+      throw new Error('AI credits exhausted. Please upgrade your plan.');
+    }
+    throw new Error(`AI API error: ${response.status}`);
   }
 
   const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-  console.log('Gemini response received, length:', text.length);
+  const text = data.choices?.[0]?.message?.content || '';
+  console.log('AI response received, length:', text.length);
   return text;
 }
 
@@ -49,8 +53,8 @@ serve(async (req) => {
     const { action, data } = await req.json();
     console.log('AI Features request - Action:', action);
 
-    if (!GEMINI_API_KEY) {
-      throw new Error('GEMINI_API_KEY is not configured');
+    if (!LOVABLE_API_KEY) {
+      throw new Error('LOVABLE_API_KEY is not configured');
     }
 
     let result: any;
@@ -74,7 +78,7 @@ Generate a flowing, authentic script that answers each question naturally. The s
 
 Return ONLY the script text, no headers or labels.`;
 
-        result = { script: await callGemini(prompt) };
+        result = { script: await callAI(prompt) };
         break;
       }
 
@@ -115,7 +119,7 @@ Return ONLY the translated testimonial text, no explanations.`;
             throw new Error('Invalid enhance mode');
         }
 
-        result = { text: await callGemini(prompt) };
+        result = { text: await callAI(prompt) };
         break;
       }
 
@@ -135,7 +139,7 @@ Format your response EXACTLY like this (keep the labels):
 SUMMARY: [your one-sentence summary]
 GOLDEN_QUOTE: "[the golden quote]"`;
 
-        const response = await callGemini(prompt);
+        const response = await callAI(prompt);
         
         // Parse the response
         const summaryMatch = response.match(/SUMMARY:\s*(.+?)(?=\n|GOLDEN_QUOTE|$)/i);

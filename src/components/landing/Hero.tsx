@@ -7,10 +7,10 @@ const Hero = () => {
     <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
       {/* Subtle gradient orb */}
       <div className="absolute top-1/4 right-1/4 w-[600px] h-[600px] bg-primary/[0.03] rounded-full blur-3xl pointer-events-none" />
-      
+
       <div className="container mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-          
+
           {/* Left: Content */}
           <div className="order-2 lg:order-1">
             {/* Badge */}
@@ -35,10 +35,10 @@ const Hero = () => {
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="mb-6"
             >
-              <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.0] tracking-[-0.06em]">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-[1.0] tracking-[-0.06em]">
                 <span className="text-primary">Collect testimonials</span>
                 <br />
-                <motion.span 
+                <motion.span
                   className="text-primary/40"
                   initial={{ clipPath: "inset(0 0 100% 0)" }}
                   animate={{ clipPath: "inset(0 0 0% 0)" }}

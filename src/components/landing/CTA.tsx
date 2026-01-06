@@ -8,7 +8,7 @@ const CTA = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-32 px-6 bg-primary relative overflow-hidden" ref={ref}>
+    <section className="py-16 md:py-32 px-6 bg-primary relative overflow-hidden" ref={ref}>
       {/* Animated grid background */}
       <div className="absolute inset-0 pointer-events-none opacity-10">
         <div className="absolute inset-0 grid grid-cols-12 gap-0">
@@ -53,7 +53,7 @@ const CTA = () => {
             transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="mb-8"
           >
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-[-0.06em] text-primary-foreground">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-[-0.06em] text-primary-foreground">
               Start collecting
               <br />
               testimonials today
@@ -66,7 +66,7 @@ const CTA = () => {
             animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
             transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            Join thousands of businesses using Vouchy to turn customer 
+            Join thousands of businesses using Vouchy to turn customer
             voices into their most powerful growth engine.
           </motion.p>
 

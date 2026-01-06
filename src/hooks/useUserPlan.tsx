@@ -74,7 +74,7 @@ export const useUserPlan = () => {
         .maybeSingle();
 
       if (error) throw error;
-      
+
       // Default to free if no plan found
       const userPlan = ((data as any)?.plan as PlanType) || "free";
       setPlan(userPlan);
@@ -160,9 +160,22 @@ export const useAIFeatures = () => {
 
       if (!response.ok) throw new Error('Failed to enhance text');
       const data = await response.json();
+
+
       return data.text;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error enhancing text:', error);
+
+      // Try to parse detailed error response
+      if (error.context && typeof error.context.json === 'function') {
+        try {
+          const body = await error.context.json();
+          console.error('Edge Function Detailed Error:', body);
+        } catch (e) {
+          console.error('Could not parse error body:', e);
+        }
+      }
+
       return null;
     } finally {
       setLoading(false);

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Vouchy is a modern, full-stack testimonial collection and management platform built with React, TypeScript, and Lovable Cloud (powered by Supabase). It enables businesses to collect, manage, and showcase video and text testimonials with beautiful embeddable widgets.
+Vouchy is a modern, full-stack testimonial collection and management platform built with React, TypeScript, and Supabase. It enables businesses to collect, manage, and showcase video and text testimonials with beautiful embeddable widgets.
 
 ## Features
 
@@ -55,7 +55,7 @@ Vouchy is a modern, full-stack testimonial collection and management platform bu
 - **React Query** - Data fetching
 - **Lucide React** - Icons
 
-### Backend (Lovable Cloud)
+### Backend (Supabase)
 - **Supabase Database** - PostgreSQL database
 - **Supabase Auth** - User authentication
 - **Supabase Storage** - File storage for logos and testimonial videos

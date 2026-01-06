@@ -18,6 +18,7 @@ export interface WidgetSettings {
   dark_mode: boolean;
   layout: string;
   show_video_first: boolean;
+  appearance?: any;
 }
 
 export const useWorkspace = () => {
@@ -55,7 +56,7 @@ export const useWorkspace = () => {
           .select("*")
           .eq("workspace_id", data.id)
           .maybeSingle();
-        
+
         setWidgetSettings(settings);
       }
     } catch (error) {

@@ -1,49 +1,40 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
 
 async function callAI(prompt: string): Promise<string> {
-  console.log('Calling Lovable AI with prompt:', prompt.substring(0, 100) + '...');
-  
-  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+  console.log('Calling Gemini AI with prompt:', prompt.substring(0, 100) + '...');
+
+  const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
-      messages: [
-        { role: 'user', content: prompt }
-      ],
+      contents: [{
+        parts: [{ text: prompt }]
+      }]
     }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
     console.error('AI API error:', response.status, errorText);
-    
-    if (response.status === 429) {
-      throw new Error('Rate limit exceeded. Please try again later.');
-    }
-    if (response.status === 402) {
-      throw new Error('AI credits exhausted. Please upgrade your plan.');
-    }
-    throw new Error(`AI API error: ${response.status}`);
+    throw new Error(`AI API error: ${response.status} - ${errorText}`);
   }
 
   const data = await response.json();
-  const text = data.choices?.[0]?.message?.content || '';
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
   console.log('AI response received, length:', text.length);
   return text;
 }
 
-serve(async (req) => {
+// Native Deno.serve (no import needed)
+Deno.serve(async (req: Request) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -53,8 +44,8 @@ serve(async (req) => {
     const { action, data } = await req.json();
     console.log('AI Features request - Action:', action);
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+    if (!GEMINI_API_KEY) {
+      throw new Error('GEMINI_API_KEY is not configured');
     }
 
     let result: any;
@@ -140,7 +131,7 @@ SUMMARY: [your one-sentence summary]
 GOLDEN_QUOTE: "[the golden quote]"`;
 
         const response = await callAI(prompt);
-        
+
         // Parse the response
         const summaryMatch = response.match(/SUMMARY:\s*(.+?)(?=\n|GOLDEN_QUOTE|$)/i);
         const quoteMatch = response.match(/GOLDEN_QUOTE:\s*"?([^"]+)"?/i);
@@ -164,7 +155,15 @@ GOLDEN_QUOTE: "[the golden quote]"`;
   } catch (error) {
     console.error('AI Features error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return new Response(JSON.stringify({ error: errorMessage }), {
+
+    return new Response(JSON.stringify({
+      error: errorMessage,
+      debug: {
+        hasKey: !!GEMINI_API_KEY,
+        keyLength: GEMINI_API_KEY ? GEMINI_API_KEY.length : 0,
+        keyStart: GEMINI_API_KEY ? GEMINI_API_KEY.substring(0, 4) : 'none'
+      }
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

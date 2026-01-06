@@ -129,4 +129,30 @@
   .editorial-card {
     @apply bg-card border border-border/[0.08] rounded-[4px];
   }
+
+  /* Custom Scrollbar Utilities */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-border/20 rounded-full hover:bg-border/40 transition-colors;
+  }
+  
+  /* Mask Gradient */
+  .mask-gradient-r {
+    mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+  }
 }

@@ -1,40 +1,15 @@
 import { useState, useEffect } from "react";
-import { WidgetPreview } from "@/components/WidgetPreview";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutGrid,
-  BarChart3,
-  Heart,
-  Settings,
-  Plus,
-  Link2,
-  Check,
-  X,
-  Share2,
-  Code2,
-  Palette,
-  Copy,
-  ChevronDown,
   Sparkles,
-  Video,
-  Menu,
-  LogOut,
-  Loader2,
-  Trash2,
+  Link2,
+  Heart,
   Play,
-  Crown,
+  Loader2,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
 import { useWorkspace } from "@/hooks/useWorkspace";
@@ -42,17 +17,13 @@ import { useSpaces } from "@/hooks/useSpaces";
 import { useTestimonials, Testimonial } from "@/hooks/useTestimonials";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { useToast } from "@/hooks/use-toast";
-import logoIcon from "@/assets/logo-icon.svg";
-import { supabase } from "@/integrations/supabase/client";
-
-type View = "spaces" | "analytics" | "wall" | "settings" | "widget";
-
-const sidebarItems = [
-  { id: "spaces" as View, icon: LayoutGrid, label: "Spaces" },
-  { id: "analytics" as View, icon: BarChart3, label: "Analytics" },
-  { id: "wall" as View, icon: Heart, label: "Wall of Love" },
-  { id: "settings" as View, icon: Settings, label: "Settings" },
-];
+import { TestimonialGrid } from "@/components/dashboard/TestimonialGrid";
+import { AnalyticsCards } from "@/components/dashboard/AnalyticsCards";
+import { SpaceSettings } from "@/components/dashboard/SpaceSettings";
+import { Sidebar, View } from "@/components/dashboard/Sidebar";
+import { WidgetLabView } from "@/components/dashboard/WidgetLabView";
+import { PlanUpgradeCard } from "@/components/dashboard/PlanUpgradeCard";
+import { BottomNavigation } from "@/components/dashboard/BottomNavigation";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -66,7 +37,7 @@ const Dashboard = () => {
   const { toast } = useToast();
 
   const [activeView, setActiveView] = useState<View>("spaces");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   const [newSpaceName, setNewSpaceName] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [creatingSpace, setCreatingSpace] = useState(false);
@@ -80,11 +51,11 @@ const Dashboard = () => {
 
   const handleCreateSpace = async () => {
     if (!newSpaceName.trim()) return;
-    
+
     setCreatingSpace(true);
     const { data, error } = await createSpace(newSpaceName.trim());
     setCreatingSpace(false);
-    
+
     if (error) {
       toast({
         variant: "destructive",
@@ -93,7 +64,7 @@ const Dashboard = () => {
       });
       return;
     }
-    
+
     setNewSpaceName("");
     setCreateDialogOpen(false);
     toast({
@@ -123,7 +94,18 @@ const Dashboard = () => {
     toast({ title: "Link copied to clipboard" });
   };
 
-  const embedCode = `<script src="${window.location.origin}/widget.js" data-id="${workspace?.id || ""}"></script>`;
+  const handleShare = (testimonial: Testimonial) => {
+    // Simple share functionality - copy testimonial text
+    const shareText = testimonial.type === "video"
+      ? `Check out this video testimonial from ${testimonial.author_name}!`
+      : testimonial.content || "";
+    navigator.clipboard.writeText(shareText);
+    toast({ title: "Testimonial copied to clipboard" });
+  };
+
+  const embedCode = workspace?.id
+    ? `<script src="${window.location.origin}/widget.js" data-id="${workspace.id}"></script>`
+    : `<!-- Please create a workspace first -->`;
 
   const hasTestimonials = testimonials.length > 0;
 
@@ -137,134 +119,24 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <motion.aside
-        className={`bg-slate border-r border-border/[0.08] flex flex-col transition-all duration-300 ${
-          sidebarOpen ? "w-64" : "w-20"
-        }`}
-        initial={{ x: -20, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.4 }}
-      >
-        {/* Logo */}
-        <div className="p-6 flex items-center justify-between">
-          <img
-            src={logoIcon}
-            alt="Vouchy"
-            className={`transition-all duration-300 ${sidebarOpen ? "h-12 w-12" : "h-10 w-10"}`}
-          />
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 hover:bg-background/50 rounded-lg transition-colors"
-          >
-            <Menu className="w-4 h-4 text-subtext" />
-          </button>
-        </div>
-
-        {/* Workspace */}
-        <div className="px-4 mb-6">
-          <button className="w-full p-3 bg-background rounded-[8px] flex items-center gap-3 hover:shadow-sm transition-shadow">
-            <div
-              className="w-8 h-8 rounded-[6px] flex items-center justify-center text-white text-sm font-bold"
-              style={{ backgroundColor: workspace?.primary_color || "#1a3f64" }}
-            >
-              {workspace?.name?.charAt(0) || "W"}
-            </div>
-            {sidebarOpen && (
-              <>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-medium text-primary truncate">
-                    {workspace?.name || "My Workspace"}
-                  </p>
-                  <p className="text-xs text-subtext capitalize">{plan} plan</p>
-                </div>
-                <ChevronDown className="w-4 h-4 text-subtext" />
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Nav items */}
-        <nav className="flex-1 px-3">
-          {sidebarItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveView(item.id)}
-              className={`w-full p-3 mb-1 rounded-[8px] flex items-center gap-3 transition-all duration-200 ${
-                activeView === item.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground/70 hover:bg-background/50"
-              }`}
-            >
-              <item.icon className="w-5 h-5 shrink-0" />
-              {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
-            </button>
-          ))}
-
-          <div className="my-4 h-px bg-border/[0.08]" />
-
-          <button
-            onClick={() => setActiveView("widget")}
-            className={`w-full p-3 rounded-[8px] flex items-center gap-3 transition-all duration-200 ${
-              activeView === "widget"
-                ? "bg-primary text-primary-foreground"
-                : "text-foreground/70 hover:bg-background/50"
-            }`}
-          >
-            <Palette className="w-5 h-5 shrink-0" />
-            {sidebarOpen && <span className="text-sm font-medium">Widget Lab</span>}
-          </button>
-        </nav>
-
-        {/* Bottom actions */}
-        <div className="p-4 space-y-2">
-          <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="hero" className={`w-full ${!sidebarOpen && "p-2"}`}>
-                <Plus className="w-4 h-4" />
-                {sidebarOpen && <span className="ml-2">New Space</span>}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create new space</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <Input
-                  placeholder="Space name (e.g., Product Reviews)"
-                  value={newSpaceName}
-                  onChange={(e) => setNewSpaceName(e.target.value)}
-                  maxLength={100}
-                />
-                <Button 
-                  variant="hero" 
-                  className="w-full" 
-                  onClick={handleCreateSpace}
-                  disabled={!newSpaceName.trim() || creatingSpace}
-                >
-                  {creatingSpace ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    "Create Space"
-                  )}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-          
-          <Button 
-            variant="ghost" 
-            className={`w-full text-subtext hover:text-foreground ${!sidebarOpen && "p-2"}`}
-            onClick={handleSignOut}
-          >
-            <LogOut className="w-4 h-4" />
-            {sidebarOpen && <span className="ml-2">Sign Out</span>}
-          </Button>
-        </div>
-      </motion.aside>
+      <Sidebar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        workspace={workspace}
+        plan={plan}
+        activeView={activeView}
+        setActiveView={setActiveView}
+        createDialogOpen={createDialogOpen}
+        setCreateDialogOpen={setCreateDialogOpen}
+        newSpaceName={newSpaceName}
+        setNewSpaceName={setNewSpaceName}
+        handleCreateSpace={handleCreateSpace}
+        creatingSpace={creatingSpace}
+        handleSignOut={handleSignOut}
+      />
 
       {/* Main Content */}
-      <main className="flex-1 p-8 overflow-auto">
+      <main className="flex-1 p-4 md:p-8 overflow-auto pb-24 md:pb-8">
         <AnimatePresence mode="wait">
           {/* Spaces / Feed View */}
           {activeView === "spaces" && (
@@ -280,41 +152,30 @@ const Dashboard = () => {
                   <h1 className="text-2xl font-black text-primary">Testimonials</h1>
                   <p className="text-subtext">Manage and curate your social proof</p>
                 </div>
-                {spaces.length > 0 && (
-                  <Button 
-                    variant="outline" 
-                    className="gap-2"
-                    onClick={() => copyCollectionLink(spaces[0].slug)}
+                <div className="flex gap-2">
+                  <Button
+                    variant="hero"
+                    size="sm"
+                    className="md:hidden"
+                    onClick={() => setCreateDialogOpen(true)}
                   >
-                    <Link2 className="w-4 h-4" />
-                    Copy Collection Link
+                    <Plus className="w-4 h-4" />
                   </Button>
-                )}
+                  {spaces.length > 0 && (
+                    <Button
+                      variant="outline"
+                      className="gap-2"
+                      onClick={() => copyCollectionLink(spaces[0].slug)}
+                    >
+                      <Link2 className="w-4 h-4" />
+                      <span className="hidden md:inline">Copy Link</span>
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {/* Spaces list */}
-              {spaces.length > 0 && (
-                <div className="mb-8">
-                  <h3 className="text-sm font-medium text-subtext mb-3">Your Spaces</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {spaces.map((space) => (
-                      <div
-                        key={space.id}
-                        className="px-4 py-2 bg-card border border-border/[0.08] rounded-lg flex items-center gap-3"
-                      >
-                        <span className="font-medium text-foreground">{space.name}</span>
-                        <button
-                          onClick={() => copyCollectionLink(space.slug)}
-                          className="p-1 hover:bg-slate rounded transition-colors"
-                          title="Copy link"
-                        >
-                          <Link2 className="w-3 h-3 text-subtext" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <SpaceSettings spaces={spaces} onCopyLink={copyCollectionLink} />
 
               {!hasTestimonials && spaces.length === 0 ? (
                 /* Empty State */
@@ -329,9 +190,9 @@ const Dashboard = () => {
                     Create a collection space and share the link with your customers to start
                     gathering powerful testimonials.
                   </p>
-                  <Button 
-                    variant="hero" 
-                    size="lg" 
+                  <Button
+                    variant="hero"
+                    size="lg"
                     className="gap-2"
                     onClick={() => setCreateDialogOpen(true)}
                   >
@@ -339,39 +200,15 @@ const Dashboard = () => {
                     Create Collection Space
                   </Button>
                 </div>
-              ) : !hasTestimonials && spaces.length > 0 ? (
-                <div className="flex flex-col items-center justify-center py-16">
-                  <div className="w-20 h-20 mb-6 rounded-full bg-slate flex items-center justify-center">
-                    <Heart className="w-8 h-8 text-primary/40" />
-                  </div>
-                  <h2 className="text-xl font-bold text-primary mb-2">
-                    No testimonials yet
-                  </h2>
-                  <p className="text-subtext mb-6 text-center max-w-md">
-                    Share your collection link with customers to start receiving testimonials.
-                  </p>
-                  <Button 
-                    variant="outline" 
-                    className="gap-2"
-                    onClick={() => copyCollectionLink(spaces[0].slug)}
-                  >
-                    <Link2 className="w-4 h-4" />
-                    Copy Collection Link
-                  </Button>
-                </div>
               ) : (
-                /* Testimonial Cards */
-                <div className="grid gap-4">
-                  {testimonials.map((testimonial) => (
-                    <TestimonialCard
-                      key={testimonial.id}
-                      testimonial={testimonial}
-                      onApprove={handleApprove}
-                      onReject={handleReject}
-                      onDelete={deleteTestimonial}
-                    />
-                  ))}
-                </div>
+                /* Testimonial Grid */
+                <TestimonialGrid
+                  testimonials={testimonials}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                  onDelete={deleteTestimonial}
+                  onShare={handleShare}
+                />
               )}
             </motion.div>
           )}
@@ -390,18 +227,11 @@ const Dashboard = () => {
                 <p className="text-subtext">Track your testimonial performance</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {[
-                  { label: "Total Testimonials", value: testimonials.length },
-                  { label: "Approved", value: testimonials.filter(t => t.status === "approved").length },
-                  { label: "Pending", value: testimonials.filter(t => t.status === "pending").length },
-                ].map((stat) => (
-                  <div key={stat.label} className="p-6 bg-card border border-border/[0.08] rounded-[12px]">
-                    <p className="text-sm text-subtext mb-1">{stat.label}</p>
-                    <p className="text-3xl font-bold text-primary">{stat.value}</p>
-                  </div>
-                ))}
-              </div>
+              <AnalyticsCards
+                totalTestimonials={testimonials.length}
+                approvedCount={testimonials.filter(t => t.status === "approved").length}
+                pendingCount={testimonials.filter(t => t.status === "pending").length}
+              />
 
               {/* Usage Limits */}
               <div className="p-6 bg-card border border-border/[0.08] rounded-[12px]">
@@ -415,15 +245,15 @@ const Dashboard = () => {
                       </p>
                     </div>
                     <div className="h-2 bg-slate rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-primary rounded-full transition-all"
-                        style={{ 
-                          width: `${Math.min((testimonials.length / features.testimonialLimit) * 100, 100)}%` 
+                        style={{
+                          width: `${Math.min((testimonials.length / features.testimonialLimit) * 100, 100)}%`
                         }}
                       />
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-sm text-foreground">Active Spaces</p>
@@ -432,10 +262,10 @@ const Dashboard = () => {
                       </p>
                     </div>
                     <div className="h-2 bg-slate rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-primary rounded-full transition-all"
-                        style={{ 
-                          width: `${Math.min((spaces.length / features.activeSpacesLimit) * 100, 100)}%` 
+                        style={{
+                          width: `${Math.min((spaces.length / features.activeSpacesLimit) * 100, 100)}%`
                         }}
                       />
                     </div>
@@ -448,23 +278,8 @@ const Dashboard = () => {
                         {plan} Plan
                       </span>
                       <span className="px-2 py-1 bg-slate text-subtext text-xs rounded-full">
-                        {features.videoDurationSeconds}s max video
+                        {features.videoDurationSeconds}s video limit
                       </span>
-                      {features.hasTeleprompter && (
-                        <span className="px-2 py-1 bg-green-500/10 text-green-600 text-xs rounded-full">
-                          AI Teleprompter
-                        </span>
-                      )}
-                      {features.hasCustomBranding && (
-                        <span className="px-2 py-1 bg-green-500/10 text-green-600 text-xs rounded-full">
-                          Custom Branding
-                        </span>
-                      )}
-                      {features.hasWhiteLabel && (
-                        <span className="px-2 py-1 bg-green-500/10 text-green-600 text-xs rounded-full">
-                          White Label
-                        </span>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -576,9 +391,9 @@ const Dashboard = () => {
 
               <div className="max-w-2xl space-y-6">
                 {/* Plan & Upgrade Section */}
-                <PlanUpgradeCard 
-                  currentPlan={plan} 
-                  features={features} 
+                <PlanUpgradeCard
+                  currentPlan={plan}
+                  features={features}
                   user={user}
                 />
 
@@ -592,7 +407,7 @@ const Dashboard = () => {
                     <div>
                       <label className="text-sm text-subtext">Primary Color</label>
                       <div className="flex items-center gap-2 mt-1">
-                        <div 
+                        <div
                           className="w-6 h-6 rounded"
                           style={{ backgroundColor: workspace?.primary_color }}
                         />
@@ -611,453 +426,35 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Mobile Sign Out */}
+                <div className="md:hidden">
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={handleSignOut}
+                  >
+                    Sign Out
+                  </Button>
+                </div>
               </div>
             </motion.div>
           )}
 
-          {/* Widget Lab */}
+          {/* Widget Lab View */}
           {activeView === "widget" && (
-            <motion.div
-              key="widget"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="mb-8">
-                <h1 className="text-2xl font-black text-primary">Widget Lab</h1>
-                <p className="text-subtext">Customize your embeddable wall</p>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Settings */}
-                <div className="space-y-6">
-                  <div className="p-6 bg-card border border-border/[0.08] rounded-[12px]">
-                    <h3 className="font-semibold text-primary mb-6">Appearance</h3>
-                    
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-foreground">Dark Mode</p>
-                          <p className="text-sm text-subtext">Enable dark theme</p>
-                        </div>
-                        <Switch
-                          checked={widgetSettings?.dark_mode || false}
-                          onCheckedChange={(checked) =>
-                            updateWidgetSettings({ dark_mode: checked })
-                          }
-                        />
-                      </div>
-
-                      <div className="h-px bg-border/[0.08]" />
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-foreground">Layout</p>
-                          <p className="text-sm text-subtext">Grid or Carousel</p>
-                        </div>
-                        <div className="flex gap-2">
-                          {["grid", "carousel"].map((layout) => (
-                            <button
-                              key={layout}
-                              onClick={() => updateWidgetSettings({ layout })}
-                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                widgetSettings?.layout === layout
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-slate text-foreground/70"
-                              }`}
-                            >
-                              {layout.charAt(0).toUpperCase() + layout.slice(1)}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="h-px bg-border/[0.08]" />
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-foreground">Show Video First</p>
-                          <p className="text-sm text-subtext">Prioritize video testimonials</p>
-                        </div>
-                        <Switch
-                          checked={widgetSettings?.show_video_first || false}
-                          onCheckedChange={(checked) =>
-                            updateWidgetSettings({ show_video_first: checked })
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Code Generator */}
-                  <div className="p-6 bg-card border border-border/[0.08] rounded-[12px]">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Code2 className="w-5 h-5 text-primary" />
-                      <h3 className="font-semibold text-primary">Embed Code</h3>
-                    </div>
-                    <div className="bg-slate p-4 rounded-[8px] font-mono text-sm text-foreground/80 mb-4 overflow-x-auto">
-                      {embedCode}
-                    </div>
-                    <Button
-                      variant="outline"
-                      className="w-full gap-2"
-                      onClick={() => {
-                        navigator.clipboard.writeText(embedCode);
-                        toast({ title: "Embed code copied" });
-                      }}
-                    >
-                      <Copy className="w-4 h-4" />
-                      Copy Code
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Widget Preview */}
-                <div className="p-6 bg-slate rounded-[12px]">
-                  <WidgetPreview
-                    testimonials={testimonials}
-                    darkMode={widgetSettings?.dark_mode || false}
-                    layout={widgetSettings?.layout || "grid"}
-                    showVideoFirst={widgetSettings?.show_video_first || false}
-                  />
-                </div>
-              </div>
-            </motion.div>
+            <WidgetLabView
+              widgetSettings={widgetSettings}
+              updateWidgetSettings={updateWidgetSettings}
+              testimonials={testimonials}
+              embedCode={embedCode}
+            />
           )}
         </AnimatePresence>
       </main>
+
+      <BottomNavigation activeView={activeView} setActiveView={setActiveView} />
     </div>
-  );
-};
-
-// Plan Upgrade Card Component
-const PlanUpgradeCard = ({
-  currentPlan,
-  features,
-  user,
-}: {
-  currentPlan: string;
-  features: {
-    testimonialLimit: number;
-    activeSpacesLimit: number;
-    videoDurationSeconds: number;
-    aiCredits: number;
-    hasTeleprompter: boolean;
-    hasCustomBranding: boolean;
-    hasWhiteLabel: boolean;
-  };
-  user: { email?: string; user_metadata?: { full_name?: string } } | null;
-}) => {
-  const [loading, setLoading] = useState<string | null>(null);
-  const { toast } = useToast();
-
-  const plans = [
-    {
-      name: "Free",
-      price: "$0",
-      productId: null,
-      features: ["5 testimonials", "1 space", "60s video"],
-      current: currentPlan === "free",
-    },
-    {
-      name: "Pro",
-      price: "$12/mo",
-      productId: "pdt_0NVVmIlZrdWC90xs1ZgOm",
-      features: ["50 testimonials", "3 spaces", "3min video", "AI Magic", "Teleprompter"],
-      current: currentPlan === "pro",
-      popular: true,
-    },
-    {
-      name: "Agency",
-      price: "$45/mo",
-      productId: "pdt_0NVVmba1bevOgK6sfV8Wx",
-      features: ["250 testimonials", "15 spaces", "5min video", "Full AI Suite", "White-label"],
-      current: currentPlan === "agency",
-    },
-  ];
-
-  const handleUpgrade = async (productId: string, planName: string) => {
-    if (!user) return;
-    
-    setLoading(planName);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: {
-          productId,
-          customerEmail: user.email,
-          customerName: user.user_metadata?.full_name || user.email,
-          returnUrl: `${window.location.origin}/dashboard?payment=success`,
-        },
-      });
-
-      if (error) throw error;
-      
-      if (data?.paymentLink) {
-        window.location.href = data.paymentLink;
-      } else {
-        throw new Error('No payment link received');
-      }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      toast({
-        variant: "destructive",
-        title: "Payment Error",
-        description: "Failed to create checkout session. Please try again.",
-      });
-    } finally {
-      setLoading(null);
-    }
-  };
-
-  return (
-    <div className="p-6 bg-card border border-border/[0.08] rounded-[12px]">
-      <div className="flex items-center gap-2 mb-6">
-        <Crown className="w-5 h-5 text-primary" />
-        <h3 className="font-semibold text-primary">Your Plan</h3>
-      </div>
-
-      {/* Current Plan Status */}
-      <div className="mb-6 p-4 bg-slate rounded-[8px]">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-subtext">Current Plan</p>
-            <p className="text-xl font-bold text-primary capitalize">{currentPlan}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-subtext">Limits</p>
-            <p className="text-sm text-foreground">
-              {features.testimonialLimit} testimonials • {features.activeSpacesLimit} spaces
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Plan Options */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {plans.map((plan) => (
-          <div
-            key={plan.name}
-            className={`relative p-4 rounded-[8px] border transition-all ${
-              plan.current
-                ? "border-primary bg-primary/5"
-                : plan.popular
-                ? "border-primary/50 hover:border-primary"
-                : "border-border/[0.08] hover:border-primary/30"
-            }`}
-          >
-            {plan.popular && !plan.current && (
-              <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                <span className="px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full uppercase">
-                  Popular
-                </span>
-              </div>
-            )}
-            
-            <div className="mb-3">
-              <p className="font-semibold text-primary">{plan.name}</p>
-              <p className="text-lg font-bold text-foreground">{plan.price}</p>
-            </div>
-
-            <ul className="space-y-1 mb-4">
-              {plan.features.map((feature) => (
-                <li key={feature} className="flex items-center gap-2 text-xs text-subtext">
-                  <Check className="w-3 h-3 text-primary" />
-                  {feature}
-                </li>
-              ))}
-            </ul>
-
-            {plan.current ? (
-              <Button variant="outline" size="sm" className="w-full" disabled>
-                Current Plan
-              </Button>
-            ) : plan.productId ? (
-              <Button
-                variant={plan.popular ? "hero" : "outline"}
-                size="sm"
-                className="w-full"
-                onClick={() => handleUpgrade(plan.productId!, plan.name)}
-                disabled={loading === plan.name}
-              >
-                {loading === plan.name ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  `Upgrade to ${plan.name}`
-                )}
-              </Button>
-            ) : null}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Testimonial Card Component
-const TestimonialCard = ({
-  testimonial,
-  onApprove,
-  onReject,
-  onDelete,
-}: {
-  testimonial: Testimonial;
-  onApprove: (id: string) => void;
-  onReject: (id: string) => void;
-  onDelete: (id: string) => void;
-}) => {
-  const timeAgo = (date: string) => {
-    const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-    if (seconds < 60) return "just now";
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-  };
-
-  const { toast } = useToast();
-  
-  const handleShare = () => {
-    const shareText = testimonial.type === "video" 
-      ? `Check out this video testimonial from ${testimonial.author_name}!`
-      : `"${testimonial.content}" - ${testimonial.author_name}`;
-    
-    if (navigator.share) {
-      navigator.share({
-        title: `Testimonial from ${testimonial.author_name}`,
-        text: shareText,
-      });
-    } else {
-      navigator.clipboard.writeText(shareText);
-      toast({ title: "Copied to clipboard!" });
-    }
-  };
-
-  return (
-    <motion.div
-      className="p-6 bg-card border border-border/[0.08] rounded-[12px] hover:shadow-lg transition-shadow duration-300 relative overflow-hidden"
-      layout
-    >
-      {/* Video badge */}
-      {testimonial.type === "video" && (
-        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-primary rounded-full shadow-sm">
-          <Play className="w-3 h-3 text-primary-foreground fill-current" />
-          <span className="text-[10px] font-bold text-primary-foreground uppercase tracking-wide">Video</span>
-          <Crown className="w-3 h-3 text-amber-300" />
-        </div>
-      )}
-      
-      <div className="flex items-start gap-4">
-        {/* Avatar */}
-        <div className="relative shrink-0">
-          <Avatar className="w-14 h-14 ring-2 ring-primary/20">
-            {testimonial.author_avatar_url ? (
-              <AvatarImage src={testimonial.author_avatar_url} alt={testimonial.author_name} />
-            ) : null}
-            <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
-              {testimonial.author_name.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          {testimonial.type === "video" && (
-            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm">
-              <Play className="w-2.5 h-2.5 text-primary-foreground fill-current" />
-            </div>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <h3 className="font-semibold text-primary">
-              {testimonial.author_name}
-            </h3>
-            {testimonial.author_title && (
-              <span className="text-xs text-subtext">
-                {testimonial.author_title}
-              </span>
-            )}
-            {testimonial.author_company && (
-              <>
-                <span className="text-xs text-subtext/60">at</span>
-                <span className="text-xs text-subtext">
-                  {testimonial.author_company}
-                </span>
-              </>
-            )}
-            <span className="text-xs text-subtext/60">•</span>
-            <span className="text-xs text-subtext/60">
-              {timeAgo(testimonial.created_at)}
-            </span>
-          </div>
-          {testimonial.rating && (
-            <div className="flex gap-0.5 mb-2">
-              {[...Array(testimonial.rating)].map((_, i) => (
-                <span key={i} className="text-amber-400 text-sm">★</span>
-              ))}
-            </div>
-          )}
-          {testimonial.type === "video" && testimonial.video_url ? (
-            <video
-              src={testimonial.video_url}
-              controls
-              className="w-full max-w-md rounded-lg mt-2"
-            />
-          ) : (
-            <p className="text-foreground/80 leading-relaxed">
-              {testimonial.content}
-            </p>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-2 shrink-0">
-          {testimonial.status === "pending" ? (
-            <>
-              <button
-                onClick={() => onApprove(testimonial.id)}
-                className="p-2 rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors"
-                title="Approve"
-              >
-                <Check className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => onReject(testimonial.id)}
-                className="p-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-colors"
-                title="Reject"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </>
-          ) : (
-            <span
-              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                testimonial.status === "approved"
-                  ? "bg-green-500/10 text-green-600"
-                  : "bg-red-500/10 text-red-600"
-              }`}
-            >
-              {testimonial.status}
-            </span>
-          )}
-          <button 
-            className="p-2 rounded-lg hover:bg-slate transition-colors"
-            onClick={handleShare}
-            title="Share testimonial"
-          >
-            <Share2 className="w-4 h-4 text-subtext" />
-          </button>
-          <button 
-            className="p-2 rounded-lg hover:bg-red-500/10 transition-colors"
-            onClick={() => onDelete(testimonial.id)}
-            title="Delete"
-          >
-            <Trash2 className="w-4 h-4 text-subtext hover:text-red-500" />
-          </button>
-        </div>
-      </div>
-    </motion.div>
   );
 };
 

@@ -27,10 +27,10 @@ const Auth = () => {
   const navigate = useNavigate();
   const { user, session } = useAuth();
   const { toast } = useToast();
-  
+
   const initialMode = location.state?.mode || "signup";
   const selectedPlan = location.state?.plan || "Starter";
-  
+
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -49,7 +49,7 @@ const Auth = () => {
 
   const handlePostAuthRedirect = async () => {
     const productId = planProductIds[selectedPlan];
-    
+
     // If a paid plan was selected, redirect to payment
     if (productId && user) {
       setLoading(true);
@@ -64,7 +64,7 @@ const Auth = () => {
         });
 
         if (error) throw error;
-        
+
         if (data?.paymentLink) {
           window.location.href = data.paymentLink;
           return;
@@ -80,7 +80,7 @@ const Auth = () => {
         setLoading(false);
       }
     }
-    
+
     // Otherwise redirect to dashboard or onboarding
     if (mode === "signup") {
       navigate("/onboarding", { replace: true });
@@ -114,16 +114,16 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
-    
+
     try {
       if (mode === "signup") {
         const redirectUrl = `${window.location.origin}/`;
-        
-        const { error } = await supabase.auth.signUp({
+
+        const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
           options: {
@@ -133,7 +133,7 @@ const Auth = () => {
             },
           },
         });
-        
+
         if (error) {
           if (error.message.includes("already registered")) {
             toast({
@@ -151,13 +151,31 @@ const Auth = () => {
           setLoading(false);
           return;
         }
-        // The useEffect will handle redirect when user state updates
+
+        // Check if session was created (Email confirmation might be ON)
+        if (data.user && !data.session) {
+          toast({
+            title: "Account created!",
+            description: "Please check your email to verify your account before logging in.",
+          });
+          setLoading(false);
+          // Optional: Switch to login mode
+          setMode("login");
+          return;
+        }
+
+        // If session exists, manually navigate to ensure we don't hang
+        if (data.session) {
+          navigate("/dashboard");
+          return;
+        }
+
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password,
         });
-        
+
         if (error) {
           toast({
             variant: "destructive",
@@ -167,9 +185,19 @@ const Auth = () => {
           setLoading(false);
           return;
         }
-        // The useEffect will handle redirect when user state updates
+
+        if (data.session) {
+          navigate("/dashboard");
+          return;
+        }
       }
     } catch (err) {
+      console.error("Auth error:", err);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "An unexpected error occurred",
+      });
       setLoading(false);
     }
   };
@@ -179,8 +207,8 @@ const Auth = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: selectedPlan && planProductIds[selectedPlan] 
-          ? `${window.location.origin}/auth?plan=${selectedPlan}` 
+        redirectTo: selectedPlan && planProductIds[selectedPlan]
+          ? `${window.location.origin}/auth?plan=${selectedPlan}`
           : `${window.location.origin}/dashboard`,
       },
     });
@@ -321,9 +349,9 @@ const Auth = () => {
               )}
             </div>
 
-            <Button 
-              variant="hero" 
-              className="w-full h-12 text-base group" 
+            <Button
+              variant="hero"
+              className="w-full h-12 text-base group"
               type="submit"
               disabled={loading}
             >
@@ -386,7 +414,7 @@ const Auth = () => {
               </div>
             </div>
             <p className="text-foreground/80 leading-relaxed mb-4">
-              "Vouchy transformed how we collect testimonials. The video feature 
+              "Vouchy transformed how we collect testimonials. The video feature
               is a game-changer for social proof."
             </p>
             <div className="flex gap-1">

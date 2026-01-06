@@ -34,7 +34,7 @@ const HowItWorks = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="py-32 px-6 bg-slate border-y border-border/[0.08]" ref={ref}>
+    <section className="py-16 md:py-32 px-6 bg-slate border-y border-border/[0.08]" ref={ref}>
       <div className="container mx-auto">
         {/* Section header */}
         <div className="text-center mb-20">
@@ -72,10 +72,10 @@ const HowItWorks = () => {
               className="relative group"
               initial={{ opacity: 0, y: 40 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ 
-                duration: 0.6, 
-                delay: 0.2 + index * 0.15, 
-                ease: [0.22, 1, 0.36, 1] 
+              transition={{
+                duration: 0.6,
+                delay: 0.2 + index * 0.15,
+                ease: [0.22, 1, 0.36, 1]
               }}
             >
               {/* Card */}
@@ -89,7 +89,7 @@ const HowItWorks = () => {
                         <step.icon className="w-6 h-6 text-primary" />
                         <motion.div
                           className="absolute -right-1 -bottom-1 w-2 h-2 bg-primary rounded-full"
-                          animate={{ 
+                          animate={{
                             scale: [0, 1, 1, 0],
                             opacity: [0, 1, 1, 0]
                           }}
@@ -128,7 +128,7 @@ const HowItWorks = () => {
                         <step.icon className="w-6 h-6 text-primary" />
                         <motion.div
                           className="absolute -top-3 left-1/2 w-1.5 h-1.5 bg-primary rounded-full"
-                          animate={{ 
+                          animate={{
                             y: [0, 12],
                             opacity: [1, 0],
                             scale: [1, 0.5]
@@ -137,7 +137,7 @@ const HowItWorks = () => {
                         />
                         <motion.div
                           className="absolute -top-2 left-0 w-1 h-1 bg-primary/60 rounded-full"
-                          animate={{ 
+                          animate={{
                             y: [0, 10],
                             x: [0, 4],
                             opacity: [1, 0]
@@ -146,7 +146,7 @@ const HowItWorks = () => {
                         />
                         <motion.div
                           className="absolute -top-2 right-0 w-1 h-1 bg-primary/60 rounded-full"
-                          animate={{ 
+                          animate={{
                             y: [0, 10],
                             x: [0, -4],
                             opacity: [1, 0]

@@ -43,7 +43,7 @@ const AvatarCard = ({
             `}
             style={{
                 backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
-                color: customStyles.textColor,
+                color: customStyles.textColor || (darkMode ? '#ffffff' : '#000000'),
                 borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                 ...(customStyles.borderRadius ? { borderRadius: customStyles.borderRadius } : {}),
             }}
@@ -85,8 +85,8 @@ const AvatarCard = ({
             </div>
 
             {/* Footer with Divider */}
-            <div className={`w-full flex items-end justify-between border-t border-dashed pt-4 mt-auto ${darkMode ? "border-gray-700" : "border-gray-200"}`}>
-                <div className="text-left w-full">
+            <div className={`w-full flex items-center justify-center border-t border-dashed pt-4 mt-auto ${darkMode ? "border-gray-700" : "border-gray-200"}`}>
+                <div className="text-center w-full">
                     <p className={`font-bold text-sm leading-tight ${darkMode ? "text-white" : "text-gray-900"}`}>
                         {t.author_name}
                     </p>

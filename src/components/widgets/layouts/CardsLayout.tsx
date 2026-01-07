@@ -39,7 +39,7 @@ export const CardsLayout = ({
                         `}
                         style={{
                             backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
-                            color: customStyles.textColor,
+                            color: customStyles.textColor || (darkMode ? '#ffffff' : '#000000'),
                             borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                             borderRadius: customStyles.borderRadius,
                         }}

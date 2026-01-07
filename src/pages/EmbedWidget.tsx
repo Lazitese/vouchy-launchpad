@@ -23,61 +23,66 @@ const EmbedWidget = () => {
     useEffect(() => {
         const loadWidget = async () => {
             try {
-                if (!workspaceId) return;
-
-                // Use the Edge Function to fetch public data securely (or simulating public API)
-                // This ensures we reuse the same logic as the legacy widget.js data fetching
-                // But we can also invoke it via Supabase Client
-
-                const { data: responseData, error: responseError } = await supabase.functions.invoke('widget-api', {
-                    body: { method: 'GET_PUBLIC_DATA', workspaceId } // Custom method handling if needed, or default GET
-                });
-
-                // The widget-api function likely expects a specific RESTful pattern if invoked via fetch,
-                // but invocation via 'functions.invoke' sends a POST by default with body.
-                // We might need to stick to the standard fetch used in widget.js if the function isn't set up for RPC-style usage.
-
-                // Let's rely on the direct fetch like widget.js did, to match existing backend.
-                // We need the absolute URL of the Edge Function.
-                const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-                const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/widget-api`;
-
-                const [settingsRes, testimonialsRes] = await Promise.all([
-                    fetch(`${FUNCTION_URL}/api/widget/${workspaceId}/settings`),
-                    fetch(`${FUNCTION_URL}/api/widget/${workspaceId}/testimonials`)
-                ]);
-
-                if (!settingsRes.ok || !testimonialsRes.ok) {
-                    throw new Error("Failed to load widget data");
+                if (!workspaceId) {
+                    console.error("Widget Error: Missing workspaceId parameter");
+                    setError("No workspace ID provided");
+                    return;
                 }
 
-                const settings = await settingsRes.json();
-                const testimonials = await testimonialsRes.json();
+                console.log(`Loading widget for workspace: ${workspaceId}`);
 
-                // Settings might contain 'appearance' JSONB now (if updated backend returns it)
-                // If not, we might need to fetch it via Supabase client directly if the Edge Function filters it out.
-                // Since I added the column but didn't update the Edge Function, the Edge Function might NOT return 'appearance'
-                // unless it does "select *".
-                // Use direct Supabase client fetch for settings to be safe and ensure 'appearance' is present.
+                // Parallel Fetching: Settings + Testimonials
+                // We prioritize direct Supabase Client access because RLS policies are set to Public.
+                // This avoids CORS issues often associated with raw fetch calls to Edge Functions from iframes.
 
-                const { data: settingsDirect, error: directError } = await supabase
+                const settingsPromise = supabase
                     .from("widget_settings")
                     .select("*")
                     .eq("workspace_id", workspaceId)
                     .single();
 
-                if (directError) {
-                    console.warn("Could not fetch direct settings", directError);
-                    // Fallback to edge function result
+                const testimonialsPromise = supabase
+                    .from("testimonials")
+                    .select("*, space:spaces!inner(workspace_id)")
+                    .eq("space.workspace_id", workspaceId)
+                    .eq("status", "approved")
+                    .order("created_at", { ascending: false })
+                    .limit(50);
+
+                const [settingsResult, testimonialsResult] = await Promise.all([
+                    settingsPromise,
+                    testimonialsPromise
+                ]);
+
+                if (settingsResult.error) {
+                    console.error("Error fetching settings:", settingsResult.error);
+                    // Use defaults if settings fail, don't crash entirely? 
+                    // But if it's a 406/Not Found, maybe the workspace doesn't exist.
                 }
 
-                const finalSettings = settingsDirect || settings;
+                if (testimonialsResult.error) {
+                    console.error("Error fetching testimonials:", testimonialsResult.error);
+                }
+
+                const settings = (settingsResult.data || {}) as any;
+                const testimonials = testimonialsResult.data || [];
+
+                // Fallback / Defaults logic
+                const finalSettings = {
+                    ...settings,
+                    appearance: settings.appearance || {}, // Ensure appearance object exists
+                    layout: settings.layout || "grid",
+                    dark_mode: settings.dark_mode ?? false,
+                    show_video_first: settings.show_video_first ?? true,
+                };
+
+                console.log("Widget Data Loaded:", { settings: finalSettings, count: testimonials.length });
 
                 setData({ settings: finalSettings, testimonials });
 
             } catch (err) {
-                console.error(err);
-                setError("Failed to load widget data");
+                console.error("CRITICAL WIDGET ERROR:", err);
+                setError("Failed to load widget data. Check console for details.");
             } finally {
                 setLoading(false);
             }

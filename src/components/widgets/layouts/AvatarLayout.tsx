@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useState, useRef, useEffect } from 'react';
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
@@ -113,6 +113,19 @@ export const AvatarLayout = ({
     const scrollRef = externalRef || localRef;
     const [activeIndex, setActiveIndex] = useState(0);
 
+    // Calculate actual card width dynamically
+    const getCardWidth = () => {
+        if (!scrollRef.current) return 364; // fallback
+        const container = scrollRef.current;
+        const firstCard = container.querySelector('.snap-center') as HTMLElement;
+        if (firstCard) {
+            const cardWidth = firstCard.offsetWidth;
+            const gap = 24; // gap-6 = 24px
+            return cardWidth + gap;
+        }
+        return 364; // fallback (340 + 24)
+    };
+
     // Track scroll to update active index
     useEffect(() => {
         const container = scrollRef.current;
@@ -120,18 +133,18 @@ export const AvatarLayout = ({
 
         const handleScroll = () => {
             const scrollLeft = container.scrollLeft;
-            const cardWidth = 340 + 24; // min-width + gap (approx)
+            const cardWidth = getCardWidth();
             const index = Math.round(scrollLeft / cardWidth);
-            setActiveIndex(index);
+            setActiveIndex(Math.min(index, displayItems.length - 1));
         };
 
         container.addEventListener('scroll', handleScroll);
         return () => container.removeEventListener('scroll', handleScroll);
-    }, [scrollRef]);
+    }, [scrollRef, displayItems.length]);
 
     const scrollTo = (index: number) => {
         if (scrollRef.current) {
-            const cardWidth = 340 + 24;
+            const cardWidth = getCardWidth();
             scrollRef.current.scrollTo({
                 left: index * cardWidth,
                 behavior: 'smooth'
@@ -139,8 +152,15 @@ export const AvatarLayout = ({
         }
     };
 
-    const handlePrev = () => scrollTo(Math.max(0, activeIndex - 1));
-    const handleNext = () => scrollTo(Math.min(displayItems.length - 1, activeIndex + 1));
+    const handlePrev = () => {
+        const newIndex = Math.max(0, activeIndex - 1);
+        scrollTo(newIndex);
+    };
+
+    const handleNext = () => {
+        const newIndex = Math.min(displayItems.length - 1, activeIndex + 1);
+        scrollTo(newIndex);
+    };
 
     return (
         <div className="relative group w-full h-full overflow-hidden">
@@ -167,14 +187,17 @@ export const AvatarLayout = ({
                 <button
                     onClick={handlePrev}
                     disabled={activeIndex === 0}
-                    className={`p-2 rounded-full transition-all ${activeIndex === 0
+                    className={`p-3 rounded-full transition-all ${activeIndex === 0
                         ? "opacity-30 cursor-not-allowed"
                         : "hover:bg-primary/10 active:scale-95 cursor-pointer"
                         }`}
-                    style={{ color: darkMode ? '#ffffff' : '#000000' }}
+                    style={{
+                        color: darkMode ? '#ffffff' : '#000000',
+                        backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
+                    }}
                     aria-label="Previous testimonial"
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+                    <ChevronLeft className="w-5 h-5" />
                 </button>
 
                 {/* Progress Dots */}
@@ -196,14 +219,17 @@ export const AvatarLayout = ({
                 <button
                     onClick={handleNext}
                     disabled={activeIndex === displayItems.length - 1}
-                    className={`p-2 rounded-full transition-all ${activeIndex === displayItems.length - 1
+                    className={`p-3 rounded-full transition-all ${activeIndex === displayItems.length - 1
                         ? "opacity-30 cursor-not-allowed"
                         : "hover:bg-primary/10 active:scale-95 cursor-pointer"
                         }`}
-                    style={{ color: darkMode ? '#ffffff' : '#000000' }}
+                    style={{
+                        color: darkMode ? '#ffffff' : '#000000',
+                        backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
+                    }}
                     aria-label="Next testimonial"
                 >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                    <ChevronRight className="w-5 h-5" />
                 </button>
             </div>
 

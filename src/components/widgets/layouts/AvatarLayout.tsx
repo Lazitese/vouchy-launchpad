@@ -162,29 +162,32 @@ export const AvatarLayout = ({
             </div>
 
             {/* Navigation Controls */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-50 pointer-events-auto">
                 {/* Prev Button */}
                 <button
                     onClick={handlePrev}
                     disabled={activeIndex === 0}
                     className={`p-2 rounded-full transition-all ${activeIndex === 0
                         ? "opacity-30 cursor-not-allowed"
-                        : `hover:bg-primary/10 active:scale-95 ${darkMode ? "hover:text-white" : "hover:text-primary"}`
+                        : "hover:bg-primary/10 active:scale-95 cursor-pointer"
                         }`}
+                    style={{ color: darkMode ? '#ffffff' : '#000000' }}
+                    aria-label="Previous testimonial"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                 </button>
 
                 {/* Progress Dots */}
-                <div className="flex items-center gap-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg">
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg backdrop-blur-sm ${darkMode ? 'bg-gray-800/90' : 'bg-white/90'}`}>
                     {displayItems.map((_, idx) => (
                         <button
                             key={idx}
                             onClick={() => scrollTo(idx)}
-                            className={`rounded-full transition-all duration-300 ${idx === activeIndex
+                            className={`rounded-full transition-all duration-300 cursor-pointer ${idx === activeIndex
                                 ? "w-6 h-1.5 bg-primary shadow-sm shadow-primary/30"
-                                : "w-1.5 h-1.5 bg-gray-300 dark:bg-gray-700 hover:bg-primary/50"
+                                : `w-1.5 h-1.5 ${darkMode ? 'bg-gray-600 hover:bg-primary/50' : 'bg-gray-300 hover:bg-primary/50'}`
                                 }`}
+                            aria-label={`Go to testimonial ${idx + 1}`}
                         />
                     ))}
                 </div>
@@ -195,8 +198,10 @@ export const AvatarLayout = ({
                     disabled={activeIndex === displayItems.length - 1}
                     className={`p-2 rounded-full transition-all ${activeIndex === displayItems.length - 1
                         ? "opacity-30 cursor-not-allowed"
-                        : `hover:bg-primary/10 active:scale-95 ${darkMode ? "hover:text-white" : "hover:text-primary"}`
+                        : "hover:bg-primary/10 active:scale-95 cursor-pointer"
                         }`}
+                    style={{ color: darkMode ? '#ffffff' : '#000000' }}
+                    aria-label="Next testimonial"
                 >
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
                 </button>

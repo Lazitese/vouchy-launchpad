@@ -163,11 +163,11 @@ export const AvatarLayout = ({
     };
 
     return (
-        <div className="relative group w-full h-full overflow-hidden">
+        <div className="relative group w-full h-full flex flex-col overflow-hidden">
             {/* Scrollable Container */}
             <div
                 ref={scrollRef}
-                className="flex flex-row gap-6 overflow-x-auto pb-24 pt-16 px-6 snap-x snap-mandatory scrollbar-none items-start h-full"
+                className="flex-1 flex flex-row gap-6 overflow-x-auto pb-4 pt-16 px-6 snap-x snap-mandatory scrollbar-none items-start w-full"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
                 {displayItems.map((testimonial, i) => (
@@ -181,55 +181,40 @@ export const AvatarLayout = ({
                 ))}
             </div>
 
-            {/* Navigation Controls */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-50 pointer-events-auto">
-                {/* Prev Button */}
+            {/* Navigation Controls (Spotlight Style) */}
+            <div className="flex items-center justify-center gap-4 py-4 shrink-0 z-10 relative">
                 <button
                     onClick={handlePrev}
                     disabled={activeIndex === 0}
-                    className={`p-3 rounded-full transition-all ${activeIndex === 0
-                        ? "opacity-30 cursor-not-allowed"
-                        : "hover:bg-primary/10 active:scale-95 cursor-pointer"
-                        }`}
-                    style={{
-                        color: darkMode ? '#ffffff' : '#000000',
-                        backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
-                    }}
+                    className={`p-2 rounded-full transition-all hover:bg-primary/10 active:scale-95 ${darkMode ? "hover:text-white" : "hover:text-primary"} ${activeIndex === 0 ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
+                    style={{ color: darkMode ? '#ffffff' : '#000000' }}
                     aria-label="Previous testimonial"
                 >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-6 h-6" />
                 </button>
 
-                {/* Progress Dots */}
-                <div className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg backdrop-blur-sm ${darkMode ? 'bg-gray-800/90' : 'bg-white/90'}`}>
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg backdrop-blur-sm ${darkMode ? 'bg-gray-900/80' : 'bg-white/80'}`}>
                     {displayItems.map((_, idx) => (
                         <button
                             key={idx}
                             onClick={() => scrollTo(idx)}
                             className={`rounded-full transition-all duration-300 cursor-pointer ${idx === activeIndex
                                 ? "w-6 h-1.5 bg-primary shadow-sm shadow-primary/30"
-                                : `w-1.5 h-1.5 ${darkMode ? 'bg-gray-600 hover:bg-primary/50' : 'bg-gray-300 hover:bg-primary/50'}`
+                                : `w-1.5 h-1.5 ${darkMode ? 'bg-gray-700 hover:bg-primary/50' : 'bg-gray-300 hover:bg-primary/50'}`
                                 }`}
                             aria-label={`Go to testimonial ${idx + 1}`}
                         />
                     ))}
                 </div>
 
-                {/* Next Button */}
                 <button
                     onClick={handleNext}
                     disabled={activeIndex === displayItems.length - 1}
-                    className={`p-3 rounded-full transition-all ${activeIndex === displayItems.length - 1
-                        ? "opacity-30 cursor-not-allowed"
-                        : "hover:bg-primary/10 active:scale-95 cursor-pointer"
-                        }`}
-                    style={{
-                        color: darkMode ? '#ffffff' : '#000000',
-                        backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
-                    }}
+                    className={`p-2 rounded-full transition-all hover:bg-primary/10 active:scale-95 ${darkMode ? "hover:text-white" : "hover:text-primary"} ${activeIndex === displayItems.length - 1 ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
+                    style={{ color: darkMode ? '#ffffff' : '#000000' }}
                     aria-label="Next testimonial"
                 >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-6 h-6" />
                 </button>
             </div>
 

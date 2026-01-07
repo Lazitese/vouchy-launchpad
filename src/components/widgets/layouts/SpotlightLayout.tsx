@@ -41,14 +41,13 @@ export const SpotlightLayout = ({
                     className={`
           relative z-10 p-6 md:p-8 rounded-2xl md:rounded-3xl text-center overflow-hidden
           h-[400px] flex flex-col items-center
-          ${darkMode ? "bg-gradient-to-br from-gray-900 to-gray-950 border-gray-800" : "bg-white border-gray-100"}
           ${customStyles.showBorder ? "border" : "border-0"}
           ${customStyles.showShadow ? (darkMode ? "" : "shadow-2xl shadow-primary/5") : ""}
         `}
                     style={{
-                        backgroundColor: customStyles.backgroundColor,
+                        backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
                         color: customStyles.textColor,
-                        borderColor: customStyles.borderColor,
+                        borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                         borderRadius: customStyles.borderRadius,
                         boxShadow: customStyles.showShadow ? undefined : "none",
                     }}

@@ -36,15 +36,11 @@ export const CardsLayout = ({
                         transition={{ delay: i * 0.05 }}
                         className={`
                             relative p-8 rounded-[2rem] border-2 flex flex-col h-full
-                            ${darkMode
-                                ? "bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 border-gray-700/50 shadow-lg shadow-black/20"
-                                : "bg-gradient-to-br from-white via-white to-gray-50/50 border-gray-100 shadow-lg shadow-gray-200/50"
-                            }
                         `}
                         style={{
-                            backgroundColor: customStyles.backgroundColor,
+                            backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
                             color: customStyles.textColor,
-                            borderColor: customStyles.borderColor,
+                            borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                             borderRadius: customStyles.borderRadius,
                         }}
                     >

@@ -36,14 +36,13 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
                 className={`
                     relative rounded-2xl p-5 overflow-hidden transition-all duration-300 group flex flex-col
                     ${spanClass}
-                    ${darkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-100"}
                     ${customStyles.showBorder ? "border" : "border-0"}
                     ${customStyles.showShadow ? "shadow-sm shadow-black/5" : ""}
                 `}
                 style={{
-                    backgroundColor: customStyles.backgroundColor,
+                    backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
                     color: customStyles.textColor,
-                    borderColor: customStyles.borderColor,
+                    borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                     borderRadius: customStyles.borderRadius,
                     height: isMobile ? "auto" : undefined
                 }}

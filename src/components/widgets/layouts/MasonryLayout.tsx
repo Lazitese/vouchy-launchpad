@@ -49,15 +49,11 @@ export const MasonryLayout = ({
                                 className={`
                                     relative p-6 rounded-[1.5rem] border-2 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl
                                     w-full
-                                    ${darkMode
-                                        ? "bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 border-gray-700/50 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]"
-                                        : "bg-gradient-to-br from-white via-white to-gray-50/50 border-gray-100/80 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)]"
-                                    }
                                 `}
                                 style={{
-                                    backgroundColor: customStyles.backgroundColor,
+                                    backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
                                     color: customStyles.textColor,
-                                    borderColor: customStyles.borderColor,
+                                    borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                                     borderRadius: customStyles.borderRadius,
                                 }}
                             >

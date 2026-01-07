@@ -32,16 +32,10 @@ export const MinimalLayout = ({
                         transition={{ delay: i * 0.05 }}
                         className={`
                             relative p-8 rounded-[2rem] border transition-all duration-300
-                            ${darkMode
-                                ? "bg-gray-900/50 hover:bg-gray-900 border-gray-800 hover:border-gray-700"
-                                : "bg-white/50 hover:bg-white border-gray-100 hover:border-gray-200"
-                            }
                         `}
                         style={{
-                            backgroundColor: customStyles.backgroundColor ? undefined : (darkMode ? "rgba(17, 24, 39, 0.4)" : "rgba(255, 255, 255, 0.6)"),
-                            // We allow custom background override if specifically set, otherwise use the nice semi-transparent minimal look
-                            ...(customStyles.backgroundColor ? { backgroundColor: customStyles.backgroundColor } : {}),
-                            borderColor: customStyles.borderColor,
+                            backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
+                            borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                             borderRadius: customStyles.borderRadius,
                             color: customStyles.textColor,
                         }}

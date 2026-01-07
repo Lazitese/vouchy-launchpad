@@ -34,14 +34,13 @@ export const MarqueeLayout = ({
             className={`
                 flex-shrink-0 p-6 rounded-2xl transition-all duration-300 hover:scale-[1.02]
                 w-[280px] md:w-[350px]
-                ${darkMode ? "bg-gray-900/50 border-white/5" : "bg-white border-black/5"}
                 ${customStyles.showBorder ? "border" : "border-0"}
                 ${customStyles.showShadow ? "shadow-lg shadow-black/5" : ""}
             `}
             style={{
-                backgroundColor: customStyles.backgroundColor,
+                backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
                 color: customStyles.textColor,
-                borderColor: customStyles.borderColor,
+                borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                 borderRadius: customStyles.borderRadius,
             }}
         >

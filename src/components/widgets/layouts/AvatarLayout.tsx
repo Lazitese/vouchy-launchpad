@@ -38,18 +38,13 @@ const AvatarCard = ({
             className={`
                 relative w-full pt-16 pb-8 px-8 rounded-[2.5rem] text-center mt-12 mb-6
                 flex flex-col shrink-0 transition-all duration-300 hover:-translate-y-2
-                ${darkMode
-                    ? "bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] border-2 border-gray-700/50"
-                    : "bg-gradient-to-br from-white via-white to-gray-50/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border-2 border-gray-200/60"
-                }
-                ${customStyles.showBorder ? "border" : ""}
+                ${customStyles.showBorder ? "border-2" : ""}
                 ${widthClass} h-[420px] snap-center
             `}
             style={{
-                backgroundColor: customStyles.backgroundColor,
+                backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
                 color: customStyles.textColor,
-                borderColor: customStyles.borderColor,
-                // If borderRadius is customized, override the default
+                borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                 ...(customStyles.borderRadius ? { borderRadius: customStyles.borderRadius } : {}),
             }}
         >

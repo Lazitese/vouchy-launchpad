@@ -77,16 +77,12 @@ export const StackLayout = ({
                                 className={`
                                     ${isFront ? "relative cursor-pointer active:cursor-grabbing" : "absolute inset-x-0 top-0 pointer-events-none"}
                                     p-8 md:p-10 rounded-[2.5rem] border-2 flex flex-col overflow-hidden
-                                    ${darkMode
-                                        ? "bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 border-gray-700/50 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.05)]"
-                                        : "bg-gradient-to-br from-white via-white to-gray-50/30 border-gray-200/60 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15),0_8px_16px_-8px_rgba(0,0,0,0.1)]"
-                                    }
                                     ${isFront ? "backdrop-blur-xl" : ""}
                                 `}
                                 style={{
-                                    backgroundColor: customStyles.backgroundColor,
+                                    backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
                                     color: customStyles.textColor,
-                                    borderColor: customStyles.borderColor,
+                                    borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                                     borderRadius: customStyles.borderRadius,
                                     transformOrigin: "top center"
                                 }}

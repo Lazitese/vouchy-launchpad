@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TbVideo, TbMessage, TbChartBar, TbCode, TbBolt, TbBrandSlack, TbBrandNotion, TbBrandZapier, TbBrandWebflow, TbBrandFigma, TbBrandWordpress, TbPlayerPlayFilled, TbTrendingUp, TbStarFilled } from "react-icons/tb";
+import { TbVideo, TbMessage, TbCode, TbBolt, TbPlayerPlayFilled, TbTrendingUp, TbStarFilled, TbWand, TbMicrophone } from "react-icons/tb";
 
 const BentoGrid = () => {
   return (
@@ -67,7 +67,7 @@ const BentoGrid = () => {
           </motion.div>
 
 
-          {/* Card 2: The Wall of Love - col-span-3 */}
+          {/* Card 2: The Wall of Love (Restored) - col-span-3 */}
           <motion.div
             className="lg:col-span-3 bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between h-[400px] overflow-hidden relative group"
             initial={{ opacity: 0, y: 20 }}
@@ -120,7 +120,7 @@ const BentoGrid = () => {
           </motion.div>
 
 
-          {/* Card 3: Trust Analytics (Primary) - col-span-2 */}
+          {/* Card 3: AI Script Assistant (Replaces Performance Analytics) - col-span-2 */}
           <motion.div
             className="lg:col-span-2 bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between h-[320px] overflow-hidden relative group"
             initial={{ opacity: 0, y: 20 }}
@@ -129,34 +129,30 @@ const BentoGrid = () => {
             transition={{ delay: 0.2 }}
           >
             {/* Visual */}
-            <div className="h-[140px] relative overflow-hidden rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700 p-4">
-              <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm border border-border/50 flex items-center justify-center">
-                  <TbChartBar className="w-5 h-5 text-primary" />
+            <div className="h-[140px] relative overflow-hidden rounded-2xl bg-purple-50/50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700 p-4 transition-colors">
+              <div className="absolute inset-0 flex items-center justify-center">
+                {/* Teleprompter Mockup */}
+                <div className="w-40 bg-zinc-900 rounded-xl p-4 shadow-xl transform rotate-[-3deg] group-hover:rotate-0 transition-all duration-500 border border-zinc-800">
+                  <div className="flex items-center justify-between mb-3">
+                    <TbMicrophone className="w-3 h-3 text-zinc-500" />
+                    <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <p className="text-[11px] text-white font-medium leading-tight">"This product changed our workflow..."</p>
+                    <p className="text-[11px] text-zinc-600 font-medium leading-tight blur-[0.5px]">It was incredibly easy to setup.</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Last 7 days</p>
-                  <p className="text-2xl font-black tracking-tight">+18%</p>
+                {/* Wand Icon Floating */}
+                <div className="absolute top-3 right-3 w-8 h-8 bg-white dark:bg-zinc-800 rounded-full shadow-sm flex items-center justify-center border border-zinc-100 dark:border-zinc-700">
+                  <TbWand className="w-4 h-4 text-purple-500" />
                 </div>
               </div>
-
-              <div className="mt-4 grid grid-cols-12 gap-1 items-end h-16">
-                {[30, 40, 28, 55, 48, 60, 52, 72, 66, 78, 70, 90].map((h, i) => (
-                  <div
-                    key={i}
-                    className={`rounded-sm ${i > 8 ? "bg-primary/60" : "bg-primary/25"}`}
-                    style={{ height: `${h}%` }}
-                  />
-                ))}
-              </div>
-
-              <div className="absolute -right-8 -bottom-10 w-32 h-32 rounded-full bg-primary/10 blur-2xl" />
             </div>
 
             {/* Content */}
             <div className="mt-auto relative z-10">
-              <h3 className="text-xl font-bold mb-2">Performance insights</h3>
-              <p className="text-muted-foreground text-xs">See which testimonials drive clicks and plays—without drowning in dashboards.</p>
+              <h3 className="text-xl font-bold mb-2">AI Script Assistant</h3>
+              <p className="text-muted-foreground text-xs">Stuck? Our AI generates scripts and cues a teleprompter for perfect takes.</p>
             </div>
           </motion.div>
 
@@ -188,7 +184,7 @@ const BentoGrid = () => {
             {/* Content */}
             <div className="mt-auto relative z-10">
               <h3 className="text-xl font-bold mb-2 text-white">Zero-Code Embed</h3>
-              <p className="text-zinc-400 text-xs">One script for everything. Just paste a single line into your site.</p>
+              <p className="text-muted-foreground text-xs">One script for everything. Just paste a single line into your site.</p>
             </div>
           </motion.div>
 

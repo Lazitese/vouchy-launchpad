@@ -150,10 +150,15 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
 
     // Desktop/Tablet View: Standard Bento Grid
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-fr">
-            {displayItems.map((t, i) => (
-                <BentoCard key={t.id} t={t} i={i} isLarge={i === 0} />
-            ))}
+        <div className={`
+            w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent
+            ${isMobile ? "max-h-[600px] px-4" : "max-h-[650px] px-6"}
+        `}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-fr pb-20 pt-4">
+                {displayItems.map((t, i) => (
+                    <BentoCard key={t.id} t={t} i={i} isLarge={i === 0} />
+                ))}
+            </div>
         </div>
     );
 };

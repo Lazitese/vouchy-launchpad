@@ -97,47 +97,52 @@ export const MarqueeLayout = ({
     `;
 
     return (
-        <div className="relative overflow-hidden py-10 -mx-6 marquee-container group">
-            <style>{marqueeStyle}</style>
+        <div className={`
+            w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent
+            ${isMobile ? "max-h-[600px] px-4" : "max-h-[650px] px-6"}
+        `}>
+            <div className="relative overflow-hidden py-10 -mx-6 marquee-container group pb-20 pt-4">
+                <style>{marqueeStyle}</style>
 
-            {/* Gradient Masks */}
-            {/* Gradient Masks - Dynamic colors to match custom background */}
-            <div
-                className="absolute inset-y-0 left-0 w-24 md:w-32 z-20 pointer-events-none"
-                style={{
-                    background: `linear-gradient(to right, ${customStyles.backgroundColor || (darkMode ? '#0f172a' : '#ffffff')}, transparent)`
-                }}
-            />
-            <div
-                className="absolute inset-y-0 right-0 w-24 md:w-32 z-20 pointer-events-none"
-                style={{
-                    background: `linear-gradient(to left, ${customStyles.backgroundColor || (darkMode ? '#0f172a' : '#ffffff')}, transparent)`
-                }}
-            />
+                {/* Gradient Masks */}
+                {/* Gradient Masks - Dynamic colors to match custom background */}
+                <div
+                    className="absolute inset-y-0 left-0 w-24 md:w-32 z-20 pointer-events-none"
+                    style={{
+                        background: `linear-gradient(to right, ${customStyles.backgroundColor || (darkMode ? '#0f172a' : '#ffffff')}, transparent)`
+                    }}
+                />
+                <div
+                    className="absolute inset-y-0 right-0 w-24 md:w-32 z-20 pointer-events-none"
+                    style={{
+                        background: `linear-gradient(to left, ${customStyles.backgroundColor || (darkMode ? '#0f172a' : '#ffffff')}, transparent)`
+                    }}
+                />
 
-            <div className="flex flex-col gap-6">
-                {/* Row 1: Left to Right (Actually standard marquee moves content left, so items appear from right) */}
-                {/* Wait, standard marquee: content moves LEFT. (transform x 0 to -50%). Matches normal reading direction sort of. */}
-                {/* User previously had "animate={{ x: [-1200, 0] }}" which is moving RIGHT (Left to Right). */}
-                {/* Let's keep one moving Left, one moving Right. */}
+                <div className="flex flex-col gap-6">
+                    {/* Row 1: Left to Right (Actually standard marquee moves content left, so items appear from right) */}
+                    {/* Wait, standard marquee: content moves LEFT. (transform x 0 to -50%). Matches normal reading direction sort of. */}
+                    {/* User previously had "animate={{ x: [-1200, 0] }}" which is moving RIGHT (Left to Right). */}
+                    {/* Let's keep one moving Left, one moving Right. */}
 
-                {/* Row 1: Left Moving (Standard) */}
-                <div className="flex overflow-hidden w-full">
-                    <div className="flex gap-6 animate-marquee w-max pl-6">
-                        {/* Duplicate content times 4 to ensure smooth loop on large screens */}
-                        {[...finalRow1, ...finalRow1, ...finalRow1, ...finalRow1].map((t, i) => (
-                            <MarqueeCard key={`r1-${t.id}-${i}`} t={t} i={i} />
-                        ))}
+                    {/* Row 1: Left Moving (Standard) */}
+                    <div className="flex overflow-hidden w-full">
+                        <div className="flex gap-6 animate-marquee w-max pl-6">
+                            {/* Duplicate content times 4 to ensure smooth loop on large screens */}
+                            {[...finalRow1, ...finalRow1, ...finalRow1, ...finalRow1].map((t, i) => (
+                                <MarqueeCard key={`r1-${t.id}-${i}`} t={t} i={i} />
+                            ))}
+                        </div>
                     </div>
-                </div>
 
-                {/* Row 2: Right Moving (Reverse) */}
-                {/* Logic: Transform -50% to 0. */}
-                <div className="flex overflow-hidden w-full">
-                    <div className="flex gap-6 animate-marquee-reverse w-max pl-6">
-                        {[...finalRow2, ...finalRow2, ...finalRow2, ...finalRow2].map((t, i) => (
-                            <MarqueeCard key={`r2-${t.id}-${i}`} t={t} i={i} />
-                        ))}
+                    {/* Row 2: Right Moving (Reverse) */}
+                    {/* Logic: Transform -50% to 0. */}
+                    <div className="flex overflow-hidden w-full">
+                        <div className="flex gap-6 animate-marquee-reverse w-max pl-6">
+                            {[...finalRow2, ...finalRow2, ...finalRow2, ...finalRow2].map((t, i) => (
+                                <MarqueeCard key={`r2-${t.id}-${i}`} t={t} i={i} />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

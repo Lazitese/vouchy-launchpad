@@ -13,6 +13,16 @@ const Terms = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
+            {/* Back to Home Button */}
+            <div className="mb-8">
+              <a
+                href="/"
+                className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                <span>←</span> Back to Home
+              </a>
+            </div>
+
             <h1 className="text-4xl md:text-5xl font-bold text-primary mb-8">
               Terms of Service
             </h1>
@@ -109,7 +119,7 @@ const Terms = () => {
                   9. Contact Us
                 </h2>
                 <p className="text-foreground/80">
-                  If you have any questions about these Terms, please contact us at support@vouchy.app
+                  If you have any questions about these Terms, please contact us at support@vouchy.click
                 </p>
               </section>
             </div>

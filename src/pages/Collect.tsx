@@ -150,9 +150,9 @@ const Collect = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 flex flex-col">
       {/* Header */}
-      <header className="border-b border-border/[0.08] px-6 py-4">
+      <header className="border-b border-zinc-200/50 dark:border-zinc-800/50 px-6 py-4 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
         <img src={logoPrimary} alt="Vouchy" className="h-6" />
       </header>
 
@@ -180,18 +180,18 @@ const Collect = () => {
                 {/* Video Option */}
                 <button
                   onClick={() => setMode("video")}
-                  className="group p-6 md:p-8 bg-card border border-border/[0.08] rounded-[16px] text-left hover:border-primary/30 hover:shadow-lg transition-all duration-300"
+                  className="group p-8 bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl text-left hover:border-primary/50 hover:shadow-2xl transition-all duration-300"
                 >
-                  <div className="w-14 h-14 rounded-[12px] bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-6 group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
                     <Video className="w-7 h-7 text-primary" />
                   </div>
-                  <h3 className="text-xl font-bold text-primary mb-2">
+                  <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-2">
                     Record a video
                   </h3>
-                  <p className="text-subtext mb-4">
+                  <p className="text-zinc-600 dark:text-zinc-400 mb-4">
                     Share your story on camera. It's quick and personal.
                   </p>
-                  <div className="flex items-center text-primary font-medium">
+                  <div className="flex items-center text-primary font-semibold">
                     Start recording
                     <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -200,18 +200,18 @@ const Collect = () => {
                 {/* Text Option */}
                 <button
                   onClick={() => setMode("text")}
-                  className="group p-6 md:p-8 bg-card border border-border/[0.08] rounded-[16px] text-left hover:border-primary/30 hover:shadow-lg transition-all duration-300"
+                  className="group p-8 bg-white dark:bg-zinc-900 border-2 border-zinc-200 dark:border-zinc-800 rounded-2xl text-left hover:border-primary/50 hover:shadow-2xl transition-all duration-300"
                 >
-                  <div className="w-14 h-14 rounded-[12px] bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-6 group-hover:from-primary/30 group-hover:to-primary/20 transition-all">
                     <MessageSquare className="w-7 h-7 text-primary" />
                   </div>
-                  <h3 className="text-xl font-bold text-primary mb-2">
+                  <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-2">
                     Write a review
                   </h3>
-                  <p className="text-subtext mb-4">
+                  <p className="text-zinc-600 dark:text-zinc-400 mb-4">
                     Prefer writing? Share your thoughts in text form.
                   </p>
-                  <div className="flex items-center text-primary font-medium">
+                  <div className="flex items-center text-primary font-semibold">
                     Write review
                     <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -271,9 +271,9 @@ const Collect = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border/[0.08] px-6 py-4 text-center">
-        <p className="text-xs text-subtext">
-          Powered by <span className="font-medium text-primary">Vouchy</span>
+      <footer className="border-t border-zinc-200/50 dark:border-zinc-800/50 px-6 py-6 text-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm">
+        <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          Powered by <span className="font-semibold text-primary">Vouchy</span>
         </p>
       </footer>
     </div>

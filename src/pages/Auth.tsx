@@ -273,9 +273,20 @@ const Auth = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
+          {/* Back to Home Button */}
+          <div className="mb-8">
+            <button
+              onClick={() => navigate("/")}
+              className="group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              <TbArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
+              Back to Home
+            </button>
+          </div>
+
           {/* Logo */}
           <div className="mb-12">
-            <img src={logoPrimary} alt="Vouchy" className="h-8 w-auto" />
+            <img src="/Vouchy (48 x 160 px).svg" alt="Vouchy" className="h-12 w-auto" />
           </div>
 
           <div className="mb-8 space-y-2">
@@ -457,9 +468,9 @@ const Auth = () => {
                 <Video className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
               </div>
             </div>
-            
+
             <TestimonialStars rating={sampleTestimonial1.rating} className="mb-2" />
-            
+
             <p className="text-xs text-muted-foreground leading-relaxed mb-3">
               "{sampleTestimonial1.content}"
             </p>
@@ -486,9 +497,9 @@ const Auth = () => {
                 <p className="text-xs text-muted-foreground">{sampleTestimonial2.author_title}</p>
               </div>
             </div>
-            
+
             <TestimonialStars rating={sampleTestimonial2.rating} className="mb-3" />
-            
+
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               "{sampleTestimonial2.content}"
             </p>

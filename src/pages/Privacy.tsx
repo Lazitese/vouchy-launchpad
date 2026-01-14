@@ -6,13 +6,23 @@ const Privacy = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      <main className="pt-24 pb-16">
+      <main className="pt-32 pb-16">
         <div className="container mx-auto px-6 max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
+            {/* Back to Home Button */}
+            <div className="mb-8">
+              <a
+                href="/"
+                className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                <span>←</span> Back to Home
+              </a>
+            </div>
+
             <h1 className="text-4xl md:text-5xl font-bold text-primary mb-8">
               Privacy Policy
             </h1>
@@ -132,7 +142,7 @@ const Privacy = () => {
                   10. Contact Us
                 </h2>
                 <p className="text-foreground/80">
-                  If you have questions about this Privacy Policy, please contact us at privacy@vouchy.app
+                  If you have questions about this Privacy Policy, please contact us at privacy@vouchy.click
                 </p>
               </section>
             </div>

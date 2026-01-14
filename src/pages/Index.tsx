@@ -7,6 +7,8 @@ import Pricing from "@/components/landing/Pricing";
 import CTA from "@/components/landing/CTA";
 import Footer from "@/components/layout/Footer";
 
+import HowItWorks from "@/components/landing/HowItWorks";
+
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
@@ -14,6 +16,7 @@ const Index = () => {
       <main>
         <Hero />
         <BentoGrid />
+        <HowItWorks />
         <TestimonialDesigns />
         <ProductShowcase />
         <Pricing />

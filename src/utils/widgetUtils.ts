@@ -35,6 +35,7 @@ export const widgetStyles = [
     { id: "bento", name: "Bento", description: "Structured grid", isPro: true },
     { id: "stack", name: "Stack", description: "Depth & focus", isPro: true },
     { id: "spotlight", name: "Spotlight", description: "Center stage", isPro: true },
+    { id: "timeline", name: "Timeline", description: "Story flow", isPro: true },
 ] as const;
 
 export function hexToHSL(hex: string): string {

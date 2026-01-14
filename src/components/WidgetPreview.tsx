@@ -13,6 +13,7 @@ import { BentoLayout } from "./widgets/layouts/BentoLayout";
 import { MarqueeLayout } from "./widgets/layouts/MarqueeLayout";
 import { StackLayout } from "./widgets/layouts/StackLayout";
 import { SpotlightLayout } from "./widgets/layouts/SpotlightLayout";
+import { TimelineLayout } from "./widgets/layouts/TimelineLayout";
 import { VideoModal } from "./widgets/VideoModal";
 
 interface WidgetPreviewProps {
@@ -148,6 +149,7 @@ export const WidgetPreview = ({
       marquee: <MarqueeLayout {...layoutProps} />,
       stack: <StackLayout {...layoutProps} carouselIndex={carouselIndex} nextSlide={() => setCarouselIndex(i => (i + 1) % Math.max(displayItems.length, 1))} prevSlide={() => setCarouselIndex(i => (i - 1 + displayItems.length) % Math.max(displayItems.length, 1))} />,
       spotlight: <SpotlightLayout {...layoutProps} carouselIndex={carouselIndex} setCarouselIndex={setCarouselIndex} activeStyle={layout} nextSlide={() => setCarouselIndex(i => (i + 1) % Math.max(displayItems.length, 1))} prevSlide={() => setCarouselIndex(i => (i - 1 + displayItems.length) % Math.max(displayItems.length, 1))} />,
+      timeline: <TimelineLayout {...layoutProps} />,
     };
 
     return layouts[layout] || <MinimalLayout {...layoutProps} />;

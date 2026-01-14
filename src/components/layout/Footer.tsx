@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { TbSparkles } from "react-icons/tb";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -25,46 +24,27 @@ const Footer = () => {
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-white/10 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-black/10 rounded-full blur-[100px] pointer-events-none" />
       </div>
-      
+
       <div className="relative py-16 px-6">
         <div className="container mx-auto">
-          <motion.div 
+          <motion.div
             className="flex flex-col items-center text-center space-y-8"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            {/* Logo with animation */}
+            {/* Logo */}
             <motion.div
-              className="relative"
-              whileHover={{ scale: 1.05, rotate: 5 }}
+              whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
+              className="mb-4"
             >
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-md p-0.5 border border-white/20">
-                <div className="w-full h-full rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                  <TbSparkles className="w-6 h-6 text-white" />
-                </div>
-              </div>
-              
-              {/* Orbiting dots */}
-              <motion.div
-                className="absolute inset-0"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-              >
-                {[0, 120, 240].map((angle) => (
-                  <motion.div
-                    key={angle}
-                    className="absolute w-1.5 h-1.5 rounded-full bg-white"
-                    style={{
-                      top: "50%",
-                      left: "50%",
-                      transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-20px)`
-                    }}
-                  />
-                ))}
-              </motion.div>
+              <img
+                src="/Vouchy (512 x 512 px).svg"
+                alt="Vouchy Logo"
+                className="w-40 h-40 object-contain mx-auto drop-shadow-2xl"
+              />
             </motion.div>
 
             {/* Brand text with gradient */}
@@ -74,7 +54,6 @@ const Footer = () => {
               transition={{ delay: 0.2 }}
               viewport={{ once: true }}
             >
-              <h3 className="text-2xl font-black mb-2 text-white">Vouchy</h3>
               <p className="text-sm text-white/80 max-w-md">
                 Turning customer voices into your most powerful growth engine
               </p>
@@ -88,15 +67,15 @@ const Footer = () => {
               transition={{ delay: 0.3 }}
               viewport={{ once: true }}
             >
-              <Link 
-                to="/privacy" 
+              <Link
+                to="/privacy"
                 className="text-white/70 hover:text-white transition-colors"
               >
                 Privacy
               </Link>
               <span className="w-1 h-1 rounded-full bg-white/30" />
-              <Link 
-                to="/terms" 
+              <Link
+                to="/terms"
                 className="text-white/70 hover:text-white transition-colors"
               >
                 Terms

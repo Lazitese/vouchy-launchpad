@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Quote, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialAvatar, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
 
@@ -13,6 +13,7 @@ interface SpotlightLayoutProps {
     nextSlide: () => void;
     setCarouselIndex: (index: number) => void;
     previewDevice?: "desktop" | "tablet" | "mobile";
+    onVideoClick?: (videoUrl: string) => void;
 }
 
 export const SpotlightLayout = ({
@@ -24,7 +25,8 @@ export const SpotlightLayout = ({
     prevSlide,
     nextSlide,
     setCarouselIndex,
-    previewDevice = "desktop"
+    previewDevice = "desktop",
+    onVideoClick
 }: SpotlightLayoutProps) => {
     const isMobile = previewDevice === "mobile";
     const current = displayItems[carouselIndex] || displayItems[0];
@@ -80,22 +82,38 @@ export const SpotlightLayout = ({
                     <TestimonialStars rating={current?.rating} size="w-6 h-6" className="justify-center mb-6" />
 
                     <motion.div
-                        className="text-lg md:text-xl font-medium leading-relaxed mb-6 max-w-lg mx-auto"
+                        className="text-lg md:text-xl font-medium leading-relaxed mb-6 max-w-lg mx-auto flex items-center justify-center min-h-[120px]"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.4 }}
                     >
-                        <ExpandableContent content={current?.content || ""} id={current?.id || ""} maxLength={250} darkMode={darkMode} />
+                        {current?.type === 'video' ? (
+                            <div
+                                className="flex flex-col items-center justify-center gap-3 cursor-pointer group/play"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onVideoClick?.(current.video_url || "");
+                                }}
+                            >
+                                <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 transform group-hover/play:scale-110 ${darkMode ? "bg-white text-black shadow-lg shadow-white/20" : "bg-black text-white shadow-lg shadow-black/20"}`}>
+                                    <Play size={32} className="fill-current ml-1" />
+                                </div>
+                                <span className={`text-sm font-medium opacity-80 group-hover/play:opacity-100 ${darkMode ? "text-white" : "text-black"}`}>Watch Video</span>
+                            </div>
+                        ) : (
+                            <ExpandableContent content={current?.content || ""} id={current?.id || ""} maxLength={180} darkMode={darkMode} isVideo={false} />
+                        )}
                     </motion.div>
 
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
+                        className="w-full"
                     >
-                        <p className="text-base font-bold">{current?.author_name}</p>
+                        <p className="text-base font-bold truncate px-4">{current?.author_name}</p>
                         {(current?.author_title || current?.author_company) && (
-                            <p className={`text-sm mt-1 ${subtextClasses(darkMode)}`}>
+                            <p className={`text-sm mt-1 truncate px-4 ${subtextClasses(darkMode)}`}>
                                 {current.author_title}
                                 {current.author_title && current.author_company && " @ "}
                                 <span className="opacity-80">{current.author_company}</span>

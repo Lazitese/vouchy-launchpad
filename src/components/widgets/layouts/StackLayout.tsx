@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Quote } from "lucide-react";
+import { Quote, Play } from "lucide-react";
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialAvatar, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
 
@@ -7,10 +7,11 @@ interface StackLayoutProps {
     displayItems: Testimonial[];
     darkMode: boolean;
     customStyles: CustomStyles;
-    carouselIndex: number;
+    carouselIndex: number; // controlled by parent (WidgetPreview)
     nextSlide: () => void;
-    prevSlide?: () => void;
+    prevSlide: () => void;
     previewDevice?: "desktop" | "tablet" | "mobile";
+    onVideoClick?: (videoUrl: string) => void;
 }
 
 export const StackLayout = ({
@@ -19,104 +20,143 @@ export const StackLayout = ({
     customStyles,
     carouselIndex,
     nextSlide,
-    prevSlide,
-    previewDevice = "desktop"
+    prevSlide, // kept for prop compatibility, though usually stack only goes forward
+    previewDevice = "desktop",
+    onVideoClick
 }: StackLayoutProps) => {
-    // Generate a sliding window of 3 items starting from carouselIndex
-    const stackItems = Array.from({ length: Math.min(displayItems.length, 3) }).map((_, i) => {
-        const idx = (carouselIndex + i) % displayItems.length;
-        return displayItems[idx];
-    });
+    // Current top card
+    const activeTestimonial = displayItems[carouselIndex] || displayItems[0];
+    const isMobile = previewDevice === "mobile";
 
     return (
-        <div className="w-full flex flex-col items-center justify-center min-h-[600px] overflow-hidden">
-            {/* Unified 3D Stack View for All Devices */}
-            <div className="relative w-full max-w-[340px] md:max-w-lg mx-auto pt-10 pb-20">
-                <AnimatePresence initial={false} mode="popLayout">
-                    {stackItems.map((t, index) => {
-                        const isFront = index === 0;
+        <div className="relative w-full h-full flex flex-col items-center justify-center py-10 overflow-hidden">
+            <div className="relative w-full max-w-lg h-[400px] flex items-center justify-center">
+                <AnimatePresence mode="popLayout" initial={false}>
+                    {displayItems.length > 0 &&
+                        displayItems.map((t, index) => {
+                            // Only render current, next, and maybe previous for stack effect?
+                            // Actually stack usually just shows the top one and maybe ones behind it.
+                            // Here we just render them all but control z-index and position based on index relative to carouselIndex.
 
-                        return (
-                            <motion.div
-                                key={t.id}
-                                layout
-                                onClick={() => isFront && nextSlide()}
-                                drag={isFront ? "x" : false}
-                                dragConstraints={{ left: 0, right: 0 }}
-                                dragElastic={0.7}
-                                onDragEnd={(e, { offset, velocity }) => {
-                                    const swipe = Math.abs(offset.x) * velocity.x;
-                                    if (swipe < -500 || offset.x < -100) {
-                                        nextSlide();
-                                    }
-                                }}
-                                initial={{ opacity: 0, scale: 0.85, x: -60, y: 20 }}
-                                animate={{
-                                    scale: 1 - (index * 0.04),
-                                    y: index * 16,
-                                    zIndex: stackItems.length - index,
-                                    opacity: 1 - (index * 0.2),
-                                    rotate: isFront ? 0 : (index % 2 === 0 ? 0.8 : -0.8),
-                                    x: 0
-                                }}
-                                exit={{
-                                    opacity: 0,
-                                    scale: 0.92,
-                                    x: 350,
-                                    rotate: 15,
-                                    y: -30,
-                                    zIndex: 10,
-                                    transition: { duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }
-                                }}
-                                transition={{
-                                    type: "spring",
-                                    stiffness: 300,
-                                    damping: 30,
-                                    mass: 0.8
-                                }}
-                                className={`
-                                    ${isFront ? "relative cursor-pointer active:cursor-grabbing" : "absolute inset-x-0 top-0 pointer-events-none"}
-                                    p-8 md:p-10 rounded-[2.5rem] border-2 flex flex-col overflow-hidden
-                                    ${isFront ? "backdrop-blur-xl" : ""}
-                                `}
-                                style={{
-                                    backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
-                                    color: customStyles.textColor || (darkMode ? '#ffffff' : '#000000'),
-                                    borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
-                                    borderRadius: customStyles.borderRadius,
-                                    transformOrigin: "top center"
-                                }}
-                            >
-                                <div className="flex items-start justify-between mb-8">
-                                    <TestimonialAvatar testimonial={t} size="lg" />
-                                    <div className="flex flex-col items-end">
-                                        <div className={`text-6xl font-serif italic select-none leading-none h-10 bg-gradient-to-br ${darkMode ? "from-primary/20 via-primary/10 to-transparent" : "from-primary/15 via-primary/8 to-transparent"} bg-clip-text text-transparent drop-shadow-sm`}>"</div>
-                                        <TestimonialStars rating={t.rating} size="w-5 h-5" className="mt-4" />
-                                    </div>
-                                </div>
+                            // Simplified Stack Logic:
+                            // Show current at front.
+                            // Show next 1 or 2 behind it.
+                            // Hide others.
 
-                                <div className="flex-1 mb-10 text-left min-h-[160px] flex flex-col justify-start">
-                                    <div className="text-xl font-bold leading-relaxed tracking-tight">
-                                        <ExpandableContent content={t.content || ""} id={t.id} maxLength={220} darkMode={darkMode} />
-                                    </div>
-                                </div>
+                            // Calculate "offset" from current index
+                            const offset = (index - carouselIndex + displayItems.length) % displayItems.length;
 
-                                <div className={`flex items-center justify-between pt-8 border-t border-dashed ${darkMode ? "border-gray-800" : "border-gray-100"}`}>
-                                    <div className="text-left min-w-0 pr-4">
-                                        <p className="text-lg font-black truncate">{t.author_name}</p>
-                                        <p className={`text-sm mt-1 truncate ${subtextClasses(darkMode)}`}>
-                                            {t.author_title || t.author_company || "Verified Customer"}
-                                        </p>
+                            // We only want to show 3 cards: offset 0 (active), 1 (behind), 2 (back)
+                            if (offset > 2 && offset !== displayItems.length - 1) return null; // Logic to hide unnecessary cards, except maybe smooth exit?
+
+                            // Determine Z-Index
+                            const zIndex = displayItems.length - offset;
+
+                            // Determine Scale & Y Position & Opacity
+                            const scale = 1 - offset * 0.05;
+                            const y = offset * 15; // move down slightly
+                            const opacity = 1 - offset * 0.2;
+
+                            return (
+                                <motion.div
+                                    key={t.id}
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                                    animate={{
+                                        opacity: opacity,
+                                        scale: scale,
+                                        y: y,
+                                        zIndex: zIndex,
+                                        filter: offset > 0 ? "blur(1px)" : "none",
+                                        x: 0
+                                    }}
+                                    exit={{ opacity: 0, scale: 0.8, y: -100, transition: { duration: 0.3 } }}
+                                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                                    drag={offset === 0 ? "x" : false}
+                                    dragConstraints={{ left: 0, right: 0 }}
+                                    dragElastic={0.7}
+                                    onDragEnd={(e, { offset: panOffset, velocity }) => {
+                                        const swipe = Math.abs(panOffset.x) * velocity.x;
+                                        if (swipe < -500 || panOffset.x < -100) {
+                                            nextSlide();
+                                        }
+                                    }}
+                                    onClick={() => {
+                                        if (offset === 0) {
+                                            nextSlide();
+                                        }
+                                    }}
+                                    className={`
+                                        absolute w-full px-8 md:px-0
+                                        ${offset === 0 ? 'cursor-pointer' : 'pointer-events-none'}
+                                        ${offset === 0 && t.type === 'video' ? 'hover:shadow-xl' : ''}
+                                    `}
+                                    style={{
+                                        maxWidth: isMobile ? "90%" : "100%",
+                                    }}
+                                >
+                                    <div
+                                        className={`
+                                            relative p-6 rounded-[2rem] shadow-2xl overflow-hidden
+                                            flex flex-col h-[400px] w-full
+                                            ${customStyles.showBorder ? "border-2" : "border-0"}
+                                        `}
+                                        style={{
+                                            backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
+                                            color: customStyles.textColor || (darkMode ? '#ffffff' : '#000000'),
+                                            borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
+                                            borderRadius: customStyles.borderRadius,
+                                        }}
+                                    >
+                                        <div className="absolute top-0 right-0 p-4 opacity-5 scale-150 rotate-12 pointer-events-none">
+                                            <Quote size={80} fill="currentColor" />
+                                        </div>
+
+                                        <div className="relative z-10 flex items-start justify-between mb-4">
+                                            <TestimonialAvatar testimonial={t} size="lg" />
+                                            <TestimonialStars rating={t.rating} size="w-5 h-5" className="mt-2" />
+                                        </div>
+
+                                        <div className="relative z-10 flex-1 mb-4 text-left min-h-0 flex flex-col justify-start overflow-hidden">
+                                            {t.type === 'video' ? (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <div
+                                                        className="flex flex-col items-center justify-center gap-3 cursor-pointer group/play"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            onVideoClick?.(t.video_url || "");
+                                                        }}
+                                                    >
+                                                        <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 transform group-hover/play:scale-110 ${darkMode ? "bg-white text-black shadow-lg shadow-white/20" : "bg-black text-white shadow-lg shadow-black/20"}`}>
+                                                            <Play size={28} className="fill-current ml-1" />
+                                                        </div>
+                                                        <span className={`text-sm font-medium opacity-80 group-hover/play:opacity-100 ${darkMode ? "text-white" : "text-black"}`}>Watch Video</span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="text-lg md:text-xl font-bold leading-relaxed tracking-tight overflow-y-auto scrollbar-none">
+                                                    <ExpandableContent content={t.content || ""} id={t.id} maxLength={140} darkMode={darkMode} isVideo={false} />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className={`relative z-10 flex items-center justify-between pt-4 border-t border-dashed ${darkMode ? "border-gray-800" : "border-gray-100"} shrink-0`}>
+                                            <div className="text-left min-w-0 pr-4">
+                                                <p className="text-lg font-black truncate">{t.author_name}</p>
+                                                <p className={`text-sm mt-0.5 truncate ${subtextClasses(darkMode)}`}>
+                                                    {t.author_title || t.author_company || "Verified Customer"}
+                                                </p>
+                                            </div>
+                                            <Quote className="w-5 h-5 text-primary/20 flex-shrink-0" />
+                                        </div>
                                     </div>
-                                    <Quote className="w-5 h-5 text-primary/20 flex-shrink-0" />
-                                </div>
-                            </motion.div>
-                        );
-                    })}
+                                </motion.div>
+                            );
+                        })}
                 </AnimatePresence>
 
-                {/* Navigation Controls: Standard Arrows + Dots (Replacing previous text/swipe hint) */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10 w-full justify-center">
+                {/* Navigation Controls: Standard Arrows + Dots */}
+                <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10 w-full justify-center">
                     {/* Prev Button */}
                     <button
                         onClick={(e) => {

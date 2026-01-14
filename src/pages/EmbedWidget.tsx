@@ -37,13 +37,13 @@ const EmbedWidget = () => {
 
                 const settingsPromise = supabase
                     .from("widget_settings")
-                    .select("*")
+                    .select("workspace_id, layout, dark_mode, show_video_first, appearance")
                     .eq("workspace_id", workspaceId)
                     .single();
 
                 const testimonialsPromise = supabase
                     .from("testimonials")
-                    .select("*, space:spaces!inner(workspace_id)")
+                    .select("id, space_id, type, content, video_url, author_name, author_title, author_company, author_avatar_url, rating, status, created_at, ai_summary, golden_quote, space:spaces!inner(workspace_id)")
                     .eq("space.workspace_id", workspaceId)
                     .eq("status", "approved")
                     .order("created_at", { ascending: false })

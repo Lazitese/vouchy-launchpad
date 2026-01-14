@@ -88,22 +88,27 @@ export const PlanUpgradeCard = ({
     };
 
     return (
-        <div className="p-6 bg-card border border-border/[0.08] rounded-[12px]">
-            <div className="flex items-center gap-2 mb-6">
-                <Crown className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold text-primary">Your Plan</h3>
+        <div className="organic-card p-8">
+            <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white shadow-md">
+                    <Crown className="w-5 h-5" />
+                </div>
+                <div>
+                    <h3 className="font-bold text-xl text-black">Your Plan</h3>
+                    <p className="text-sm text-gray-500">Manage your subscription</p>
+                </div>
             </div>
 
             {/* Current Plan Status */}
-            <div className="mb-6 p-4 bg-slate rounded-[8px]">
-                <div className="flex items-center justify-between">
+            <div className="mb-8 p-6 bg-gray-50 border border-gray-100 rounded-[20px]">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <p className="text-sm text-subtext">Current Plan</p>
-                        <p className="text-xl font-bold text-primary capitalize">{currentPlan}</p>
+                        <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Current Plan</p>
+                        <p className="text-2xl font-bold text-black capitalize">{currentPlan}</p>
                     </div>
-                    <div className="text-right">
-                        <p className="text-sm text-subtext">Limits</p>
-                        <p className="text-sm text-foreground">
+                    <div className="text-left md:text-right">
+                        <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Usage Limits</p>
+                        <p className="text-sm font-medium text-black bg-white px-3 py-1.5 rounded-full border border-gray-200 inline-block shadow-sm">
                             {features.testimonialLimit} testimonials • {features.activeSpacesLimit} spaces
                         </p>
                     </div>
@@ -111,58 +116,63 @@ export const PlanUpgradeCard = ({
             </div>
 
             {/* Plan Options */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {plans.map((plan) => (
                     <div
                         key={plan.name}
-                        className={`relative p-4 rounded-[8px] border transition-all ${plan.current
-                            ? "border-primary bg-primary/5"
-                            : plan.popular
-                                ? "border-primary/50 hover:border-primary"
-                                : "border-border/[0.08] hover:border-primary/30"
+                        className={`relative p-6 rounded-[24px] border transition-all duration-300 ${plan.current
+                                ? "border-black bg-black text-white ring-4 ring-black/10"
+                                : plan.popular
+                                    ? "border-[#ccf381] bg-white ring-4 ring-[#ccf381]/20 shadow-lg"
+                                    : "border-gray-100 bg-white hover:border-gray-300 hover:shadow-md"
                             }`}
                     >
                         {plan.popular && !plan.current && (
-                            <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                                <span className="px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full uppercase">
-                                    Popular
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                                <span className="px-3 py-1 bg-[#ccf381] text-black text-xs font-bold rounded-full uppercase shadow-sm">
+                                    Recommended
                                 </span>
                             </div>
                         )}
 
-                        <div className="mb-3">
-                            <p className="font-semibold text-primary">{plan.name}</p>
-                            <p className="text-lg font-bold text-foreground">{plan.price}</p>
+                        <div className="mb-4">
+                            <p className={`font-semibold ${plan.current ? 'text-gray-300' : 'text-gray-500'}`}>{plan.name}</p>
+                            <p className="text-3xl font-bold tracking-tight">{plan.price}</p>
                         </div>
 
-                        <ul className="space-y-1 mb-4">
+                        <ul className="space-y-3 mb-6">
                             {plan.features.map((feature) => (
-                                <li key={feature} className="flex items-center gap-2 text-xs text-subtext">
-                                    <Check className="w-3 h-3 text-primary" />
+                                <li key={feature} className={`flex items-start gap-2 text-sm ${plan.current ? 'text-gray-300' : 'text-gray-600'}`}>
+                                    <Check className={`w-4 h-4 shrink-0 mt-0.5 ${plan.current ? 'text-[#ccf381]' : 'text-black'}`} />
                                     {feature}
                                 </li>
                             ))}
                         </ul>
 
-                        {plan.current ? (
-                            <Button variant="outline" size="sm" className="w-full" disabled>
-                                Current Plan
-                            </Button>
-                        ) : plan.productId ? (
-                            <Button
-                                variant={plan.popular ? "hero" : "outline"}
-                                size="sm"
-                                className="w-full"
-                                onClick={() => handleUpgrade(plan.productId!, plan.name)}
-                                disabled={loading === plan.name}
-                            >
-                                {loading === plan.name ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    `Upgrade to ${plan.name}`
-                                )}
-                            </Button>
-                        ) : null}
+                        <div className="mt-auto">
+                            {plan.current ? (
+                                <Button className="w-full bg-white text-black hover:bg-gray-200 border-none h-10 rounded-xl font-bold" disabled>
+                                    Current Plan
+                                </Button>
+                            ) : plan.productId ? (
+                                <Button
+                                    className={`w-full h-10 rounded-xl font-bold transition-transform active:scale-95 ${plan.popular
+                                            ? "bg-black text-white hover:bg-gray-800 shadow-md"
+                                            : "bg-gray-100 text-black hover:bg-gray-200"
+                                        }`}
+                                    onClick={() => handleUpgrade(plan.productId!, plan.name)}
+                                    disabled={loading === plan.name}
+                                >
+                                    {loading === plan.name ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        `Upgrade`
+                                    )}
+                                </Button>
+                            ) : (
+                                <Button variant="outline" className="w-full rounded-xl" disabled>Free Forever</Button>
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>

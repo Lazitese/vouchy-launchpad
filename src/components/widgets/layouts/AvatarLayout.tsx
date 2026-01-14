@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Video, Play } from "lucide-react";
 import React, { useState, useRef, useEffect } from 'react';
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
@@ -11,6 +11,7 @@ interface AvatarLayoutProps {
     customStyles: CustomStyles;
     scrollContainerRef?: React.RefObject<HTMLDivElement>;
     previewDevice?: "desktop" | "tablet" | "mobile";
+    onVideoClick?: (videoUrl: string) => void;
 }
 
 // --- Card Component ---
@@ -19,11 +20,13 @@ const AvatarCard = ({
     darkMode,
     customStyles,
     previewDevice,
+    onVideoClick,
 }: {
     t: Testimonial,
     darkMode: boolean,
     customStyles: CustomStyles,
     previewDevice?: "desktop" | "tablet" | "mobile",
+    onVideoClick?: (videoUrl: string) => void,
 }) => {
     // Determine the width class based on the PREVIEW DEVICE
     const widthClass =
@@ -49,9 +52,13 @@ const AvatarCard = ({
             }}
         >
             {/* Profile Image Container - Floating Effect */}
-            <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+            < div className="absolute -top-12 left-1/2 -translate-x-1/2" >
                 <div className={`p-2 rounded-full shadow-lg ${darkMode ? "bg-gray-900 shadow-primary/10" : "bg-white shadow-primary/10"}`}>
-                    {t.author_avatar_url ? (
+                    {t.type === 'video' ? (
+                        <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center ring-2 ring-primary/30 shadow-lg shadow-primary/10">
+                            <Video className="w-10 h-10 text-primary" />
+                        </div>
+                    ) : t.author_avatar_url ? (
                         <img
                             src={t.author_avatar_url}
                             alt={t.author_name}
@@ -64,28 +71,44 @@ const AvatarCard = ({
                         </div>
                     )}
                 </div>
-            </div>
+            </div >
 
             {/* Star Rating */}
-            <TestimonialStars rating={t.rating} size="w-5 h-5" className="justify-center mb-6" />
+            < TestimonialStars rating={t.rating} size="w-5 h-5" className="justify-center mb-6" />
 
             {/* Text Content Area - flex-grow ensures footer stays at bottom */}
-            <div className="flex-grow flex flex-col items-center">
+            < div className="flex-grow flex flex-col items-center" >
                 <h3 className={`text-xl font-extrabold mb-4 tracking-tight ${darkMode ? "text-white" : "text-gray-900"}`}>
                     {t.author_title || "Highly Recommended!"}
                 </h3>
 
-                <div className={`mb-8 w-full ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-                    <ExpandableContent
-                        content={t.content || ""}
-                        maxLength={120}
-                        darkMode={darkMode}
-                    />
+                <div className={`mb-8 w-full ${darkMode ? "text-gray-400" : "text-gray-500"} flex-1 flex items-center justify-center`}>
+                    {t.type === 'video' ? (
+                        <div
+                            className="flex flex-col items-center justify-center gap-3 cursor-pointer group/play"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onVideoClick?.(t.video_url || "");
+                            }}
+                        >
+                            <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 transform group-hover/play:scale-110 ${darkMode ? "bg-white text-black shadow-lg shadow-white/20" : "bg-black text-white shadow-lg shadow-black/20"}`}>
+                                <Play size={28} className="fill-current ml-1" />
+                            </div>
+                            <span className={`text-sm font-medium opacity-80 group-hover/play:opacity-100 ${darkMode ? "text-white" : "text-black"}`}>Watch Video</span>
+                        </div>
+                    ) : (
+                        <ExpandableContent
+                            content={t.content || ""}
+                            maxLength={120}
+                            darkMode={darkMode}
+                            isVideo={false}
+                        />
+                    )}
                 </div>
-            </div>
+            </div >
 
             {/* Footer with Divider */}
-            <div className={`w-full flex items-center justify-center border-t border-dashed pt-4 mt-auto ${darkMode ? "border-gray-700" : "border-gray-200"}`}>
+            < div className={`w-full flex items-center justify-center border-t border-dashed pt-4 mt-auto ${darkMode ? "border-gray-700" : "border-gray-200"}`}>
                 <div className="text-center w-full">
                     <p className={`font-bold text-sm leading-tight ${darkMode ? "text-white" : "text-gray-900"}`}>
                         {t.author_name}
@@ -94,8 +117,8 @@ const AvatarCard = ({
                         {t.author_company || "@" + t.author_name.replace(/\s+/g, '')}
                     </p>
                 </div>
-            </div>
-        </motion.div>
+            </div >
+        </motion.div >
     );
 };
 
@@ -106,7 +129,8 @@ export const AvatarLayout = ({
     layout = "masonry",
     customStyles,
     scrollContainerRef: externalRef,
-    previewDevice = "desktop"
+    previewDevice = "desktop",
+    onVideoClick
 }: AvatarLayoutProps) => {
     const isMobile = previewDevice === "mobile";
     const localRef = useRef<HTMLDivElement>(null);
@@ -177,6 +201,7 @@ export const AvatarLayout = ({
                         darkMode={darkMode}
                         customStyles={customStyles}
                         previewDevice={previewDevice}
+                        onVideoClick={onVideoClick}
                     />
                 ))}
             </div>

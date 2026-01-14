@@ -14,6 +14,12 @@
   const scriptSrc = currentScript.src;
   // Remove /widget.js from the end to get the app root
   const baseUrl = scriptSrc.substring(0, scriptSrc.lastIndexOf('/'));
+  let baseOrigin;
+  try {
+    baseOrigin = new URL(baseUrl).origin;
+  } catch (e) {
+    baseOrigin = null;
+  }
 
   // Create iframe
   const iframe = document.createElement('iframe');
@@ -24,6 +30,11 @@
   iframe.style.borderRadius = '12px';
   iframe.style.overflow = 'hidden';
   iframe.title = 'Testimonials Widget';
+
+  // Security hardening
+  iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+  iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+  iframe.setAttribute('allow', 'fullscreen');
 
   // Accessibility
   iframe.setAttribute('loading', 'lazy');
@@ -42,9 +53,8 @@
 
   // Handle resizing if the iframe sends messages (for future proofing)
   window.addEventListener('message', (event) => {
-    // Simple security check: ensure origin matches base URL
-    // Note: baseUrl might be relative if sourced relatively, but usually it's absolute
-    // if (event.origin !== baseUrl) return; 
+    // Security check: accept resize messages only from our own embed origin
+    if (baseOrigin && event.origin !== baseOrigin) return;
 
     if (event.data && event.data.type === 'vouchy-resize' && event.data.height) {
       iframe.style.height = `${event.data.height}px`;

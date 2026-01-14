@@ -1,185 +1,181 @@
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { Check, Sparkles } from "lucide-react";
+import { TbPlayerPlayFilled, TbHeartFilled, TbStarFilled } from "react-icons/tb";
 
 const ProductShowcase = () => {
-  const ref = useRef(null);
   const containerRef = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
   });
 
-  const cardY = useTransform(scrollYProgress, [0, 1], [100, -100]);
-  const cardRotate = useTransform(scrollYProgress, [0, 1], [5, -5]);
-
-  const features = [
-    "Video & text collection",
-    "Custom branding",
-    "One-click embed",
-    "Analytics dashboard",
-    "Team collaboration",
-    "API access",
-  ];
+  const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
 
   return (
-    <section className="py-32 px-6 overflow-hidden" ref={containerRef}>
-      <div className="container mx-auto" ref={ref}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Content */}
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="flex items-center gap-4 mb-6"
-            >
-              <div className="w-12 h-px bg-primary/30" />
-              <span className="text-[12px] font-medium text-foreground/50 uppercase tracking-[0.2em]">
-                The Product
-              </span>
-            </motion.div>
+    <section className="py-24 lg:py-32 px-6 overflow-hidden bg-gray-50/50 dark:bg-zinc-900/50" ref={containerRef}>
+      <div className="container mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-            <motion.div
-              initial={{ clipPath: "inset(0 0 100% 0)" }}
-              animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="mb-8"
+          {/* Left: Minimal Copy */}
+          <div className="max-w-md">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-4xl md:text-5xl font-black tracking-tight mb-6"
             >
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-[-0.06em] text-primary">
-                One platform,
-                <br />
-                <span className="text-primary/30">endless possibilities</span>
-              </h2>
-            </motion.div>
-
+              Build trust <br />
+              <span className="text-primary">on autopilot.</span>
+            </motion.h2>
             <motion.p
-              className="text-lg text-subtext leading-relaxed mb-10 max-w-md"
-              initial={{ clipPath: "inset(0 0 100% 0)" }}
-              animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-lg text-muted-foreground leading-relaxed"
             >
-              From collection to conversion, Vouchy handles everything. 
-              No more scattered tools or complex integrations.
+              Forget chasing clients for reviews. Vouchy automates the entire process so you can focus on building.
             </motion.p>
-
-            {/* Feature list */}
-            <div className="grid grid-cols-2 gap-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature}
-                  className="flex items-center gap-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.3 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <div className="w-5 h-5 rounded-[4px] bg-primary/10 flex items-center justify-center">
-                    <Check className="w-3 h-3 text-primary" />
-                  </div>
-                  <span className="text-sm text-foreground/70">{feature}</span>
-                </motion.div>
-              ))}
-            </div>
           </div>
 
-          {/* Right: Floating cards */}
-          <div className="relative h-[500px]">
-            {/* Background card */}
-            <motion.div
-              className="absolute inset-x-8 inset-y-8 bg-slate border border-border/[0.08] rounded-[4px]"
-              style={{ y: cardY, rotateZ: cardRotate }}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.8, delay: 0.4 }}
-            />
+          {/* Right: Storytelling Visual - Autopilot Automation */}
+          <div className="relative h-[450px] flex items-center justify-center">
 
-            {/* Main product card */}
+            {/* The Dashboard Card */}
             <motion.div
-              className="absolute inset-0 bg-background border border-border/[0.08] rounded-[4px] p-8 shadow-[0_32px_64px_-16px_rgba(26,63,100,0.15)]"
-              initial={{ opacity: 0, y: 60 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              style={{ y }}
+              className="relative w-full max-w-[400px] bg-white dark:bg-zinc-950 rounded-3xl shadow-2xl border border-border/50 overflow-hidden"
             >
+
               {/* Header */}
-              <div className="flex items-center justify-between mb-8">
+              <div className="border-b border-border/50 p-4 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-900/50 backdrop-blur-sm">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-foreground/10" />
-                  <div className="w-3 h-3 rounded-full bg-foreground/10" />
-                  <div className="w-3 h-3 rounded-full bg-foreground/10" />
+                  <div className="w-3 h-3 rounded-full bg-red-400" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                  <div className="w-3 h-3 rounded-full bg-green-400" />
                 </div>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 rounded-[4px]">
-                  <Sparkles className="w-3 h-3 text-primary" />
-                  <span className="text-[11px] font-medium text-primary uppercase tracking-wider">Live</span>
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-[10px] font-bold text-green-700 dark:text-green-400">
+                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  AUTOPILOT ON
                 </div>
               </div>
 
-              {/* Dashboard mockup */}
-              <div className="space-y-6">
-                {/* Stats row */}
-                <div className="grid grid-cols-3 gap-4">
-                  {[
-                    { label: "Total", value: "1,247" },
-                    { label: "This week", value: "+89" },
-                    { label: "Rate", value: "4.9★" },
-                  ].map((stat, i) => (
-                    <motion.div
-                      key={stat.label}
-                      className="p-4 bg-slate rounded-[4px]"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                      transition={{ duration: 0.5, delay: 0.7 + i * 0.1 }}
+              {/* Dashboard Content */}
+              <div className="p-6">
+
+                {/* Trust Score Gauge */}
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Trust Score</p>
+                    <motion.h3
+                      className="text-3xl font-black text-foreground"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
                     >
-                      <p className="text-[11px] text-subtext uppercase tracking-wider mb-1">{stat.label}</p>
-                      <p className="text-xl font-bold text-primary">{stat.value}</p>
-                    </motion.div>
-                  ))}
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ duration: 2 }}
+                      >
+                        100
+                      </motion.span>
+                      <span className="text-sm font-bold text-muted-foreground ml-1">/ 100</span>
+                    </motion.h3>
+                  </div>
+                  {/* Radial Graph */}
+                  <div className="relative w-16 h-16">
+                    <svg className="w-full h-full -rotate-90">
+                      <circle cx="32" cy="32" r="28" className="stroke-zinc-100 dark:stroke-zinc-800" strokeWidth="6" fill="none" />
+                      <motion.circle
+                        cx="32" cy="32" r="28"
+                        className="stroke-primary"
+                        strokeWidth="6" fill="none"
+                        strokeDasharray="175"
+                        strokeDashoffset="175"
+                        strokeLinecap="round"
+                        initial={{ strokeDashoffset: 175 }}
+                        whileInView={{ strokeDashoffset: 0 }}
+                        transition={{ duration: 2, ease: "easeOut" }}
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <TbHeartFilled className="w-5 h-5 text-red-500 animate-pulse" />
+                    </div>
+                  </div>
                 </div>
 
-                {/* Chart mockup */}
-                <div className="p-4 bg-slate rounded-[4px]">
-                  <div className="flex items-end gap-2 h-24">
-                    {[35, 55, 40, 70, 45, 85, 60, 90, 75, 95, 80, 70].map((height, i) => (
+                {/* Recent Activity List */}
+                <div>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase mb-3 ml-1">Live Activity</p>
+                  <div className="space-y-3">
+                    {[
+                      { name: "Sarah J.", action: "New Video Review", icon: TbPlayerPlayFilled, color: "bg-blue-500", delay: 0.5 },
+                      { name: "Mike T.", action: "5 Star Rating", icon: TbHeartFilled, color: "bg-red-500", delay: 1.2 },
+                      { name: "Emily R.", action: "New Testimonial", icon: TbStarFilled, color: "bg-yellow-500", delay: 1.9 },
+                    ].map((item, i) => (
                       <motion.div
                         key={i}
-                        className="flex-1 bg-primary/20 rounded-t-[2px]"
-                        initial={{ height: 0 }}
-                        animate={isInView ? { height: `${height}%` } : {}}
-                        transition={{ delay: 0.8 + i * 0.05, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      />
+                        className="flex items-center gap-3 p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-border/40"
+                        initial={{ x: -20, opacity: 0 }}
+                        whileInView={{ x: 0, opacity: 1 }}
+                        transition={{ delay: item.delay, duration: 0.5 }}
+                      >
+                        <div className={`w-8 h-8 rounded-full ${item.color} flex items-center justify-center text-white shadow-sm`}>
+                          <item.icon className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-foreground truncate">{item.action}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">Just now • {item.name}</p>
+                        </div>
+                        <div className="w-2 h-2 rounded-full bg-green-500" />
+                      </motion.div>
                     ))}
                   </div>
                 </div>
-
-                {/* Recent items */}
-                <div className="space-y-3">
-                  {[1, 2, 3].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="flex items-center gap-4 p-3 bg-slate rounded-[4px]"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={isInView ? { opacity: 1, x: 0 } : {}}
-                      transition={{ delay: 1 + i * 0.1 }}
-                    >
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-[11px] font-bold text-primary">
-                        {["AB", "CD", "EF"][i]}
-                      </div>
-                      <div className="flex-1">
-                        <div className="h-2 bg-foreground/10 rounded-[4px] w-24 mb-1.5" />
-                        <div className="h-1.5 bg-foreground/5 rounded-[4px] w-16" />
-                      </div>
-                      <div className="flex gap-0.5">
-                        {[...Array(5)].map((_, j) => (
-                          <span key={j} className="text-primary/60 text-[10px]">★</span>
-                        ))}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
               </div>
+
+              {/* Background Glow */}
+              <motion.div
+                className="absolute -bottom-20 -right-20 w-64 h-64 bg-primary/20 rounded-full blur-[80px]"
+                animate={{ opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              />
+
             </motion.div>
+
+            {/* Floating Elements (Incoming Reviews) */}
+            <div className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none overflow-hidden">
+              {[1, 2, 3, 4].map(i => (
+                <motion.div
+                  key={i}
+                  className="absolute bg-white dark:bg-zinc-800 p-2 rounded-xl shadow-lg border border-border/50 text-yellow-500"
+                  initial={{
+                    x: Math.random() > 0.5 ? 400 : -400,
+                    y: Math.random() * 200 - 100,
+                    opacity: 0,
+                    scale: 0.5
+                  }}
+                  whileInView={{
+                    x: Math.random() * 40 - 20, // Converge to center
+                    y: Math.random() * 40 - 20,
+                    opacity: [0, 1, 0],
+                    scale: [0.5, 1, 0.5]
+                  }}
+                  transition={{
+                    duration: 3,
+                    delay: i * 0.8,
+                    repeat: Infinity,
+                    repeatDelay: 2
+                  }}
+                >
+                  <TbStarFilled className="w-4 h-4" />
+                </motion.div>
+              ))}
+            </div>
+
           </div>
+
         </div>
       </div>
     </section>

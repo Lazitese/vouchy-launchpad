@@ -10,6 +10,8 @@ export interface CustomStyles {
     borderRadius: string;
     showShadow: boolean;
     showBorder: boolean;
+    filterVideo?: boolean;
+    filterText?: boolean;
 }
 
 export const defaultStyles: CustomStyles = {
@@ -20,6 +22,8 @@ export const defaultStyles: CustomStyles = {
     borderRadius: "1rem",
     showShadow: true,
     showBorder: true,
+    filterVideo: true,
+    filterText: true,
 };
 
 export const widgetStyles = [

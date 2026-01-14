@@ -1,7 +1,7 @@
 import Navigation from "@/components/layout/Navigation";
 import Hero from "@/components/landing/Hero";
 import BentoGrid from "@/components/landing/BentoGrid";
-import HowItWorks from "@/components/landing/HowItWorks";
+import TestimonialDesigns from "@/components/landing/TestimonialDesigns";
 import ProductShowcase from "@/components/landing/ProductShowcase";
 import Pricing from "@/components/landing/Pricing";
 import CTA from "@/components/landing/CTA";
@@ -14,7 +14,7 @@ const Index = () => {
       <main>
         <Hero />
         <BentoGrid />
-        <HowItWorks />
+        <TestimonialDesigns />
         <ProductShowcase />
         <Pricing />
         <CTA />

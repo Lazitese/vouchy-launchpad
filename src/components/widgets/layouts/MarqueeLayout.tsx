@@ -8,13 +8,15 @@ interface MarqueeLayoutProps {
     darkMode: boolean;
     customStyles: CustomStyles;
     previewDevice?: "desktop" | "tablet" | "mobile";
+    onVideoClick?: (videoUrl: string) => void;
 }
 
 export const MarqueeLayout = ({
     displayItems,
     darkMode,
     customStyles,
-    previewDevice = "desktop"
+    previewDevice = "desktop",
+    onVideoClick
 }: MarqueeLayoutProps) => {
     const isMobile = previewDevice === "mobile";
 
@@ -53,6 +55,8 @@ export const MarqueeLayout = ({
                         id={`${t.id}-${i}`}
                         maxLength={isMobile ? 100 : 150}
                         darkMode={darkMode}
+                        isVideo={t.type === 'video'}
+                        videoUrl={t.video_url}
                     />
                 </div>
 

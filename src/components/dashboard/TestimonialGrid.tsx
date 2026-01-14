@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import { Heart, Link2, Trash2, Share2, Check, X, Play } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Testimonial } from "@/hooks/useTestimonials";
+import { VideoModal } from "@/components/widgets/VideoModal";
+import { useState } from "react";
 
 interface TestimonialGridProps {
     testimonials: Testimonial[];
@@ -18,6 +20,8 @@ export const TestimonialGrid = ({
     onDelete,
     onShare,
 }: TestimonialGridProps) => {
+    const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+
     const timeAgo = (date: string) => {
         const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
         if (seconds < 60) return "just now";
@@ -46,130 +50,123 @@ export const TestimonialGrid = ({
     }
 
     return (
-        <div className="grid gap-4">
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
             {testimonials.map((testimonial) => (
                 <motion.div
                     key={testimonial.id}
-                    className="p-6 bg-card border border-border/[0.08] rounded-[12px] hover:shadow-lg transition-shadow duration-300 relative overflow-hidden"
+                    className="organic-card p-6 relative overflow-hidden group mb-6 break-inside-avoid"
                     layout
                 >
-                    {/* Video badge */}
-                    {testimonial.type === "video" && (
-                        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 bg-primary rounded-full shadow-sm">
-                            <Play className="w-3 h-3 text-primary-foreground fill-current" />
-                            <span className="text-[10px] font-bold text-primary-foreground uppercase tracking-wide">Video</span>
-                        </div>
-                    )}
 
-                    <div className="flex items-start gap-4">
-                        {/* Avatar */}
-                        <div className="relative shrink-0">
-                            <Avatar className="w-14 h-14 ring-2 ring-primary/20">
-                                {testimonial.author_avatar_url ? (
-                                    <AvatarImage src={testimonial.author_avatar_url} alt={testimonial.author_name} />
-                                ) : null}
-                                <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
-                                    {testimonial.author_name.charAt(0)}
-                                </AvatarFallback>
-                            </Avatar>
-                            {testimonial.type === "video" && (
-                                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-sm">
-                                    <Play className="w-2.5 h-2.5 text-primary-foreground fill-current" />
+
+                    <div className="flex flex-col gap-4">
+                        {/* Header: Avatar + Meta */}
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-3">
+                                <Avatar className="w-10 h-10 ring-2 ring-gray-50 border border-gray-100">
+                                    {testimonial.author_avatar_url ? (
+                                        <AvatarImage src={testimonial.author_avatar_url} alt={testimonial.author_name} />
+                                    ) : null}
+                                    <AvatarFallback className="bg-gray-100 text-gray-500 font-bold text-sm">
+                                        {testimonial.author_name.charAt(0)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <h3 className="font-bold text-black text-sm leading-tight">
+                                        {testimonial.author_name}
+                                    </h3>
+                                    <p className="text-xs text-gray-400 font-medium">
+                                        {testimonial.author_title || "Verified Customer"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Rating */}
+                            {testimonial.rating && (
+                                <div className="flex gap-0.5">
+                                    {[...Array(5)].map((_, i) => (
+                                        <span key={i} className={`text-xs ${i < testimonial.rating ? 'text-black' : 'text-gray-200'}`}>★</span>
+                                    ))}
                                 </div>
                             )}
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                <h3 className="font-semibold text-primary">
-                                    {testimonial.author_name}
-                                </h3>
-                                {testimonial.author_title && (
-                                    <span className="text-xs text-subtext">
-                                        {testimonial.author_title}
-                                    </span>
-                                )}
-                                {testimonial.author_company && (
-                                    <>
-                                        <span className="text-xs text-subtext/60">at</span>
-                                        <span className="text-xs text-subtext">
-                                            {testimonial.author_company}
-                                        </span>
-                                    </>
-                                )}
-                                <span className="text-xs text-subtext/60">•</span>
-                                <span className="text-xs text-subtext/60">
-                                    {timeAgo(testimonial.created_at)}
-                                </span>
-                            </div>
-                            {testimonial.rating && (
-                                <div className="flex gap-0.5 mb-2">
-                                    {[...Array(testimonial.rating)].map((_, i) => (
-                                        <span key={i} className="text-amber-400 text-sm">★</span>
-                                    ))}
-                                </div>
-                            )}
+                        <div className="text-sm text-gray-600 leading-relaxed">
                             {testimonial.type === "video" && testimonial.video_url ? (
-                                <video
-                                    src={testimonial.video_url}
-                                    controls
-                                    className="w-full max-w-md rounded-lg mt-2"
-                                />
+                                <div
+                                    className="relative w-full h-32 rounded-xl bg-black flex items-center justify-center cursor-pointer group/play overflow-hidden border border-black/5 shadow-inner"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setSelectedVideo(testimonial.video_url);
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-20" />
+                                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/play:scale-110">
+                                        <Play className="w-5 h-5 text-black fill-current ml-0.5" />
+                                    </div>
+                                    <span className="absolute bottom-3 text-[10px] font-bold text-white/50 uppercase tracking-widest group-hover/play:text-white/80 transition-colors">
+                                        Watch Video
+                                    </span>
+                                </div>
                             ) : (
-                                <p className="text-foreground/80 leading-relaxed">
-                                    {testimonial.content}
+                                <p className="italic">
+                                    "{testimonial.content}"
                                 </p>
                             )}
                         </div>
 
-                        {/* Actions */}
-                        <div className="flex items-center gap-2 shrink-0">
-                            {testimonial.status === "pending" ? (
-                                <>
-                                    <button
-                                        onClick={() => onApprove(testimonial.id)}
-                                        className="p-2 rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors"
-                                        title="Approve"
-                                    >
-                                        <Check className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => onReject(testimonial.id)}
-                                        className="p-2 rounded-lg bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-colors"
-                                        title="Reject"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </>
-                            ) : (
-                                <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${testimonial.status === "approved"
-                                            ? "bg-green-500/10 text-green-600"
-                                            : "bg-red-500/10 text-red-600"
-                                        }`}
+                        {/* Footer: Date & Actions */}
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-2">
+                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
+                                {timeAgo(testimonial.created_at)}
+                            </span>
+
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {testimonial.status === "pending" ? (
+                                    <>
+                                        <button
+                                            onClick={() => onApprove(testimonial.id)}
+                                            className="w-8 h-8 rounded-full bg-lime-100 text-lime-700 hover:bg-lime-200 flex items-center justify-center transition-colors"
+                                            title="Approve"
+                                        >
+                                            <Check className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                            onClick={() => onReject(testimonial.id)}
+                                            className="w-8 h-8 rounded-full bg-red-50 text-red-600 hover:bg-red-100 flex items-center justify-center transition-colors"
+                                            title="Reject"
+                                        >
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    </>
+                                ) : (
+                                    <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${testimonial.status === 'approved' ? 'bg-lime-100 text-lime-800' : 'bg-red-50 text-red-600'}`}>
+                                        {testimonial.status}
+                                    </div>
+                                )}
+
+                                <div className="w-px h-4 bg-gray-200 mx-1" />
+
+                                <button
+                                    className="w-8 h-8 rounded-full hover:bg-gray-50 text-gray-400 hover:text-black flex items-center justify-center transition-colors"
+                                    onClick={() => onDelete(testimonial.id)}
+                                    title="Delete"
                                 >
-                                    {testimonial.status}
-                                </span>
-                            )}
-                            <button
-                                className="p-2 rounded-lg hover:bg-slate transition-colors"
-                                onClick={() => onShare(testimonial)}
-                                title="Share testimonial"
-                            >
-                                <Share2 className="w-4 h-4 text-subtext" />
-                            </button>
-                            <button
-                                className="p-2 rounded-lg hover:bg-red-500/10 transition-colors"
-                                onClick={() => onDelete(testimonial.id)}
-                                title="Delete"
-                            >
-                                <Trash2 className="w-4 h-4 text-subtext hover:text-red-500" />
-                            </button>
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </motion.div>
             ))}
+
+            <VideoModal
+                isOpen={!!selectedVideo}
+                onClose={() => setSelectedVideo(null)}
+                videoUrl={selectedVideo || ""}
+            />
         </div>
     );
 };

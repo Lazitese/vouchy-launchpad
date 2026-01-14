@@ -8,13 +8,15 @@ interface CardsLayoutProps {
     darkMode: boolean;
     customStyles: CustomStyles;
     previewDevice?: "desktop" | "tablet" | "mobile";
+    onVideoClick?: (videoUrl: string) => void;
 }
 
 export const CardsLayout = ({
     displayItems,
     darkMode,
     customStyles,
-    previewDevice = "desktop"
+    previewDevice = "desktop",
+    onVideoClick
 }: CardsLayoutProps) => {
     const isMobile = previewDevice === "mobile";
 
@@ -54,7 +56,13 @@ export const CardsLayout = ({
                         <div className="flex-1 mb-6">
                             <TestimonialStars rating={t.rating} size="w-4 h-4" className="mb-3" />
                             <div className="text-base font-medium leading-relaxed">
-                                <ExpandableContent content={t.content || ""} maxLength={150} darkMode={darkMode} />
+                                <ExpandableContent
+                                    content={t.content || ""}
+                                    maxLength={150}
+                                    darkMode={darkMode}
+                                    isVideo={t.type === 'video'}
+                                    videoUrl={t.video_url}
+                                />
                             </div>
                         </div>
 

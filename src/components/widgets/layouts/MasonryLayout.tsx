@@ -9,13 +9,15 @@ interface MasonryLayoutProps {
     darkMode: boolean;
     customStyles: CustomStyles;
     previewDevice?: "desktop" | "tablet" | "mobile";
+    onVideoClick?: (videoUrl: string) => void;
 }
 
 export const MasonryLayout = ({
     displayItems,
     darkMode,
     customStyles,
-    previewDevice = "desktop"
+    previewDevice = "desktop",
+    onVideoClick
 }: MasonryLayoutProps) => {
     const isMobile = previewDevice === "mobile";
     const isTablet = previewDevice === "tablet";
@@ -66,7 +68,7 @@ export const MasonryLayout = ({
                                 {/* Content */}
                                 <div className="mb-6">
                                     <div className="text-sm font-medium leading-relaxed tracking-wide">
-                                        <ExpandableContent content={t.content || ""} maxLength={isMobile ? 120 : 180} darkMode={darkMode} />
+                                        <ExpandableContent content={t.content || ""} maxLength={isMobile ? 120 : 180} darkMode={darkMode} isVideo={t.type === 'video'} videoUrl={t.video_url} />
                                     </div>
                                 </div>
 

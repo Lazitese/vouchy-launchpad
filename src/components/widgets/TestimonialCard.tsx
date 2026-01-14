@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Play, Star } from "lucide-react";
 import { Testimonial } from "@/utils/widgetUtils";
@@ -10,16 +10,30 @@ interface ExpandableContentProps {
     id?: string;
     maxLength?: number;
     darkMode?: boolean;
+    isVideo?: boolean;
+    videoUrl?: string | null;
 }
 
-export const ExpandableContent = ({ content, maxLength = 140, darkMode = false }: ExpandableContentProps) => {
+export const ExpandableContent = ({ content, maxLength = 140, darkMode = false, isVideo = false, videoUrl }: ExpandableContentProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const needsTruncation = content.length > maxLength;
-    const displayContent = isExpanded || !needsTruncation ? content : content.slice(0, maxLength);
+
+    // Video Preview Mode
+    if (isVideo && videoUrl) {
+        return (
+            <VideoPlayer videoUrl={videoUrl} />
+        );
+    }
+
+    const effectiveContent = (!content || content.trim() === '') && isVideo
+        ? "Watch this video testimonial to hear their experience firsthand."
+        : content;
+
+    const needsTruncation = effectiveContent.length > maxLength;
+    const displayContent = isExpanded || !needsTruncation ? effectiveContent : effectiveContent.slice(0, maxLength);
 
     return (
         <div className="space-y-2">
-            <p className={`text-sm leading-relaxed transition-all duration-300 ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
+            <p className={`text-sm leading-relaxed transition-all duration-300 ${darkMode ? "text-gray-300" : "text-gray-600"} ${isVideo && (!content || content.trim() === '') ? 'italic' : ''}`}>
                 "{displayContent}{!isExpanded && needsTruncation ? "..." : ""}"
             </p>
             {needsTruncation && (
@@ -35,6 +49,47 @@ export const ExpandableContent = ({ content, maxLength = 140, darkMode = false }
                 >
                     {isExpanded ? "See less ↑" : "See more ↓"}
                 </button>
+            )}
+        </div>
+    );
+};
+
+// Helper component to avoid hook rules issues in conditional return
+const VideoPlayer = ({ videoUrl }: { videoUrl: string }) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    const handlePlay = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (videoRef.current) {
+            videoRef.current.play();
+            setIsPlaying(true);
+        }
+    };
+
+    return (
+
+        <div className="relative w-full rounded-xl overflow-hidden bg-black border border-black/5 dark:border-white/5 shadow-inner group aspect-video max-h-[180px]">
+            <video
+                ref={videoRef}
+                src={videoUrl}
+                className="w-full h-full object-contain"
+                controls={isPlaying}
+                playsInline
+                onClick={(e) => e.stopPropagation()}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+            />
+
+            {!isPlaying && (
+                <div
+                    className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors cursor-pointer"
+                    onClick={handlePlay}
+                >
+                    <div className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-all duration-300">
+                        <Play className="w-4 h-4 text-black fill-current ml-0.5" />
+                    </div>
+                </div>
             )}
         </div>
     );
@@ -64,14 +119,13 @@ export const TestimonialAvatar = ({ testimonial: t, size = "md" }: TestimonialAv
                     <AvatarImage src={t.author_avatar_url} alt={t.author_name} />
                 ) : null}
                 <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                    <span className={textSizes[size]}>{t.author_name.charAt(0)}</span>
+                    {t.type === 'video' ? (
+                        <Play className={size === 'sm' ? "w-3 h-3 fill-current" : size === 'lg' ? "w-6 h-6 fill-current" : "w-4 h-4 fill-current"} />
+                    ) : (
+                        <span className={textSizes[size]}>{t.author_name.charAt(0)}</span>
+                    )}
                 </AvatarFallback>
             </Avatar>
-            {t.type === "video" && (
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary flex items-center justify-center shadow-sm">
-                    <Play className="w-2 h-2 text-primary-foreground fill-current" />
-                </div>
-            )}
         </div>
     );
 };

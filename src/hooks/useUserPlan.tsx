@@ -114,23 +114,14 @@ export const useAIFeatures = () => {
   const generateScript = async (keywords: string, questions: string[]): Promise<string | null> => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-features`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            action: 'generate-script',
-            data: { keywords, questions },
-          }),
-        }
-      );
+      const { data, error } = await supabase.functions.invoke('ai-features', {
+        body: {
+          action: 'generate-script',
+          data: { keywords, questions },
+        },
+      });
 
-      if (!response.ok) throw new Error('Failed to generate script');
-      const data = await response.json();
+      if (error) throw error;
       return data.script;
     } catch (error) {
       console.error('Error generating script:', error);
@@ -143,39 +134,17 @@ export const useAIFeatures = () => {
   const enhanceText = async (text: string, mode: 'shorten' | 'simplify' | 'translate'): Promise<string | null> => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-features`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            action: 'enhance-text',
-            data: { text, mode },
-          }),
-        }
-      );
+      const { data, error } = await supabase.functions.invoke('ai-features', {
+        body: {
+          action: 'enhance-text',
+          data: { text, mode },
+        },
+      });
 
-      if (!response.ok) throw new Error('Failed to enhance text');
-      const data = await response.json();
-
-
+      if (error) throw error;
       return data.text;
     } catch (error: any) {
       console.error('Error enhancing text:', error);
-
-      // Try to parse detailed error response
-      if (error.context && typeof error.context.json === 'function') {
-        try {
-          const body = await error.context.json();
-          console.error('Edge Function Detailed Error:', body);
-        } catch (e) {
-          console.error('Could not parse error body:', e);
-        }
-      }
-
       return null;
     } finally {
       setLoading(false);
@@ -185,23 +154,15 @@ export const useAIFeatures = () => {
   const summarizeVideo = async (transcript: string, authorName: string): Promise<{ summary: string; goldenQuote: string } | null> => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-features`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({
-            action: 'summarize-video',
-            data: { transcript, authorName },
-          }),
-        }
-      );
+      const { data, error } = await supabase.functions.invoke('ai-features', {
+        body: {
+          action: 'summarize-video',
+          data: { transcript, authorName },
+        },
+      });
 
-      if (!response.ok) throw new Error('Failed to summarize video');
-      return await response.json();
+      if (error) throw error;
+      return data;
     } catch (error) {
       console.error('Error summarizing video:', error);
       return null;

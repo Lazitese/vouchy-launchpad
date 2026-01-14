@@ -13,6 +13,7 @@ import { BentoLayout } from "./widgets/layouts/BentoLayout";
 import { MarqueeLayout } from "./widgets/layouts/MarqueeLayout";
 import { StackLayout } from "./widgets/layouts/StackLayout";
 import { SpotlightLayout } from "./widgets/layouts/SpotlightLayout";
+import { VideoModal } from "./widgets/VideoModal";
 
 interface WidgetPreviewProps {
   testimonials: Tables<"testimonials">[];
@@ -99,6 +100,7 @@ export const WidgetPreview = ({
   previewDevice = "desktop",
 }: WidgetPreviewProps) => {
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const effectiveStyles = propStyles || (initialCustomStyles ? { ...defaultStyles, ...initialCustomStyles } : defaultStyles);
@@ -121,13 +123,20 @@ export const WidgetPreview = ({
       );
     }
 
+    const handleVideoClick = (videoUrl: string | null) => {
+      if (videoUrl) {
+        setSelectedVideo(videoUrl);
+      }
+    };
+
     const layoutProps = {
       displayItems,
       darkMode,
       customStyles: effectiveStyles,
       scrollContainerRef,
       previewDevice: readOnly ? "desktop" : previewDevice,
-      layout: "grid" as any
+      layout: "grid" as any,
+      onVideoClick: handleVideoClick
     };
 
     const layouts: Record<string, JSX.Element> = {
@@ -145,7 +154,18 @@ export const WidgetPreview = ({
   };
 
   // Embed Mode (No Lab Frame)
-  if (readOnly) return <div className="w-full">{renderWidget()}</div>;
+  if (readOnly) {
+    return (
+      <div className="w-full">
+        {renderWidget()}
+        <VideoModal
+          isOpen={!!selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          videoUrl={selectedVideo || ""}
+        />
+      </div>
+    );
+  }
 
   // Lab Mode Content (Scrollable Inner)
   const Content = (
@@ -163,6 +183,7 @@ export const WidgetPreview = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-tight break-words"
+            style={{ color: effectiveStyles.textColor || (darkMode ? "#fff" : "#000") }}
           >
             Vouchy Testimonies
           </motion.h1>
@@ -210,6 +231,12 @@ export const WidgetPreview = ({
           {previewDevice === "desktop" && <DesktopFrame darkMode={darkMode}>{Content}</DesktopFrame>}
         </motion.div>
       </AnimatePresence>
+
+      <VideoModal
+        isOpen={!!selectedVideo}
+        onClose={() => setSelectedVideo(null)}
+        videoUrl={selectedVideo || ""}
+      />
     </div>
   );
 };

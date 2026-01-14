@@ -1,213 +1,242 @@
-import { motion, useInView } from "framer-motion";
-import { Video, MessageSquareText, BarChart3, Zap, Globe, Shield, ArrowUpRight } from "lucide-react";
-import { useRef } from "react";
-
-const features = [
-  {
-    title: "Video Testimonials",
-    description: "HD recording in-browser. No downloads. One-click capture that works everywhere.",
-    icon: Video,
-    size: "large",
-    visual: (
-      <div className="relative h-full min-h-[200px] flex items-center justify-center">
-        <motion.div
-          className="w-32 h-32 rounded-[4px] bg-primary/5 border border-border/[0.08] flex items-center justify-center"
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <motion.div
-            className="w-12 h-12 rounded-full bg-primary flex items-center justify-center"
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <div className="w-0 h-0 border-l-[8px] border-l-primary-foreground border-y-[6px] border-y-transparent ml-1" />
-          </motion.div>
-        </motion.div>
-      </div>
-    ),
-  },
-  {
-    title: "Text Reviews",
-    description: "Smart forms with AI prompts that help customers write compelling stories.",
-    icon: MessageSquareText,
-    size: "medium",
-    visual: (
-      <div className="space-y-2 mt-6">
-        {[85, 60, 75].map((width, i) => (
-          <motion.div
-            key={i}
-            className="h-2 bg-primary/10 rounded-[4px]"
-            style={{ width: `${width}%` }}
-            initial={{ scaleX: 0 }}
-            whileInView={{ scaleX: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 + i * 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          />
-        ))}
-      </div>
-    ),
-  },
-  {
-    title: "Real-time Analytics",
-    description: "Track views, conversions, and engagement. Know what works.",
-    icon: BarChart3,
-    size: "medium",
-    visual: (
-      <div className="flex items-end gap-2 h-20 mt-6">
-        {[40, 65, 45, 80, 55, 90, 70].map((height, i) => (
-          <motion.div
-            key={i}
-            className="flex-1 bg-primary/20 rounded-t-[2px] origin-bottom"
-            initial={{ height: 0, opacity: 0 }}
-            whileInView={{ height: `${height}%`, opacity: 1 }}
-            whileHover={{ 
-              height: `${Math.min(height + 15, 100)}%`,
-              backgroundColor: "hsl(var(--primary) / 0.4)",
-            }}
-            viewport={{ once: true }}
-            transition={{ 
-              delay: 0.2 + i * 0.08, 
-              duration: 0.6, 
-              ease: [0.22, 1, 0.36, 1],
-              height: { type: "spring", stiffness: 300, damping: 20 }
-            }}
-          />
-        ))}
-      </div>
-    ),
-  },
-  {
-    title: "Instant Embed",
-    description: "Drop testimonials anywhere with a single line of code.",
-    icon: Globe,
-    size: "small",
-  },
-  {
-    title: "Lightning Fast",
-    description: "Sub-100ms load times. Never slow down your site.",
-    icon: Zap,
-    size: "small",
-  },
-  {
-    title: "Enterprise Ready",
-    description: "Built for scale with enterprise-grade security.",
-    icon: Shield,
-    size: "small",
-  },
-];
+import { motion } from "framer-motion";
+import { TbVideo, TbMessage, TbChartBar, TbCode, TbBolt, TbBrandSlack, TbBrandNotion, TbBrandZapier, TbBrandWebflow, TbBrandFigma, TbBrandWordpress, TbPlayerPlayFilled, TbTrendingUp, TbStarFilled } from "react-icons/tb";
 
 const BentoGrid = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
   return (
-    <section id="features" className="py-32 px-6" ref={ref}>
-      <div className="container mx-auto">
-        {/* Section header */}
-        <div className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-center gap-4 mb-6"
-          >
-            <div className="w-12 h-px bg-primary/30" />
-            <span className="text-[12px] font-medium text-foreground/50 uppercase tracking-[0.2em]">
-              Features
-            </span>
-          </motion.div>
+    <section id="features" className="py-24 bg-zinc-50 dark:bg-zinc-950">
+      <div className="container mx-auto px-6">
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <motion.div
-              initial={{ clipPath: "inset(0 0 100% 0)" }}
-              animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
-              transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-[-0.06em] text-primary">
-                Built for
-                <br />
-                <span className="text-primary/30">modern teams</span>
-              </h2>
-            </motion.div>
-            <motion.p
-              className="text-lg text-subtext leading-relaxed self-end max-w-md"
-              initial={{ clipPath: "inset(0 0 100% 0)" }}
-              animate={isInView ? { clipPath: "inset(0 0 0% 0)" } : {}}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              Everything you need to collect, manage, and showcase authentic 
-              customer testimonials that actually convert.
-            </motion.p>
-          </div>
+        {/* Header */}
+        <div className="text-center mb-16 max-w-2xl mx-auto">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-4"
+          >
+            Capabilities
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-50"
+          >
+            All-in-one platform for <br />
+            <span className="text-primary">social proof.</span>
+          </motion.h2>
         </div>
 
-        {/* Bento grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Large card - Video */}
+        {/* Grid Container */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 max-w-7xl mx-auto">
+
+          {/* Card 1: Dual-Mode Collection - col-span-3 */}
           <motion.div
-            className="md:col-span-2 lg:row-span-2 group cursor-pointer"
-            initial={{ opacity: 0, y: 40 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-3 bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between h-[400px] overflow-hidden relative group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
           >
-            <div className="h-full bg-slate border border-border/[0.08] rounded-[4px] p-8 relative overflow-hidden transition-all duration-500 hover:border-border/[0.15]">
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-10 h-10 border border-border/[0.08] rounded-[4px] flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                    <Video className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
-                  </div>
-                  <ArrowUpRight className="w-5 h-5 text-foreground/20 group-hover:text-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" />
+            {/* Visual */}
+            <div className="absolute top-10 inset-x-10 h-[220px] flex gap-4">
+              {/* Visual Left: Video */}
+              <div className="flex-1 bg-zinc-900 rounded-2xl flex items-center justify-center relative overflow-hidden group-hover:-translate-x-2 transition-transform duration-500">
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center animate-pulse">
+                  <div className="w-6 h-6 bg-red-500 rounded-full shadow-lg shadow-red-500/50" />
                 </div>
-                <h3 className="text-2xl font-bold text-primary mb-3">{features[0].title}</h3>
-                <p className="text-subtext leading-relaxed">{features[0].description}</p>
+                <div className="absolute bottom-3 text-[10px] text-white/60 font-medium">Video</div>
               </div>
-              {features[0].visual}
+
+              {/* Visual Right: Text */}
+              <div className="flex-1 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 flex flex-col items-center justify-center relative group-hover:translate-x-2 transition-transform duration-500">
+                <div className="w-10 h-10 bg-white dark:bg-zinc-700 rounded-full flex items-center justify-center shadow-sm mb-2">
+                  <TbMessage className="w-5 h-5 text-zinc-400" />
+                </div>
+                <div className="w-16 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full mb-1" />
+                <div className="w-10 h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full" />
+                <div className="absolute bottom-3 text-[10px] text-zinc-400 font-medium">Text</div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="mt-auto relative z-10">
+              <h3 className="text-2xl font-bold mb-2">Dual-Mode Collection</h3>
+              <p className="text-muted-foreground text-sm">Give your customers the choice. They can record a quick video or type a thoughtful note.</p>
             </div>
           </motion.div>
 
-          {/* Medium cards */}
-          {features.slice(1, 3).map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              className="group cursor-pointer"
-              initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.4 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="h-full bg-slate border border-border/[0.08] rounded-[4px] p-6 relative overflow-hidden transition-all duration-500 hover:border-border/[0.15]">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-9 h-9 border border-border/[0.08] rounded-[4px] flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                    <feature.icon className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />
-                  </div>
-                  <ArrowUpRight className="w-4 h-4 text-foreground/20 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
-                </div>
-                <h3 className="text-lg font-bold text-primary mb-2">{feature.title}</h3>
-                <p className="text-sm text-subtext leading-relaxed">{feature.description}</p>
-                {feature.visual}
-              </div>
-            </motion.div>
-          ))}
 
-          {/* Small cards */}
-          {features.slice(3).map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              className="group cursor-pointer"
-              initial={{ opacity: 0, y: 40 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.8, delay: 0.6 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+          {/* Card 2: The Wall of Love - col-span-3 */}
+          <motion.div
+            className="lg:col-span-3 bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between h-[400px] overflow-hidden relative group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            {/* Visual */}
+            <div
+              className="absolute top-8 inset-x-10 h-[180px] flex flex-col gap-3 overflow-hidden"
+              style={{
+                maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)"
+              }}
             >
-              <div className="h-full bg-background border border-border/[0.08] rounded-[4px] p-6 relative overflow-hidden transition-all duration-500 hover:bg-slate hover:border-border/[0.15]">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="w-9 h-9 border border-border/[0.08] rounded-[4px] flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                    <feature.icon className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />
+              <div className="columns-2 gap-3 space-y-3">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className={`break-inside-avoid bg-zinc-50 dark:bg-zinc-800 p-3 rounded-xl border border-zinc-100 dark:border-zinc-700 ${i % 2 === 0 ? 'mt-4' : ''}`}>
+                    <div className="flex gap-1 mb-2">
+                      {[...Array(5)].map((_, j) => <TbStarFilled key={j} className="w-2 h-2 text-yellow-500" />)}
+                    </div>
+                    {/* Mixed Content Type simulation */}
+                    {i === 2 ? (
+                      <div className="aspect-video bg-zinc-200 dark:bg-zinc-700 rounded-lg mb-2 relative overflow-hidden">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <TbPlayerPlayFilled className="w-4 h-4 text-white drop-shadow-md" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-1.5">
+                        <div className="h-1.5 w-full bg-zinc-200 dark:bg-zinc-700 rounded-full" />
+                        <div className="h-1.5 w-2/3 bg-zinc-200 dark:bg-zinc-700 rounded-full" />
+                        <div className="h-1.5 w-4/5 bg-zinc-200 dark:bg-zinc-700 rounded-full" />
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 mt-3">
+                      <div className="w-4 h-4 rounded-full bg-zinc-300 dark:bg-zinc-600" />
+                      <div className="h-1.5 w-12 bg-zinc-200 dark:bg-zinc-700 rounded-full" />
+                    </div>
                   </div>
-                  <h3 className="text-base font-bold text-primary">{feature.title}</h3>
-                </div>
-                <p className="text-sm text-subtext leading-relaxed">{feature.description}</p>
+                ))}
               </div>
-            </motion.div>
-          ))}
+            </div>
+
+            {/* Content */}
+            <div className="mt-auto relative z-10">
+              <h3 className="text-2xl font-bold mb-2">The Wall of Love</h3>
+              <p className="text-muted-foreground text-sm">Mix video and text testimonials in a single, beautiful grid. It makes your social proof look dense and active.</p>
+            </div>
+          </motion.div>
+
+
+          {/* Card 3: Trust Analytics (Primary) - col-span-2 */}
+          <motion.div
+            className="lg:col-span-2 bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between h-[320px] overflow-hidden relative group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            {/* Visual */}
+            <div className="h-[140px] relative overflow-hidden rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700 p-4">
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm border border-border/50 flex items-center justify-center">
+                  <TbChartBar className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-right">
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Last 7 days</p>
+                  <p className="text-2xl font-black tracking-tight">+18%</p>
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-12 gap-1 items-end h-16">
+                {[30, 40, 28, 55, 48, 60, 52, 72, 66, 78, 70, 90].map((h, i) => (
+                  <div
+                    key={i}
+                    className={`rounded-sm ${i > 8 ? "bg-primary/60" : "bg-primary/25"}`}
+                    style={{ height: `${h}%` }}
+                  />
+                ))}
+              </div>
+
+              <div className="absolute -right-8 -bottom-10 w-32 h-32 rounded-full bg-primary/10 blur-2xl" />
+            </div>
+
+            {/* Content */}
+            <div className="mt-auto relative z-10">
+              <h3 className="text-xl font-bold mb-2">Performance insights</h3>
+              <p className="text-muted-foreground text-xs">See which testimonials drive clicks and plays—without drowning in dashboards.</p>
+            </div>
+          </motion.div>
+
+
+          {/* Card 4: Zero-Code Embed (Dark) - col-span-2 */}
+          <motion.div
+            className="lg:col-span-2 bg-zinc-950 rounded-[2.5rem] p-8 shadow-xl border border-zinc-800 hover:border-zinc-700 transition-all duration-500 flex flex-col justify-between h-[320px] overflow-hidden relative group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            {/* Visual */}
+            <div className="h-[140px] bg-zinc-900 rounded-xl p-4 font-mono text-[10px] text-gray-400 border border-zinc-800 overflow-hidden relative group-hover:bg-zinc-800/80 transition-colors">
+              <div className="absolute top-0 w-full h-6 bg-zinc-800 border-b border-zinc-700 flex items-center px-2 gap-1.5 left-0">
+                <div className="w-2 h-2 rounded-full bg-red-500" />
+                <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+              </div>
+              <div className="mt-6 space-y-1 opacity-80 break-all">
+                <p>&lt;<span className="text-blue-400">script</span></p>
+                <p className="pl-2">src=<span className="text-green-400">"https://vouchy.click/embed.js"</span></p>
+                <p className="pl-2">data-id=<span className="text-orange-400">"f985f44e..."</span></p>
+                <p className="pl-2">defer</p>
+                <p>&gt;&lt;/<span className="text-blue-400">script</span>&gt;</p>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="mt-auto relative z-10">
+              <h3 className="text-xl font-bold mb-2 text-white">Zero-Code Embed</h3>
+              <p className="text-zinc-400 text-xs">One script for everything. Just paste a single line into your site.</p>
+            </div>
+          </motion.div>
+
+
+          {/* Card 5: Lightning Fast - col-span-2 */}
+          <motion.div
+            className="lg:col-span-2 bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-zinc-100 dark:border-zinc-800 flex flex-col justify-between h-[320px] overflow-hidden relative group"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+          >
+            {/* Visual */}
+            <div className="h-[140px] relative overflow-hidden rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-700 p-4">
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm border border-border/50 flex items-center justify-center">
+                  <TbCode className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <TbBolt className="w-4 h-4" />
+                  Fast load
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <div className="rounded-xl bg-white dark:bg-zinc-900 border border-border/50 p-3">
+                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Embed</p>
+                  <p className="mt-1 text-sm font-black">1 line</p>
+                </div>
+                <div className="rounded-xl bg-white dark:bg-zinc-900 border border-border/50 p-3">
+                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Impact</p>
+                  <p className="mt-1 text-sm font-black flex items-center gap-1">
+                    <TbTrendingUp className="w-4 h-4 text-primary" />
+                    Faster
+                  </p>
+                </div>
+              </div>
+
+              <div className="absolute -left-10 -top-12 w-32 h-32 rounded-full bg-primary/10 blur-2xl" />
+            </div>
+
+            {/* Content */}
+            <div className="mt-auto relative z-10">
+              <h3 className="text-xl font-bold mb-2">Install in minutes</h3>
+              <p className="text-muted-foreground text-xs">Drop in a tiny script and publish. No rebuilds, no performance tradeoffs.</p>
+            </div>
+          </motion.div>
+
         </div>
       </div>
     </section>

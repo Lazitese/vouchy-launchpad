@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,79 +6,70 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 209 57% 25%;
+    /* Organic Modern Light Theme */
+    --background: 240 5% 96%;
+    /* #f3f4f6 Light Gray */
+    --foreground: 240 10% 3.9%;
 
+    /* Pure White Cards */
     --card: 0 0% 100%;
-    --card-foreground: 209 57% 25%;
+    --card-foreground: 240 10% 3.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 209 57% 25%;
+    --popover-foreground: 240 10% 3.9%;
 
-    --primary: 209 57% 25%;
-    --primary-foreground: 0 0% 100%;
+    /* Brand Accents - Lime/Black Aesthetic from reference */
+    --primary: 142 76% 36%;
+    /* Vibrant Green/Lime-ish darker tone for legibility or allow user brand */
+    --primary-foreground: 355.7 100% 97.3%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 209 57% 25%;
+    /* Using Black for primary actions like the reference "New Task" button */
+    --accent-black: 0 0% 10%;
+    --accent-lime: 78 92% 65%;
+    /* The "Lime" from the header reference */
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 209 57% 25%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 209 57% 25%;
-    --input: 214 32% 91%;
-    --ring: 209 57% 25%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 142 76% 36%;
 
-    --radius: 0.25rem;
-
-    /* Studio-grade tokens */
-    --subtext: 215 16% 47%;
-    --slate: 210 40% 96%;
-    --grid-line: 209 57% 25% / 0.08;
+    --radius: 1.5rem;
+    /* Very rounded corners like the reference */
   }
 
+  /* Force Light Mode mostly, but keep dark variables just in case */
   .dark {
-    --background: 222 84% 5%;
-    --foreground: 210 40% 98%;
-
-    --card: 222 84% 5%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222 84% 5%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 209 57% 45%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 209 57% 25%;
-    --input: 217 33% 17%;
-    --ring: 213 27% 84%;
-
-    --slate: 217 33% 12%;
-    --grid-line: 210 40% 98% / 0.08;
+    --background: 20 14.3% 4.1%;
+    --foreground: 0 0% 95%;
+    --card: 24 9.8% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 142 70% 50%;
+    --primary-foreground: 144.9 80.4% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 142 70% 50%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border/[0.08];
+    @apply border-border;
   }
 
   html {
@@ -86,73 +77,87 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-lime-200 selection:text-black;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 
-  h1 {
-    @apply font-heading font-black;
-    letter-spacing: -0.06em;
-    line-height: 1.0;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight text-foreground;
+  }
+}
+
+@layer components {
+
+  /* Organic Card - The reference has fluid shapes */
+  .organic-card {
+    @apply bg-white rounded-[24px] shadow-sm border border-black/5 hover:shadow-md transition-all duration-300;
   }
 
-  h2, h3, h4, h5, h6 {
-    @apply font-heading font-bold;
-    letter-spacing: -0.03em;
+  /* Pill Button - Black mostly */
+  .btn-pill {
+    @apply rounded-full bg-[#1a1a1a] text-white hover:bg-[#000000] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-black/10;
+  }
+
+  /* Lime Accent Card */
+  .lime-card {
+    @apply bg-[#ccf381] text-[#0f172a] rounded-[24px];
+  }
+
+  /* Sidebar Icon Button */
+  .nav-icon {
+    @apply w-12 h-12 flex items-center justify-center rounded-full text-gray-500 hover:bg-white hover:text-black hover:shadow-md transition-all duration-200;
+  }
+
+  .nav-icon.active {
+    @apply bg-black text-white shadow-lg;
   }
 }
 
 @layer utilities {
-  .grid-line {
-    border-color: hsl(var(--grid-line));
+  .text-gradient {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  .grid-12 {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 1.5rem;
+  .mask-gradient-b {
+    mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
   }
 
-  .bg-slate {
-    background-color: hsl(var(--slate));
-  }
-
-  /* Text mask reveal animation */
-  .mask-reveal {
-    clip-path: inset(0 0 100% 0);
-  }
-
-  .mask-revealed {
-    clip-path: inset(0 0 0% 0);
-  }
-
-  /* Editorial card style */
-  .editorial-card {
-    @apply bg-card border border-border/[0.08] rounded-[4px];
-  }
-
-  /* Custom Scrollbar Utilities */
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-none {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar {
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-  .scrollbar-thin::-webkit-scrollbar-track {
+
+  ::-webkit-scrollbar-track {
     background: transparent;
   }
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-border/20 rounded-full hover:bg-border/40 transition-colors;
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-secondary rounded-full hover:bg-muted-foreground/30;
   }
-  
-  /* Mask Gradient */
-  .mask-gradient-r {
-    mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
+
+  .text-heading {
+    font-size: 2.5rem;
+    font-weight: 300;
+    /* Light weight large text */
+    letter-spacing: -0.05em;
+  }
+
+  /* Hide Scrollbar but allow scroll */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

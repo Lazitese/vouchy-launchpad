@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
+import { Quote, Play } from "lucide-react";
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialAvatar, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
 
@@ -8,13 +8,15 @@ interface MinimalLayoutProps {
     darkMode: boolean;
     customStyles: CustomStyles;
     previewDevice?: "desktop" | "tablet" | "mobile";
+    onVideoClick?: (videoUrl: string) => void;
 }
 
 export const MinimalLayout = ({
     displayItems,
     darkMode,
     customStyles,
-    previewDevice = "desktop"
+    previewDevice = "desktop",
+    onVideoClick
 }: MinimalLayoutProps) => {
     const isMobile = previewDevice === "mobile";
 
@@ -56,7 +58,22 @@ export const MinimalLayout = ({
                                 </div>
 
                                 <div className={`text-sm leading-relaxed ${darkMode ? "text-gray-300" : "text-gray-600"}`}>
-                                    <ExpandableContent content={t.content || ""} maxLength={180} darkMode={darkMode} />
+                                    {t.type === 'video' ? (
+                                        <div
+                                            className="flex items-center gap-3 cursor-pointer group/play mt-2"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onVideoClick?.(t.video_url || "");
+                                            }}
+                                        >
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 transform group-hover/play:scale-110 ${darkMode ? "bg-white text-black shadow-lg shadow-white/20" : "bg-black text-white shadow-lg shadow-black/20"}`}>
+                                                <Play size={20} className="fill-current ml-0.5" />
+                                            </div>
+                                            <span className={`text-sm font-medium opacity-80 group-hover/play:opacity-100 ${darkMode ? "text-white" : "text-black"}`}>Watch Video</span>
+                                        </div>
+                                    ) : (
+                                        <ExpandableContent content={t.content || ""} maxLength={180} darkMode={darkMode} isVideo={false} />
+                                    )}
                                 </div>
                             </div>
                         </div>

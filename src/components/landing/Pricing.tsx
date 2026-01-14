@@ -1,6 +1,6 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Check, ArrowRight, Sparkles, Loader2 } from "lucide-react";
+import { TbCheck, TbArrowRight, TbSparkles, TbLoader } from "react-icons/tb";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -68,7 +68,6 @@ const Pricing = () => {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
 
   const handleSelectPlan = async (plan: typeof plans[0]) => {
-    // Free plan - just navigate to auth/dashboard
     if (!plan.productId) {
       if (user) {
         navigate("/dashboard");
@@ -78,13 +77,11 @@ const Pricing = () => {
       return;
     }
 
-    // Paid plan - need user to be logged in first
     if (!user) {
       navigate("/auth", { state: { plan: plan.name, mode: "signup" } });
       return;
     }
 
-    // Create checkout session
     setLoadingPlan(plan.name);
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
@@ -97,7 +94,7 @@ const Pricing = () => {
       });
 
       if (error) throw error;
-      
+
       if (data?.paymentLink) {
         window.location.href = data.paymentLink;
       } else {
@@ -116,62 +113,48 @@ const Pricing = () => {
   };
 
   return (
-    <section id="pricing" className="py-32 px-6 bg-slate" ref={ref}>
+    <section id="pricing" className="py-24 lg:py-32 px-6 bg-slate-50 dark:bg-zinc-950/50" ref={ref}>
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            className="flex items-center justify-center gap-4 mb-6"
-          >
-            <div className="w-12 h-px bg-primary/30" />
-            <span className="text-[12px] font-medium text-foreground/50 uppercase tracking-[0.2em]">
-              Pricing
-            </span>
-            <div className="w-12 h-px bg-primary/30" />
-          </motion.div>
-
           <motion.h2
-            className="text-4xl md:text-5xl lg:text-6xl text-primary mb-6"
+            className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-6"
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.6 }}
           >
-            Simple, transparent pricing
+            Simple, transparent <span className="text-primary">pricing</span>
           </motion.h2>
 
           <motion.p
-            className="text-lg text-subtext max-w-md mx-auto"
+            className="text-lg text-muted-foreground max-w-md mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            No hidden fees. No surprises. Cancel anytime.
+            Upgrade as you grow. Transparent billing. No hidden fees.
           </motion.p>
         </div>
 
         {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
-              className={`relative p-8 rounded-[12px] bg-background border transition-all duration-300 ${
-                plan.popular
-                  ? "border-primary shadow-[0_24px_48px_-12px_rgba(26,63,100,0.2)]"
-                  : "border-border/[0.08] hover:border-primary/20"
-              }`}
+              className={`relative p-8 rounded-[2rem] bg-background border transition-all duration-300 h-full flex flex-col ${plan.popular
+                  ? "border-primary/50 shadow-2xl shadow-primary/10 scale-105 z-10 ring-4 ring-primary/5"
+                  : "border-border/50 hover:border-primary/20 hover:shadow-xl"
+                }`}
               initial={{ opacity: 0, y: 40 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
             >
               {/* Popular badge */}
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <div className="flex items-center gap-1.5 px-3 py-1 bg-primary text-primary-foreground rounded-full">
-                    <Sparkles className="w-3 h-3" />
-                    <span className="text-[11px] font-semibold uppercase tracking-wider">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <div className="flex items-center gap-1.5 px-4 py-1.5 bg-primary text-primary-foreground rounded-full shadow-lg">
+                    <TbSparkles className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">
                       Most Popular
                     </span>
                   </div>
@@ -180,47 +163,50 @@ const Pricing = () => {
 
               {/* Plan header */}
               <div className="mb-8">
-                <h3 className="text-lg font-semibold text-primary mb-2">
+                <h3 className="text-xl font-bold mb-2">
                   {plan.name}
                 </h3>
-                <p className="text-sm text-subtext mb-4">{plan.description}</p>
+                <p className="text-sm text-muted-foreground mb-6 h-10">{plan.description}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black text-primary">
+                  <span className="text-5xl font-black tracking-tight">
                     {plan.price}
                   </span>
-                  <span className="text-subtext">{plan.period}</span>
+                  <span className="text-muted-foreground font-medium">{plan.period}</span>
                 </div>
               </div>
 
-              {/* Features */}
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-[4px] bg-primary/10 flex items-center justify-center shrink-0">
-                      <Check className="w-3 h-3 text-primary" />
-                    </div>
-                    <span className="text-sm text-foreground/70">{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Toggle Logic (Visually included for future use if needed, or we just keep it simple) */}
 
               {/* CTA */}
               <Button
                 onClick={() => handleSelectPlan(plan)}
-                variant={plan.popular ? "hero" : "heroOutline"}
-                className="w-full group"
-                size="lg"
+                className={`w-full group rounded-xl h-12 text-base font-bold mb-8 ${plan.popular ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}
                 disabled={loadingPlan === plan.name}
               >
                 {loadingPlan === plan.name ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <TbLoader className="w-5 h-5 animate-spin" />
                 ) : (
                   <>
                     {plan.cta}
-                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    <TbArrowRight className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
                   </>
                 )}
               </Button>
+
+              {/* Features */}
+              <div className="flex-1">
+                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">Includes:</p>
+                <ul className="space-y-4">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3">
+                      <div className="w-5 h-5 rounded-full bg-green-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <TbCheck className="w-3.5 h-3.5 text-green-600" />
+                      </div>
+                      <span className="text-sm text-foreground/80 font-medium leading-snug">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </motion.div>
           ))}
         </div>

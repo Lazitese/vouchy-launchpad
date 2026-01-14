@@ -8,9 +8,10 @@ interface BentoLayoutProps {
     darkMode: boolean;
     customStyles: CustomStyles;
     previewDevice?: "desktop" | "tablet" | "mobile";
+    onVideoClick?: (videoUrl: string) => void;
 }
 
-export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevice = "desktop" }: BentoLayoutProps) => {
+export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevice = "desktop", onVideoClick }: BentoLayoutProps) => {
     const isMobile = previewDevice === "mobile";
 
     // Split items for mobile marquee logic
@@ -55,23 +56,33 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
                     {/* Header: Avatar */}
                     <div className="flex items-start justify-between mb-4">
                         <TestimonialAvatar testimonial={t} size={isLarge ? "lg" : "sm"} />
-                        {t.type === "video" && (
-                            <div className="p-1.5 rounded-full bg-primary/10 text-primary">
-                                <Play className="w-3 h-3 fill-current" />
-                            </div>
-                        )}
                     </div>
 
                     {/* Content Section: Stars & Text */}
                     <div className="flex-1 flex flex-col min-h-0">
                         <TestimonialStars rating={t.rating} size="w-3.5 h-3.5" className="mb-2" />
-                        <div className={`font-medium leading-relaxed ${isLarge ? "text-base md:text-lg" : "text-[13px] md:text-sm"}`}>
-                            <ExpandableContent
-                                content={t.content || ""}
-                                maxLength={isLarge ? 250 : 100}
-                                darkMode={darkMode}
-                            />
-                        </div>
+
+                        {isLarge && t.type === 'video' ? (
+                            <div className="flex-1 w-full min-h-[200px] rounded-xl overflow-hidden bg-black border border-black/5 dark:border-white/5 shadow-inner group relative">
+                                <video
+                                    src={t.video_url || ""}
+                                    className="w-full h-full object-contain"
+                                    controls
+                                    playsInline
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                            </div>
+                        ) : (
+                            <div className={`font-medium leading-relaxed ${isLarge ? "text-base md:text-lg" : "text-[13px] md:text-sm"}`}>
+                                <ExpandableContent
+                                    content={t.content || ""}
+                                    maxLength={isLarge ? 250 : 100}
+                                    darkMode={darkMode}
+                                    isVideo={t.type === 'video'}
+                                    videoUrl={t.video_url}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Footer: Author Info */}

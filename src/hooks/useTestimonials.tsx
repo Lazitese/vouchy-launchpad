@@ -94,20 +94,65 @@ export const useTestimonials = (spaceIds: string[]) => {
 export const useSubmitTestimonial = () => {
   const [loading, setLoading] = useState(false);
 
+  const uploadToSignedUrl = async (signedUrl: string, file: Blob, contentType: string) => {
+    const res = await fetch(signedUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": contentType,
+      },
+      body: file,
+    });
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(`Upload failed: ${res.status} ${errText}`);
+    }
+  };
+
+  const getSignedUpload = async (params: {
+    spaceId: string;
+    kind: "video" | "avatar";
+    contentType: string;
+    fileExt?: string;
+  }): Promise<{ signedUrl: string; publicUrl: string }> => {
+    const { data, error } = await supabase.functions.invoke("signed-upload", {
+      body: {
+        bucket: "testimonials",
+        spaceId: params.spaceId,
+        kind: params.kind,
+        contentType: params.contentType,
+        fileExt: params.fileExt,
+      },
+    });
+
+    if (error) throw error;
+    if (!data?.signedUrl || !data?.publicUrl) {
+      throw new Error("Signed upload response missing fields");
+    }
+
+    return { signedUrl: data.signedUrl as string, publicUrl: data.publicUrl as string };
+  };
+
   const uploadAvatar = async (spaceId: string, file: File): Promise<string | null> => {
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${spaceId}/avatars/${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
-        .from("testimonials")
-        .upload(fileName, file);
+      if (file.size > 2 * 1024 * 1024) {
+        throw new Error("Avatar must be <= 2MB");
+      }
 
-      if (uploadError) throw uploadError;
+      const allowed = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+      if (!allowed.includes(file.type)) {
+        throw new Error("Unsupported avatar type");
+      }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("testimonials")
-        .getPublicUrl(fileName);
+      const fileExt = (file.name.split(".").pop() || "png").toLowerCase();
+      const { signedUrl, publicUrl } = await getSignedUpload({
+        spaceId,
+        kind: "avatar",
+        contentType: file.type,
+        fileExt,
+      });
 
+      await uploadToSignedUrl(signedUrl, file, file.type);
       return publicUrl;
     } catch (error) {
       console.error("Error uploading avatar:", error);
@@ -168,17 +213,23 @@ export const useSubmitTestimonial = () => {
   }) => {
     setLoading(true);
     try {
-      // Upload video to storage
-      const fileName = `${data.spaceId}/${Date.now()}.webm`;
-      const { error: uploadError } = await supabase.storage
-        .from("testimonials")
-        .upload(fileName, data.videoBlob);
+      const contentType = (data.videoBlob.type || "video/webm").toLowerCase();
+      if (contentType !== "video/webm") {
+        throw new Error("Unsupported video type (only video/webm is allowed)");
+      }
 
-      if (uploadError) throw uploadError;
+      if (data.videoBlob.size > 25 * 1024 * 1024) {
+        throw new Error("Video must be <= 25MB");
+      }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("testimonials")
-        .getPublicUrl(fileName);
+      const { signedUrl, publicUrl } = await getSignedUpload({
+        spaceId: data.spaceId,
+        kind: "video",
+        contentType,
+        fileExt: "webm",
+      });
+
+      await uploadToSignedUrl(signedUrl, data.videoBlob, contentType);
 
       // Create testimonial record
       const { error } = await supabase

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,7 +56,12 @@ export const VideoRecorder = ({
         startTeleprompterSession,
         stopRecording,
         retakeRecording,
+        initCamera,
     } = useRecorder();
+
+    useEffect(() => {
+        initCamera();
+    }, []);
 
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [teleprompterScript, setTeleprompterScript] = useState<string | null>(null);

@@ -1,0 +1,28 @@
+# Vouchy Launchpad
+
+> The all-in-one platform for collecting, managing, and showcasing video and text testimonials.
+
+## Project Overview
+Vouchy Launchpad helps businesses build trust by easily collecting authentic user testimonials.
+- **Core Features**: Video recording, text reviews, AI-assisted polishing, customizable showcase widgets.
+- **Target Audience**: SaaS founders, agencies, creators.
+
+## Key Routes for Context
+- `/`: Landing page. Overview of features and value prop.
+- `/auth`: User authentication (Login/Signup).
+- `/collect/{slug}`: Public-facing collection page where end-users submit testimonials.
+- `/embed/{workspaceId}`: Embeddable widget view for external sites.
+
+## Integration & API
+- **Embeds**: Widgets are embedded via iframe using the `/embed/{workspaceId}` route.
+- **Data Model**:
+  - `Space`: A collection bucket for testimonials (has `slug`, `questions`, settings).
+  - `Testimonial`: The submitted content (video URL, text, rating, author info).
+
+## Technical Stack
+- Frontend: React, Vite, Tailwind CSS, Framer Motion.
+- Backend/DB: Supabase (PostgreSQL, Auth, Storage).
+- AI Features: Google Gemini (for text enhancement and analysis).
+
+## Documentation
+For full developer documentation, refer to `wip` (internal).

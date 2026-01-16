@@ -13,7 +13,7 @@ const ProductShowcase = () => {
   const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
 
   return (
-    <section className="py-24 lg:py-32 px-6 overflow-hidden bg-gray-50/50 dark:bg-zinc-900/50" ref={containerRef}>
+    <section className="relative py-24 lg:py-32 px-6 overflow-hidden bg-gradient-to-b from-white via-gray-50/50 to-white dark:from-zinc-950 dark:via-zinc-900/50 dark:to-zinc-950" ref={containerRef}>
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 

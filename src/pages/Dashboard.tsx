@@ -129,6 +129,8 @@ const Dashboard = () => {
           copyCollectionLink={copyCollectionLink}
           setActiveView={setActiveView}
           onManageSpace={handleManageSpace}
+          updateSpace={updateSpace}
+          deleteSpace={deleteSpace}
         />
       )}
 
@@ -151,6 +153,7 @@ const Dashboard = () => {
           testimonials={testimonials}
           embedCode={embedCode}
           spaces={spaces}
+          workspaceId={workspace?.id}
         />
       )}
 
@@ -189,6 +192,7 @@ const Dashboard = () => {
           deleteSpace={deleteSpace}
           updateTestimonial={updateStatus}
           deleteTestimonial={deleteTestimonial}
+          onManageSpace={handleManageSpace}
         />
       )}
 

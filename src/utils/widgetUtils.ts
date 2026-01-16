@@ -5,37 +5,56 @@ export type Testimonial = Tables<"testimonials">;
 export interface CustomStyles {
     primaryColor: string;
     backgroundColor: string;
+    cardBackgroundColor?: string; // New: Specific card BG
     textColor: string;
+    authorColor?: string; // New: Author Name
+    roleColor?: string; // New: Author Title/Role
+    contentColor?: string; // New: Testimonial Text
     borderColor: string;
     borderRadius: string;
     showShadow: boolean;
     showBorder: boolean;
     filterVideo?: boolean;
     filterText?: boolean;
+    fontFamily?: string; // New: Font
 }
 
 export const defaultStyles: CustomStyles = {
     primaryColor: "#3b82f6",
     backgroundColor: "",
+    cardBackgroundColor: "",
     textColor: "",
+    authorColor: "",
+    roleColor: "",
+    contentColor: "",
     borderColor: "",
     borderRadius: "1rem",
     showShadow: true,
     showBorder: true,
     filterVideo: true,
     filterText: true,
+    fontFamily: "Inter",
 };
 
 export const widgetStyles = [
-    { id: "minimal", name: "Minimal", description: "Clean & subtle", isPro: false },
+    // Free Layouts (2)
     { id: "cards", name: "Cards", description: "Modern cards", isPro: false },
-    { id: "masonry", name: "Masonry", description: "Dynamic grid", isPro: true },
-    { id: "avatar", name: "Avatar", description: "Floating profile", isPro: true },
-    { id: "marquee", name: "Marquee", description: "Infinite scroll", isPro: true },
+    { id: "minimalStacked", name: "Minimal Stacked", description: "Clean vertical list", isPro: false },
+
+    // Premium Layouts (13)
     { id: "bento", name: "Bento", description: "Structured grid", isPro: true },
-    { id: "stack", name: "Stack", description: "Depth & focus", isPro: true },
-    { id: "spotlight", name: "Spotlight", description: "Center stage", isPro: true },
+    { id: "marquee", name: "Marquee", description: "Infinite scroll", isPro: true },
     { id: "timeline", name: "Timeline", description: "Story flow", isPro: true },
+    { id: "floating", name: "Floating Cards", description: "3D hover effect", isPro: true },
+    { id: "glass", name: "Glass Prism", description: "Refractive masonry", isPro: true },
+    { id: "polaroid", name: "Polaroid Stack", description: "Nostalgic moments", isPro: true },
+    { id: "parallax", name: "Parallax Scroll", description: "Smooth motion", isPro: true },
+    { id: "cinematic", name: "Cinematic", description: "Widescreen slider", isPro: true },
+    { id: "orbit", name: "Orbit Ring", description: "Circular showcase", isPro: true },
+    { id: "radial", name: "Radial Burst", description: "Explosive energy", isPro: true },
+    { id: "news", name: "News Ticker", description: "Featured highlight", isPro: true },
+    { id: "masonryWall", name: "Masonry Wall", description: "Dense grid", isPro: true },
+    { id: "deck", name: "Deck Stack", description: "Interactive deck", isPro: true },
 ] as const;
 
 export function hexToHSL(hex: string): string {

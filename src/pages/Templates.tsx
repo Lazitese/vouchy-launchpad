@@ -193,7 +193,7 @@ export default function Templates() {
                             {/* Widget Preview */}
                             <div className="relative h-[600px] bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-800 p-8 md:p-12 flex items-center justify-center overflow-hidden">
                                 {/* Subtle grid pattern */}
-                                <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+                                <div className="absolute inset-0 opacity-[0.03] pointer-events-none [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)]">
                                     <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
                                         <defs>
                                             <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">

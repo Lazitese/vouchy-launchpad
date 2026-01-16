@@ -41,8 +41,8 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
                     ${customStyles.showShadow ? "shadow-sm shadow-black/5" : ""}
                 `}
                 style={{
-                    backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
-                    color: customStyles.textColor || (darkMode ? '#ffffff' : '#000000'),
+                    backgroundColor: customStyles.cardBackgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
+                    color: customStyles.contentColor || customStyles.textColor || (darkMode ? '#ffffff' : '#000000'), // Main text content color
                     borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                     borderRadius: customStyles.borderRadius,
                     height: isMobile ? "auto" : undefined
@@ -60,7 +60,7 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
 
                     {/* Content Section: Stars & Text */}
                     <div className="flex-1 flex flex-col min-h-0">
-                        <TestimonialStars rating={t.rating} size="w-3.5 h-3.5" className="mb-2" />
+                        <TestimonialStars darkMode={darkMode} rating={t.rating} size="w-3.5 h-3.5" className="mb-2" color={customStyles.primaryColor} />
 
                         {isLarge && t.type === 'video' ? (
                             <div className="flex-1 w-full min-h-[200px] rounded-xl overflow-hidden bg-black border border-black/5 dark:border-white/5 shadow-inner group relative">
@@ -73,13 +73,17 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
                                 />
                             </div>
                         ) : (
-                            <div className={`font-medium leading-relaxed ${isLarge ? "text-base md:text-lg" : "text-[13px] md:text-sm"}`}>
+                            <div
+                                className={`font-medium leading-relaxed ${isLarge ? "text-base md:text-lg" : "text-[13px] md:text-sm"}`}
+                                style={{ color: customStyles.contentColor || customStyles.textColor || (darkMode ? "#ffffff" : "#000000") }}
+                            >
                                 <ExpandableContent
                                     content={t.content || ""}
                                     maxLength={isLarge ? 250 : 100}
                                     darkMode={darkMode}
                                     isVideo={t.type === 'video'}
                                     videoUrl={t.video_url}
+                                    textColor={customStyles.contentColor || customStyles.textColor || (darkMode ? "#ffffff" : "#000000")}
                                 />
                             </div>
                         )}
@@ -88,8 +92,18 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
                     {/* Footer: Author Info */}
                     <div className="mt-4 pt-3 border-t border-dashed border-border/20 flex items-center justify-between">
                         <div className="min-w-0">
-                            <p className="font-bold text-[11px] md:text-sm truncate">{t.author_name}</p>
-                            <p className={`text-[10px] truncate ${subtextClasses(darkMode)}`}>{t.author_title || "@" + t.author_name.replace(/\s/g, '').toLowerCase()}</p>
+                            <p
+                                className="font-bold text-[11px] md:text-sm truncate"
+                                style={{ color: customStyles.authorColor || customStyles.textColor || (darkMode ? "#ffffff" : "#000000") }}
+                            >
+                                {t.author_name}
+                            </p>
+                            <p
+                                className={`text-[10px] truncate ${subtextClasses(darkMode)}`}
+                                style={{ color: customStyles.roleColor || (darkMode ? "#9ca3af" : "#6b7280") }}
+                            >
+                                {t.author_title || "@" + t.author_name.replace(/\s/g, '').toLowerCase()}
+                            </p>
                         </div>
                         <Quote className="w-3 h-3 text-primary/40 flex-shrink-0" />
                     </div>

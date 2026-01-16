@@ -29,10 +29,12 @@ interface VideoRecorderProps {
         email: string;
         company?: string;
         title?: string;
+        testimonial?: string;
         rating: number;
     }, blob: Blob) => void;
     onBack: () => void;
     submitting: boolean;
+    spaceId?: string;
 }
 
 export const VideoRecorder = ({
@@ -41,6 +43,7 @@ export const VideoRecorder = ({
     onSubmit,
     onBack,
     submitting,
+    spaceId,
 }: VideoRecorderProps) => {
     const {
         videoRef,
@@ -67,13 +70,56 @@ export const VideoRecorder = ({
     const [teleprompterScript, setTeleprompterScript] = useState<string | null>(null);
     const [showScriptEditor, setShowScriptEditor] = useState(false);
     const [showVideoForm, setShowVideoForm] = useState(false);
+    const teleprompterRef = useRef<HTMLDivElement>(null);
     const [videoFormData, setVideoFormData] = useState({
         name: "",
         email: "",
         company: "",
         title: "",
+        testimonial: "",
         rating: 5,
     });
+
+    // Auto-scroll teleprompter when recording
+    useEffect(() => {
+        if (isRecording && teleprompterScript && teleprompterRef.current) {
+            const element = teleprompterRef.current;
+            const scrollHeight = element.scrollHeight - element.clientHeight;
+
+            // Calculate scroll duration based on script length (approx 150 words per minute reading speed)
+            const words = teleprompterScript.split(/\s+/).length;
+            const readingTimeMs = (words / 150) * 60 * 1000; // Convert to milliseconds
+            const minDuration = 15000; // Minimum 15 seconds
+            const duration = Math.max(readingTimeMs, minDuration);
+
+            let startTime: number;
+            let animationId: number;
+
+            const scroll = (timestamp: number) => {
+                if (!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Smooth easing function
+                const easeProgress = progress;
+                element.scrollTop = easeProgress * scrollHeight;
+
+                if (progress < 1) {
+                    animationId = requestAnimationFrame(scroll);
+                }
+            };
+
+            // Start scrolling after a small delay
+            const timeoutId = setTimeout(() => {
+                animationId = requestAnimationFrame(scroll);
+            }, 1000);
+
+            return () => {
+                clearTimeout(timeoutId);
+                if (animationId) cancelAnimationFrame(animationId);
+            };
+        }
+    }, [isRecording, teleprompterScript]);
 
     const handleSubmit = () => {
         if (!recordedBlob) return;
@@ -106,39 +152,41 @@ export const VideoRecorder = ({
             {!recordedBlob && !isRecording && !isCountdownActive && (
                 <div className="mb-6">
                     {!showScriptEditor ? (
-                        <div className="flex flex-col md:flex-row items-center justify-between p-4 bg-card border border-border/[0.08] rounded-xl gap-4 md:gap-0">
+                        <div className="flex flex-col md:flex-row items-center justify-between organic-card p-4 gap-4 md:gap-0">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                                     <Mic className="w-5 h-5 text-primary" />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-primary">Need a script?</h3>
-                                    <p className="text-sm text-subtext">Write your own or use AI to generate one.</p>
+                                    <h3 className="font-semibold text-zinc-900">Need a script?</h3>
+                                    <p className="text-sm text-zinc-500">Write your own or use AI to generate one.</p>
                                 </div>
                             </div>
                             <Button
                                 variant="outline"
                                 onClick={() => setShowScriptEditor(true)}
-                                className="gap-2"
+                                className="gap-2 border-zinc-200 hover:bg-zinc-50 hover:text-primary"
                             >
                                 Open Script Editor
                             </Button>
                         </div>
                     ) : (
-                        <div className="p-4 bg-card border border-border/[0.08] rounded-xl">
+                        <div className="organic-card p-4 shadow-sm">
                             <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4 md:gap-0">
-                                <h3 className="font-semibold text-primary">Teleprompter Script</h3>
+                                <h3 className="font-semibold text-zinc-900">Teleprompter Script</h3>
                                 <div className="flex gap-2">
                                     <AIScriptGenerator
                                         questions={questions}
                                         onScriptGenerated={(script) => setTeleprompterScript(script)}
                                         isLocked={!canUseAI}
+                                        spaceId={spaceId}
                                     />
                                     {teleprompterScript && (
                                         <TextMagic
                                             text={teleprompterScript}
                                             onTextUpdated={setTeleprompterScript}
                                             isLocked={!canUseAI}
+                                            spaceId={spaceId}
                                         />
                                     )}
                                     <Button
@@ -155,9 +203,9 @@ export const VideoRecorder = ({
                                 placeholder="Write your script here, or use the AI tools above to generate one..."
                                 value={teleprompterScript || ""}
                                 onChange={(e) => setTeleprompterScript(e.target.value)}
-                                className="min-h-[150px] mb-2 font-medium text-base leading-relaxed"
+                                className="min-h-[150px] mb-2 font-medium text-base leading-relaxed bg-zinc-50 border-zinc-200 focus:border-primary focus:ring-primary/20"
                             />
-                            <p className="text-xs text-subtext text-right">
+                            <p className="text-xs text-zinc-400 text-right">
                                 This text will scroll on screen while you record.
                             </p>
                         </div>
@@ -167,7 +215,7 @@ export const VideoRecorder = ({
 
             <div className="relative">
                 {/* Video Container */}
-                <div className="relative aspect-[4/3] md:aspect-video w-full max-w-full bg-gray-900 rounded-[16px] overflow-hidden shadow-2xl">
+                <div className="relative aspect-[4/3] md:aspect-video w-full max-w-full bg-black rounded-[16px] overflow-hidden shadow-2xl">
                     {recordedBlob ? (
                         <video
                             src={URL.createObjectURL(recordedBlob)}
@@ -206,34 +254,70 @@ export const VideoRecorder = ({
                         )}
                     </AnimatePresence>
 
-                    {/* Teleprompter Overlay */}
+                    {/* Teleprompter Overlay - Redesigned */}
                     {isRecording && (
                         <motion.div
-                            className="absolute inset-x-0 top-0 p-8 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none"
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            className="absolute inset-0 pointer-events-none flex flex-col"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
                         >
                             {teleprompterScript ? (
-                                <div className="max-h-[40vh] overflow-y-auto scrollbar-hide mask-linear-fade">
-                                    <p className="text-xs text-white/50 uppercase tracking-widest font-bold mb-3">TELEPROMPTER</p>
-                                    <p className="text-2xl md:text-3xl font-medium text-white/95 whitespace-pre-wrap leading-relaxed drop-shadow-md text-center">
-                                        {teleprompterScript}
-                                    </p>
-                                </div>
+                                <>
+                                    {/* Top gradient fade */}
+                                    <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/90 via-black/60 to-transparent z-10" />
+
+                                    {/* Teleprompter content - centered card style */}
+                                    <div className="flex-1 flex items-start justify-center pt-6 px-6">
+                                        <div className="w-full max-w-2xl">
+                                            {/* Scrolling container with ref for auto-scroll */}
+                                            <div
+                                                ref={teleprompterRef}
+                                                className="max-h-[35vh] overflow-y-auto scrollbar-none"
+                                                style={{
+                                                    maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                                                    WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)'
+                                                }}
+                                            >
+                                                {/* Extra padding at top for smooth scroll start */}
+                                                <div className="h-8" />
+
+                                                <p className="text-xl md:text-2xl lg:text-3xl font-medium text-white text-center leading-relaxed tracking-wide px-4"
+                                                    style={{
+                                                        textShadow: '0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.5)'
+                                                    }}
+                                                >
+                                                    {teleprompterScript}
+                                                </p>
+
+                                                {/* Extra padding at bottom for smooth scroll end */}
+                                                <div className="h-24" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Bottom gradient fade */}
+                                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                                </>
                             ) : (
-                                <div className="text-center mt-4">
-                                    <p className="text-xs text-white/60 uppercase tracking-wider mb-2">
-                                        Question {currentQuestion + 1} of {questions.length}
-                                    </p>
-                                    <motion.p
-                                        key={currentQuestion}
-                                        className="text-2xl md:text-3xl font-bold text-white drop-shadow-md"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.4 }}
-                                    >
-                                        {questions[currentQuestion]}
-                                    </motion.p>
+                                /* Question display when no script */
+                                <div className="flex-1 flex items-start justify-center pt-12">
+                                    <div className="text-center px-6">
+                                        <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full mb-4">
+                                            <span className="text-xs text-white/70 uppercase tracking-wider font-medium">
+                                                Question {currentQuestion + 1} of {questions.length}
+                                            </span>
+                                        </div>
+                                        <motion.p
+                                            key={currentQuestion}
+                                            className="text-2xl md:text-3xl font-bold text-white max-w-xl mx-auto"
+                                            style={{ textShadow: '0 2px 20px rgba(0,0,0,0.8)' }}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.4 }}
+                                        >
+                                            {questions[currentQuestion]}
+                                        </motion.p>
+                                    </div>
                                 </div>
                             )}
                         </motion.div>
@@ -278,12 +362,12 @@ export const VideoRecorder = ({
 
                 {/* Video form for name/email after recording */}
                 {recordedBlob && showVideoForm && (
-                    <div className="mt-6 p-6 bg-card border border-border/[0.08] rounded-[12px]">
-                        <h3 className="font-semibold text-primary mb-4">Almost done! Tell us about yourself</h3>
+                    <div className="mt-6 organic-card p-6 shadow-sm">
+                        <h3 className="font-semibold text-zinc-900 mb-4">Almost done! Tell us about yourself</h3>
 
                         {/* Star Rating */}
                         <div className="flex justify-center gap-2 mb-6">
-                            <p className="text-sm text-subtext mr-3">Your rating:</p>
+                            <p className="text-sm text-zinc-500 mr-3">Your rating:</p>
                             {[1, 2, 3, 4, 5].map((rating) => (
                                 <motion.button
                                     key={rating}
@@ -296,18 +380,19 @@ export const VideoRecorder = ({
                                     <Star
                                         className={`w-7 h-7 transition-all duration-200 ${rating <= videoFormData.rating
                                             ? "text-amber-400 fill-amber-400"
-                                            : "text-border/30 hover:text-amber-300"
+                                            : "text-zinc-200 hover:text-amber-300"
                                             }`}
                                     />
                                 </motion.button>
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <Input
                                 placeholder="Your name *"
                                 value={videoFormData.name}
                                 onChange={(e) => setVideoFormData({ ...videoFormData, name: e.target.value })}
+                                className="bg-white border-zinc-200 focus:border-primary focus:ring-primary/20"
                                 maxLength={100}
                             />
                             <Input
@@ -315,19 +400,33 @@ export const VideoRecorder = ({
                                 placeholder="Email address *"
                                 value={videoFormData.email}
                                 onChange={(e) => setVideoFormData({ ...videoFormData, email: e.target.value })}
+                                className="bg-white border-zinc-200 focus:border-primary focus:ring-primary/20"
                                 maxLength={255}
                             />
                             <Input
                                 placeholder="Job title (optional)"
                                 value={videoFormData.title}
                                 onChange={(e) => setVideoFormData({ ...videoFormData, title: e.target.value })}
+                                className="bg-white border-zinc-200 focus:border-primary focus:ring-primary/20"
                                 maxLength={100}
                             />
                             <Input
                                 placeholder="Company (optional)"
                                 value={videoFormData.company}
                                 onChange={(e) => setVideoFormData({ ...videoFormData, company: e.target.value })}
+                                className="bg-white border-zinc-200 focus:border-primary focus:ring-primary/20"
                                 maxLength={100}
+                            />
+                        </div>
+
+                        {/* Optional Text Testimonial */}
+                        <div className="mb-4">
+                            <Textarea
+                                placeholder="Would you like to add a written message? (Optional)"
+                                value={videoFormData.testimonial}
+                                onChange={(e) => setVideoFormData({ ...videoFormData, testimonial: e.target.value })}
+                                className="min-h-[100px] bg-white border-zinc-200 focus:border-primary focus:ring-primary/20 resize-none"
+                                maxLength={1000}
                             />
                         </div>
                     </div>
@@ -340,14 +439,14 @@ export const VideoRecorder = ({
                             {!showVideoForm ? (
                                 <>
                                     {/* Review Step - Just recorded */}
-                                    <Button variant="outline" onClick={handleRetake} className="gap-2 h-12 px-6">
+                                    <Button variant="outline" onClick={handleRetake} className="gap-2 h-12 px-6 border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900">
                                         <RotateCcw className="w-4 h-4" />
                                         Record Again
                                     </Button>
                                     <Button
-                                        variant="hero"
+                                        variant="default"
                                         onClick={() => setShowVideoForm(true)}
-                                        className="gap-2 h-12 px-6"
+                                        className="gap-2 h-12 px-6 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
                                     >
                                         <ChevronRight className="w-4 h-4" />
                                         Continue
@@ -356,14 +455,14 @@ export const VideoRecorder = ({
                             ) : (
                                 <>
                                     {/* Form Step - Ready to submit */}
-                                    <Button variant="outline" onClick={handleRetake} className="gap-2 h-12 px-6">
+                                    <Button variant="outline" onClick={handleRetake} className="gap-2 h-12 px-6 border-zinc-200 hover:bg-zinc-50 hover:text-zinc-900">
                                         <RotateCcw className="w-4 h-4" />
                                         Retake
                                     </Button>
                                     <Button
-                                        variant="hero"
+                                        variant="default"
                                         onClick={handleSubmit}
-                                        className="gap-2 h-12 px-6"
+                                        className="gap-2 h-12 px-6 bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
                                         disabled={submitting}
                                     >
                                         {submitting ? (
@@ -405,14 +504,14 @@ export const VideoRecorder = ({
                 </div>
 
                 {!recordedBlob && !isCountdownActive && !isRecording && (
-                    <p className="text-center mt-4 text-sm font-medium text-subtext">
+                    <p className="text-center mt-4 text-sm font-medium text-zinc-400">
                         Tap to start recording
                     </p>
                 )}
 
                 <button
                     onClick={handleBackToOptions}
-                    className="block mx-auto mt-8 text-sm text-subtext hover:text-primary transition-colors"
+                    className="block mx-auto mt-8 text-sm text-zinc-400 hover:text-primary transition-colors"
                 >
                     ← Back to options
                 </button>

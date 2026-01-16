@@ -15,7 +15,7 @@ const plans = [
     description: "Perfect for trying out Vouchy",
     productId: null,
     features: [
-      "5 testimonials total",
+      "10 testimonials total",
       "1 active space",
       "60 second video limit",
       "Vouchy branding",
@@ -33,7 +33,7 @@ const plans = [
       "50 testimonials total",
       "3 active spaces",
       "3 minute video limit",
-      "20 AI Magic credits/mo",
+      "200 AI Magic credits/mo",
       "Teleprompter included",
       "Custom logo branding",
     ],
@@ -50,7 +50,7 @@ const plans = [
       "250 testimonials total",
       "15 active spaces",
       "5 minute video limit",
-      "100 AI Magic credits/mo",
+      "500 AI Magic credits/mo",
       "Full AI Suite access",
       "Full white-label solution",
     ],
@@ -113,7 +113,7 @@ const Pricing = () => {
   };
 
   return (
-    <section id="pricing" className="py-24 lg:py-32 px-6 bg-slate-50 dark:bg-zinc-950/50" ref={ref}>
+    <section id="pricing" className="relative py-24 lg:py-32 px-6 bg-gradient-to-b from-white via-slate-50 to-white dark:from-zinc-950 dark:via-zinc-900/50 dark:to-zinc-950" ref={ref}>
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="text-center mb-16">
@@ -142,8 +142,8 @@ const Pricing = () => {
             <motion.div
               key={plan.name}
               className={`relative p-8 rounded-[2rem] bg-background border transition-all duration-300 h-full flex flex-col ${plan.popular
-                  ? "border-primary/50 shadow-2xl shadow-primary/10 scale-105 z-10 ring-4 ring-primary/5"
-                  : "border-border/50 hover:border-primary/20 hover:shadow-xl"
+                ? "border-primary/50 shadow-2xl shadow-primary/10 scale-105 z-10 ring-4 ring-primary/5"
+                : "border-border/50 hover:border-primary/20 hover:shadow-xl"
                 }`}
               initial={{ opacity: 0, y: 40 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}

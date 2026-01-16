@@ -1,6 +1,6 @@
 {
     "css.lint.unknownAtRules": "ignore",
-    "deno.enable": false,
+    "deno.enable": true,
     "deno.enablePaths": [
         "./supabase/functions"
     ]

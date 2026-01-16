@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import {
     Monitor, Tablet, Smartphone, Sparkles, Code2, Copy,
-    Layout, Palette, Check, Moon, Video, Settings2, Filter, FileText
+    Layout, Palette, Check, Moon, Video, Settings2, Filter, FileText, ExternalLink
 } from "lucide-react";
 import {
     Dialog,
@@ -27,6 +27,7 @@ interface WidgetLabViewProps {
     testimonials: Testimonial[];
     embedCode: string;
     spaces: Space[];
+    workspaceId?: string;
 }
 
 export const WidgetLabView = ({
@@ -35,6 +36,7 @@ export const WidgetLabView = ({
     testimonials,
     embedCode,
     spaces,
+    workspaceId,
 }: WidgetLabViewProps) => {
     const { toast } = useToast();
     const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
@@ -184,20 +186,20 @@ export const WidgetLabView = ({
     };
 
     return (
-        <div className="flex flex-col md:flex-row h-[calc(100dvh-180px)] md:h-[calc(100vh-6rem)] bg-background border rounded-3xl shadow-sm overflow-hidden divide-y md:divide-y-0 md:divide-x divide-border">
+        <div className="flex flex-col md:flex-row h-[calc(100dvh-180px)] md:h-[calc(100vh-6rem)] gap-4 md:gap-6">
 
             {/* Mobile Tab Toggle */}
             <div className="md:hidden flex p-2 bg-gray-50/50 border-b gap-2 shrink-0 z-20">
                 <button
                     onClick={() => setActiveMobileTab("editor")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all ${activeMobileTab === "editor" ? "bg-black text-white shadow-lg" : "text-gray-400 bg-white/50"}`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all ${activeMobileTab === "editor" ? "bg-[#14873e] text-white shadow-lg" : "text-gray-400 bg-white/50"}`}
                 >
                     <Settings2 className="w-3.5 h-3.5" />
                     Editor
                 </button>
                 <button
                     onClick={() => setActiveMobileTab("preview")}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all ${activeMobileTab === "preview" ? "bg-black text-white shadow-lg" : "text-gray-400 bg-white/50"}`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all ${activeMobileTab === "preview" ? "bg-[#14873e] text-white shadow-lg" : "text-gray-400 bg-white/50"}`}
                 >
                     <Monitor className="w-3.5 h-3.5" />
                     Live View
@@ -206,13 +208,13 @@ export const WidgetLabView = ({
 
             {/* COLUMN 1: Layout & Appearance (Left, Single Column) */}
             <aside className={`
-                w-full md:w-[340px] flex-col bg-card/50 backdrop-blur-sm shrink-0 overflow-hidden
-                ${activeMobileTab === "editor" ? "flex flex-1" : "hidden md:flex md:h-full"}
+                w-full md:w-1/5 flex-col organic-card overflow-hidden shrink-0
+                ${activeMobileTab === "editor" ? "flex flex-1" : "hidden"} md:flex md:flex-none md:h-full
             `}>
                 {/* Header - Hidden on Mobile */}
-                <div className="hidden md:flex p-5 border-b shrink-0 items-center justify-between">
-                    <h2 className="text-lg font-bold flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-primary" />
+                <div className="hidden md:flex p-5 border-b border-zinc-100/50 shrink-0 items-center justify-between">
+                    <h2 className="text-lg font-bold flex items-center gap-2 text-zinc-900">
+                        <Sparkles className="w-5 h-5 text-zinc-900" strokeWidth={1.5} />
                         Widget Lab
                     </h2>
                 </div>
@@ -230,7 +232,7 @@ export const WidgetLabView = ({
                                 </div>
                                 <button
                                     onClick={toggleAllSpaces}
-                                    className="text-[10px] font-bold text-blue-600 hover:text-blue-700 uppercase tracking-wide"
+                                    className="text-[10px] font-bold text-zinc-500 hover:text-zinc-900 uppercase tracking-wide"
                                 >
                                     {selectedSpaceIds.length === spaces.length ? "Clear All" : "Select All"}
                                 </button>
@@ -252,22 +254,22 @@ export const WidgetLabView = ({
                                                 className={`
                                                     w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all duration-200
                                                     ${isSelected
-                                                        ? "bg-blue-50 border-blue-200 shadow-sm"
-                                                        : "bg-white border-gray-200 hover:bg-gray-50"}
+                                                        ? "bg-[#14873e] text-white border-[#14873e] shadow-md"
+                                                        : "bg-white/40 border-zinc-200 hover:bg-white hover:border-zinc-300"}
                                                 `}
                                             >
                                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                                     <div className={`
-                                                        w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors
+                                                        w-4 h-4 rounded-md border flex items-center justify-center shrink-0 transition-colors
                                                         ${isSelected
-                                                            ? "bg-blue-600 border-blue-600"
-                                                            : "border-gray-300"}
+                                                            ? "bg-white/20 border-white/20"
+                                                            : "bg-white border-zinc-300"}
                                                     `}>
-                                                        {isSelected && <Check className="w-3 h-3 text-white" />}
+                                                        {isSelected && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="text-sm font-semibold text-black truncate">{space.name}</div>
-                                                        <div className="text-[10px] text-gray-400">
+                                                        <div className={`text-sm font-medium truncate ${isSelected ? "text-white" : "text-zinc-900"}`}>{space.name}</div>
+                                                        <div className={`text-[10px] ${isSelected ? "text-white/60" : "text-zinc-400"}`}>
                                                             {testimonialCount} {testimonialCount === 1 ? 'testimonial' : 'testimonials'}
                                                         </div>
                                                     </div>
@@ -278,7 +280,7 @@ export const WidgetLabView = ({
                                 )}
                             </div>
                             {selectedSpaceIds.length > 0 && (
-                                <div className="text-xs text-gray-500 bg-blue-50 p-2 rounded-lg text-center">
+                                <div className="text-xs text-zinc-600 bg-lime-400/20 p-2 rounded-lg text-center font-medium">
                                     Showing {filteredTestimonials.length} testimonials from {selectedSpaceIds.length} {selectedSpaceIds.length === 1 ? 'space' : 'spaces'}
                                 </div>
                             )}
@@ -302,8 +304,8 @@ export const WidgetLabView = ({
                                             className={`
                                                 w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all duration-200 group
                                                 ${isActive
-                                                    ? "bg-black text-white border-black shadow-md translate-x-1"
-                                                    : "bg-white border-gray-200 hover:bg-gray-50"}
+                                                    ? "bg-[#14873e] text-white border-[#14873e] shadow-md translate-x-1"
+                                                    : "bg-white/40 border-zinc-200 hover:bg-white hover:border-zinc-300"}
                                             `}
                                         >
                                             <div className={`
@@ -327,59 +329,15 @@ export const WidgetLabView = ({
 
                         <div className="h-px bg-gray-100" />
 
-                        {/* SECTION 2: Appearance */}
+                        {/* SECTION 2: Customization */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
                                 <Palette className="w-3.5 h-3.5" />
                                 Customization
                             </div>
 
-                            {/* Toggles */}
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-gray-200">
-                                    <div className="flex items-center gap-2 text-xs font-medium text-black">
-                                        <Moon className="w-3.5 h-3.5" /> Dark Mode
-                                    </div>
-                                    <Switch
-                                        checked={widgetSettings?.dark_mode || false}
-                                        onCheckedChange={(val) => updateWidgetSettings({ dark_mode: val })}
-                                        className="scale-90"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-gray-200">
-                                    <div className="flex items-center gap-2 text-xs font-medium text-black">
-                                        <Video className="w-3.5 h-3.5 text-blue-500" /> Video Priority
-                                    </div>
-                                    <Switch
-                                        checked={widgetSettings?.show_video_first || false}
-                                        onCheckedChange={(val) => updateWidgetSettings({ show_video_first: val })}
-                                        className="scale-90"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-gray-200">
-                                    <div className="flex items-center gap-2 text-xs font-medium text-black">
-                                        <Video className="w-3.5 h-3.5 text-blue-500" /> Show Video
-                                    </div>
-                                    <Switch
-                                        checked={localCustomStyles.filterVideo ?? true}
-                                        onCheckedChange={(val) => handleCustomStyleChange({ filterVideo: val })}
-                                        className="scale-90"
-                                    />
-                                </div>
-                                <div className="flex items-center justify-between p-3 rounded-xl bg-white border border-gray-200">
-                                    <div className="flex items-center gap-2 text-xs font-medium text-black">
-                                        <FileText className="w-3.5 h-3.5 text-gray-500" /> Show Text
-                                    </div>
-                                    <Switch
-                                        checked={localCustomStyles.filterText ?? true}
-                                        onCheckedChange={(val) => handleCustomStyleChange({ filterText: val })}
-                                        className="scale-90"
-                                    />
-                                </div>
-                            </div>
-
                             {/* Inline Visual Customizer */}
-                            <div className="bg-white border border-gray-200 rounded-xl p-4">
+                            <div>
                                 <WidgetCustomizer
                                     showCustomizer={true}
                                     setShowCustomizer={() => { }}
@@ -387,29 +345,34 @@ export const WidgetLabView = ({
                                     onStyleChange={handleCustomStyleChange}
                                     darkMode={widgetSettings?.dark_mode || false}
                                     variant="sidebar"
+                                    widgetSettings={widgetSettings}
+                                    onSettingChange={updateWidgetSettings}
                                 />
                             </div>
+                        </div>
+
+                        {/* Reset Defaults Button */}
+                        <div className="pt-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-auto p-0 text-xs text-gray-400 hover:text-red-500 flex items-center gap-1.5"
+                                onClick={() => updateWidgetSettings({ appearance: {}, dark_mode: false, show_video_first: false })}
+                            >
+                                <Sparkles className="w-3 h-3" />
+                                Reset to Defaults
+                            </Button>
                         </div>
                     </div>
                 </div>
 
                 {/* Footer: Embed */}
                 <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-3 shrink-0">
-                    <div className="flex justify-between items-center text-xs">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-auto p-0 text-gray-400 hover:text-red-500"
-                            onClick={() => updateWidgetSettings({ appearance: {}, dark_mode: false, show_video_first: false })}
-                        >
-                            Reset Defaults
-                        </Button>
-                    </div>
                     <Dialog>
                         <DialogTrigger asChild>
                             <Button
                                 size="sm"
-                                className="w-full gap-2 shadow-lg h-9 bg-black text-white hover:bg-gray-800"
+                                className="w-full gap-2 shadow-lg h-9 bg-[#14873e] text-white hover:bg-[#0f6b30]"
                             >
                                 <Code2 className="w-4 h-4" />
                                 Get Embed Code
@@ -430,7 +393,7 @@ export const WidgetLabView = ({
                                 </div>
                             </div>
                             <div className="flex justify-end">
-                                <Button size="sm" onClick={copyEmbed} className="gap-2 bg-black text-white hover:bg-gray-800">
+                                <Button size="sm" onClick={copyEmbed} className="gap-2 bg-[#14873e] text-white hover:bg-[#0f6b30]">
                                     <Copy className="w-4 h-4" />
                                     Copy Code
                                 </Button>
@@ -442,60 +405,103 @@ export const WidgetLabView = ({
 
             {/* COLUMN 2: Preview Stage (Broad Right) */}
             <main className={`
-                flex-1 flex flex-col bg-[#F0F2F5] min-w-0 overflow-hidden min-h-0
+                flex-1 flex flex-col min-w-0 overflow-hidden min-h-0 relative
                 ${activeMobileTab === "preview" ? "flex h-full" : "hidden md:flex md:h-full"}
             `}>
+                {/* Architectural Grid Background */}
+                <div className="absolute inset-0 bg-white"
+                    style={{
+                        backgroundImage: 'radial-gradient(#e5e7eb 1px, transparent 1px)',
+                        backgroundSize: '24px 24px',
+                        opacity: 0.5
+                    }}
+                />
 
-                {/* Device Toolbar (Static Header) */}
-                <div className="h-16 border-b border-gray-200 flex items-center justify-center bg-white/80 backdrop-blur-sm shrink-0 z-10">
-                    <div className="flex items-center gap-1 bg-white border border-gray-200 p-1 rounded-full shadow-sm">
+                {/* Floating Toolbar */}
+                <div className="absolute top-6 left-0 right-0 z-30 px-6 flex items-center justify-between pointer-events-none">
+
+                    {/* Device Switcher */}
+                    <div className="flex items-center gap-1 bg-white/90 backdrop-blur-xl border border-zinc-200/60 p-1 rounded-full shadow-lg shadow-zinc-200/20 pointer-events-auto">
                         {(["desktop", "tablet", "mobile"] as const).map((device) => (
                             <button
                                 key={device}
                                 onClick={() => setPreviewDevice(device)}
                                 className={`
-                                    p-2.5 rounded-full transition-all duration-200
+                                    relative px-3 py-2 rounded-full transition-all duration-300 flex items-center gap-2
                                     ${previewDevice === device
-                                        ? "bg-black text-white shadow-sm"
-                                        : "text-gray-400 hover:text-black hover:bg-gray-100"}
+                                        ? "bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-200"
+                                        : "text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50"}
                                 `}
-                                title={`${device} Preview`}
                             >
-                                {device === "desktop" && <Monitor className="w-4 h-4" />}
-                                {device === "tablet" && <Tablet className="w-4 h-4" />}
-                                {device === "mobile" && <Smartphone className="w-4 h-4" />}
+                                {device === "desktop" && <Monitor className="w-3.5 h-3.5" strokeWidth={2} />}
+                                {device === "tablet" && <Tablet className="w-3.5 h-3.5" strokeWidth={2} />}
+                                {device === "mobile" && <Smartphone className="w-3.5 h-3.5" strokeWidth={2} />}
+                                <span className={`text-[10px] font-bold uppercase tracking-wider ${previewDevice === device ? "opacity-100" : "opacity-0 w-0 overflow-hidden group-hover:opacity-100"}`}>
+                                    {device}
+                                </span>
                             </button>
                         ))}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 pointer-events-auto">
+                        <button
+                            onClick={() => workspaceId && window.open(`/embed/${workspaceId}`, '_blank')}
+                            disabled={!workspaceId}
+                            className="bg-white/90 backdrop-blur-xl border border-zinc-200/60 hover:border-zinc-300 text-zinc-600 hover:text-zinc-900 px-4 py-2 rounded-full shadow-lg shadow-zinc-200/20 text-xs font-bold transition-all flex items-center gap-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <span>Full Preview</span>
+                            <ExternalLink className="w-3.5 h-3.5" />
+                        </button>
                     </div>
                 </div>
 
                 {/* Main Canvas */}
-                <div ref={containerRef} className="flex-1 w-full h-full flex items-center justify-center relative overflow-hidden">
+                <div ref={containerRef} className="flex-1 w-full h-full flex items-center justify-center relative overflow-hidden pt-20 pb-10">
 
-                    {/* Scaled Wrapper */}
+                    {/* Scaled Browser Frame Wrapper */}
                     <div
                         style={{
                             transform: `scale(${scale})`,
                             transformOrigin: 'center center',
-
-                            // Dimensions match the Mockup Outer Sizes
                             width: previewDevice === "mobile" ? 400 : previewDevice === "tablet" ? 840 : 1280,
-                            height: previewDevice === "mobile" ? 900 : previewDevice === "tablet" ? 1100 : 900,
-
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
+                            height: previewDevice === "mobile" ? 850 : previewDevice === "tablet" ? 1000 : 800, // Slightly reduced height for better fit
                         }}
-                        className="transition-transform duration-300 ease-out will-change-transform shadow-2xl rounded-lg bg-white dark:bg-slate-950"
+                        className="flex flex-col bg-white rounded-xl shadow-[0_30px_60px_-12px_rgba(0,0,0,0.15)] ring-1 ring-zinc-900/5 transition-all duration-500 will-change-transform"
                     >
-                        <WidgetPreview
-                            testimonials={filteredTestimonials}
-                            darkMode={widgetSettings?.dark_mode || false}
-                            layout={(widgetSettings?.layout as any) || "grid"}
-                            showVideoFirst={widgetSettings?.show_video_first || false}
-                            customStyles={localCustomStyles || defaultStyles}
-                            previewDevice={previewDevice}
-                        />
+                        {/* Browser Chrome Header */}
+                        <div className="h-10 bg-[#fbfbfb] border-b border-zinc-200/80 rounded-t-xl flex items-center px-4 justify-between shrink-0 select-none">
+                            <div className="flex gap-2 w-16">
+                                <div className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E]" />
+                                <div className="w-3 h-3 rounded-full bg-[#FEBC2E] border border-[#D89E24]" />
+                                <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]" />
+                            </div>
+
+                            <div className="flex items-center gap-2 px-3 py-1 bg-white border border-zinc-200 rounded-md shadow-sm max-w-sm flex-1 justify-center mx-4 group cursor-default">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <span className="text-[10px] font-medium text-zinc-400 group-hover:text-zinc-600 transition-colors bg-transparent border-none outline-none text-center truncate">
+                                    https://your-website.com/testimonials
+                                </span>
+                            </div>
+
+                            <div className="w-16 flex justify-end">
+                                {/* Optional: Right side controls placeholder */}
+                            </div>
+                        </div>
+
+                        {/* Viewport Content */}
+                        <div className="flex-1 bg-white relative overflow-hidden flex flex-col rounded-b-xl">
+                            <div className="flex-1 overflow-y-auto scrollbar-hide">
+                                <WidgetPreview
+                                    testimonials={filteredTestimonials}
+                                    darkMode={widgetSettings?.dark_mode || false}
+                                    layout={(widgetSettings?.layout as any) || "grid"}
+                                    showVideoFirst={widgetSettings?.show_video_first || false}
+                                    customStyles={localCustomStyles || defaultStyles}
+                                    previewDevice={previewDevice}
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>

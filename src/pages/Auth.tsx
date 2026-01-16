@@ -7,7 +7,7 @@ import { TbArrowRight, TbMail, TbLock, TbUser, TbLoader } from "react-icons/tb";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { TestimonialAvatar, TestimonialStars } from "@/components/widgets/TestimonialCard";
+
 import { Video } from "lucide-react";
 import logoPrimary from "@/assets/logo-primary.svg";
 import { z } from "zod";
@@ -31,41 +31,7 @@ const Auth = () => {
   const { toast } = useToast();
 
   // Sample testimonial data for display cards
-  const sampleTestimonial1 = {
-    id: "auth-sample-1",
-    author_name: "Emily Rodriguez",
-    author_avatar_url: null,
-    author_company: null,
-    author_email: null,
-    author_title: "CEO",
-    content: "Vouchy completely transformed how we collect customer feedback. Our conversion rates have never been higher!",
-    created_at: new Date().toISOString(),
-    golden_quote: null,
-    rating: 5,
-    space_id: "sample-space",
-    status: "approved" as const,
-    type: "video" as const,
-    video_url: null,
-    ai_summary: null
-  };
 
-  const sampleTestimonial2 = {
-    id: "auth-sample-2",
-    author_name: "David Kim",
-    author_avatar_url: null,
-    author_company: null,
-    author_email: null,
-    author_title: "Marketing Director",
-    content: "The best testimonial platform we've ever used. Setup took minutes and our customers love it!",
-    created_at: new Date().toISOString(),
-    golden_quote: null,
-    rating: 5,
-    space_id: "sample-space",
-    status: "approved" as const,
-    type: "text" as const,
-    video_url: null,
-    ai_summary: null
-  };
 
   const initialMode = location.state?.mode || "signup";
   const selectedPlan = location.state?.plan || "Starter";
@@ -265,37 +231,61 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-background overflow-hidden font-sans">
-      {/* Left: Form Section */}
-      <div className="flex flex-col justify-center px-8 sm:px-12 md:px-20 lg:px-24 xl:px-32 py-12 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    <div className="min-h-screen w-full flex items-center justify-center bg-white dark:bg-zinc-950 relative overflow-hidden font-sans p-4">
+
+      {/* Background Patterns - Matched to Hero */}
+      <div className="absolute inset-0 z-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
+          backgroundSize: '40px 40px'
+        }}
+      />
+
+      {/* Animated Orbs - Subtle Background Ambiance */}
+      <motion.div
+        animate={{ x: [0, 20, 0], y: [0, -20, 0], opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"
+      />
+      <motion.div
+        animate={{ x: [0, -30, 0], y: [0, 30, 0], opacity: [0.2, 0.4, 0.2] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-400/5 rounded-full blur-[120px] pointer-events-none"
+      />
+
+      {/* Back to Home - Absolute Top Left */}
+      <div className="absolute top-6 left-6 md:top-8 md:left-8 z-20">
+        <button
+          onClick={() => navigate("/")}
+          className="group flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-primary transition-colors bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm px-4 py-2 rounded-full border border-zinc-200/50 dark:border-zinc-800/50"
         >
-          {/* Back to Home Button */}
-          <div className="mb-8">
-            <button
-              onClick={() => navigate("/")}
-              className="group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-            >
-              <TbArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
-              Back to Home
-            </button>
-          </div>
+          <TbArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition-transform" />
+          Back to Home
+        </button>
+      </div>
 
-          {/* Logo */}
-          <div className="mb-12">
-            <img src="/Vouchy (48 x 160 px).svg" alt="Vouchy" className="h-12 w-auto" />
-          </div>
+      {/* Centered Auth Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-[480px] bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl rounded-3xl shadow-[0_40px_80px_-15px_rgba(0,0,0,0.05),0_0_0_1px_rgba(0,0,0,0.05)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.05)] relative z-10 overflow-hidden"
+      >
+        <div className="p-8 md:p-10">
 
-          <div className="mb-8 space-y-2">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground">
+          {/* Header */}
+          <div className="flex flex-col items-center text-center mb-8">
+            <div className="mb-6 relative">
+              <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-50"></div>
+              <img src="/Vouchy (64 x 64 px).svg" alt="Vouchy" className="h-16 w-16 object-contain relative z-10" />
+            </div>
+
+            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
               {mode === "signup" ? "Get started with Vouchy" : "Welcome back"}
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-zinc-500 dark:text-zinc-400">
               {mode === "signup"
-                ? "Create your account to start collecting video testimonials."
+                ? "Start collecting authentic video testimonials."
                 : "Enter your details to access your dashboard."}
             </p>
           </div>
@@ -303,25 +293,25 @@ const Auth = () => {
           <div className="space-y-4">
             <Button
               variant="outline"
-              className="w-full h-14 text-base font-medium rounded-xl border-2 hover:bg-slate-50 transition-all duration-300 relative overflow-hidden group"
+              className="w-full h-12 text-sm font-medium rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-300 relative overflow-hidden group"
               onClick={handleGoogleAuth}
               disabled={loading || googleLoading}
             >
               {googleLoading ? (
                 <TbLoader className="w-5 h-5 mr-3 animate-spin text-foreground" />
               ) : (
-                <FcGoogle className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform duration-300" />
+                <FcGoogle className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" />
               )}
-              <span className="relative z-10">Continue with Google</span>
+              <span className="relative z-10 text-zinc-700 dark:text-zinc-300">Continue with Google</span>
             </Button>
 
-            <div className="relative flex items-center gap-4 my-8">
-              <div className="flex-1 h-px bg-border/40" />
-              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">or email</span>
-              <div className="flex-1 h-px bg-border/40" />
+            <div className="relative flex items-center gap-4 my-6">
+              <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
+              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">or email</span>
+              <div className="flex-1 h-px bg-zinc-200 dark:bg-zinc-800" />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <AnimatePresence mode="popLayout">
                 {mode === "signup" && (
                   <motion.div
@@ -332,13 +322,12 @@ const Auth = () => {
                     className="overflow-hidden"
                   >
                     <div className="space-y-1.5">
-                      <label className="text-sm font-semibold text-foreground/80">Full Name</label>
                       <div className="relative group">
-                        <TbUser className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                        <TbUser className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-primary transition-colors" />
                         <Input
                           type="text"
-                          placeholder="John Doe"
-                          className={`h-12 pl-12 rounded-xl border-2 bg-transparent transition-all duration-300 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 ${errors.name ? "border-destructive focus:border-destructive" : ""}`}
+                          placeholder="Full Name"
+                          className={`h-12 pl-12 rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 transition-all duration-300 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 ${errors.name ? "border-destructive focus:border-destructive" : ""}`}
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           disabled={loading || googleLoading}
@@ -351,13 +340,12 @@ const Auth = () => {
               </AnimatePresence>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-foreground/80">Email</label>
                 <div className="relative group">
-                  <TbMail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <TbMail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-primary transition-colors" />
                   <Input
                     type="email"
-                    placeholder="hello@company.com"
-                    className={`h-12 pl-12 rounded-xl border-2 bg-transparent transition-all duration-300 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 ${errors.email ? "border-destructive focus:border-destructive" : ""}`}
+                    placeholder="Email Address"
+                    className={`h-12 pl-12 rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 transition-all duration-300 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 ${errors.email ? "border-destructive focus:border-destructive" : ""}`}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     disabled={loading || googleLoading}
@@ -367,13 +355,12 @@ const Auth = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-foreground/80">Password</label>
                 <div className="relative group">
-                  <TbLock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <TbLock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-primary transition-colors" />
                   <Input
                     type="password"
-                    placeholder="••••••••"
-                    className={`h-12 pl-12 rounded-xl border-2 bg-transparent transition-all duration-300 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 ${errors.password ? "border-destructive focus:border-destructive" : ""}`}
+                    placeholder="Password"
+                    className={`h-12 pl-12 rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/50 transition-all duration-300 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 ${errors.password ? "border-destructive focus:border-destructive" : ""}`}
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     disabled={loading || googleLoading}
@@ -383,7 +370,7 @@ const Auth = () => {
               </div>
 
               <Button
-                className="w-full h-14 rounded-xl text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all duration-300 group mt-4 relative overflow-hidden"
+                className="w-full h-12 rounded-xl text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 transition-all duration-300 group mt-2 relative overflow-hidden"
                 type="submit"
                 disabled={loading || googleLoading}
               >
@@ -392,15 +379,15 @@ const Auth = () => {
                 ) : (
                   <span className="flex items-center justify-center gap-2">
                     {mode === "signup" ? "Create Account" : "Sign In"}
-                    <TbArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <TbArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
                 )}
-                {/* Sheen effect on hover */}
+                {/* Sheen effect */}
                 <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent z-0" />
               </Button>
             </form>
 
-            <p className="text-center text-sm text-muted-foreground mt-8">
+            <p className="text-center text-xs text-zinc-500 mt-6">
               {mode === "signup" ? "Already have an account? " : "Don't have an account? "}
               <button
                 onClick={() => {
@@ -414,148 +401,15 @@ const Auth = () => {
               </button>
             </p>
           </div>
-        </motion.div>
-      </div>
-
-      {/* Right: Visual Section */}
-      <div className="hidden lg:flex relative bg-[#F4F4F5] dark:bg-zinc-900 items-center justify-center overflow-hidden">
-        {/* Background Patterns */}
-        <div className="absolute inset-0 opacity-40">
-          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <defs>
-              <pattern id="grid" width="8" height="8" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="1.5" className="fill-current text-primary/10" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
         </div>
 
-        {/* Animated Orbs */}
-        <motion.div
-          animate={{
-            y: [0, -40, 0],
-            opacity: [0.5, 0.8, 0.5]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            y: [0, 60, 0],
-            scale: [1, 1.2, 1]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl"
-        />
+        {/* Bottom Bar Gradient Line */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-primary via-blue-500 to-indigo-500" />
+      </motion.div>
 
-        {/* Testimonial Cards */}
-        <div className="relative z-10 w-full max-w-md flex flex-col gap-6">
-          {/* Top Card - Video Testimonial */}
-          <motion.div
-            initial={{ opacity: 0, x: 40, rotate: -5 }}
-            animate={{ opacity: 1, x: 0, rotate: -6 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="bg-white dark:bg-zinc-900 p-5 rounded-2xl shadow-2xl border border-zinc-100 dark:border-zinc-800 w-full"
-          >
-            <div className="flex items-start gap-3 mb-3">
-              <TestimonialAvatar testimonial={sampleTestimonial1} size="sm" />
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-foreground truncate">{sampleTestimonial1.author_name}</p>
-                <p className="text-xs text-muted-foreground">{sampleTestimonial1.author_title}</p>
-              </div>
-              <div className="flex-shrink-0 w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-950/30 flex items-center justify-center">
-                <Video className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-              </div>
-            </div>
-
-            <TestimonialStars rating={sampleTestimonial1.rating} className="mb-2" />
-
-            <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-              "{sampleTestimonial1.content}"
-            </p>
-
-            <div className="flex items-center justify-between pt-2 border-t border-zinc-200 dark:border-zinc-800">
-              <span className="text-xs text-muted-foreground">2 days ago</span>
-              <span className="text-xs px-2 py-1 rounded-md bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 font-medium">
-                Video
-              </span>
-            </div>
-          </motion.div>
-
-          {/* Center Card - Text Testimonial */}
-          <motion.div
-            initial={{ opacity: 0, x: -40, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-2xl border border-zinc-100 dark:border-zinc-800"
-          >
-            <div className="flex items-start gap-3 mb-4">
-              <TestimonialAvatar testimonial={sampleTestimonial2} size="md" />
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-foreground truncate">{sampleTestimonial2.author_name}</p>
-                <p className="text-xs text-muted-foreground">{sampleTestimonial2.author_title}</p>
-              </div>
-            </div>
-
-            <TestimonialStars rating={sampleTestimonial2.rating} className="mb-3" />
-
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-              "{sampleTestimonial2.content}"
-            </p>
-
-            <div className="flex items-center justify-between pt-3 border-t border-zinc-200 dark:border-zinc-800">
-              <span className="text-xs text-muted-foreground">1 week ago</span>
-              <span className="text-xs px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 font-medium">
-                Text
-              </span>
-            </div>
-          </motion.div>
-
-          {/* Bottom Card - Feature Highlight */}
-          <motion.div
-            initial={{ opacity: 0, x: 40, rotate: 5 }}
-            animate={{ opacity: 1, x: 0, rotate: 6 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="bg-white dark:bg-zinc-900 p-5 rounded-2xl shadow-2xl border border-zinc-100 dark:border-zinc-800"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-                <Video className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-foreground">Video & Text</p>
-                <p className="text-xs text-muted-foreground">Collect both formats</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/30 flex items-center justify-center">
-                  <svg className="w-2 h-2 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span>HD video recording</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/30 flex items-center justify-center">
-                  <svg className="w-2 h-2 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span>Beautiful display</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <div className="w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-950/30 flex items-center justify-center">
-                  <svg className="w-2 h-2 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span>One-line embed</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
+      {/* Footer Copyright */}
+      <div className="absolute bottom-6 text-[10px] text-zinc-400 font-medium">
+        © Vouchy Inc.
       </div>
     </div>
   );

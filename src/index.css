@@ -1,163 +1,101 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* Organic Modern Light Theme */
-    --background: 240 5% 96%;
-    /* #f3f4f6 Light Gray */
-    --foreground: 240 10% 3.9%;
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 240 10% 3.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 240 10% 3.9%;
+        --primary: 142 76% 36%;
+        /* emerald-600 */
+        --primary-foreground: 0 0% 100%;
+        --secondary: 240 4.8% 95.9%;
+        --secondary-foreground: 240 5.9% 10%;
+        --muted: 240 4.8% 95.9%;
+        --muted-foreground: 240 3.8% 46.1%;
+        --accent: 240 4.8% 95.9%;
+        --accent-foreground: 240 5.9% 10%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 240 5.9% 90%;
+        --input: 240 5.9% 90%;
+        --ring: 142 76% 36%;
+        --radius: 0.5rem;
+        --subtext: 240 3.8% 46.1%;
+        --slate: 215 20.2% 65.1%;
+    }
 
-    /* Pure White Cards */
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-
-    /* Brand Accents - Lime/Black Aesthetic from reference */
-    --primary: 142 76% 36%;
-    /* Vibrant Green/Lime-ish darker tone for legibility or allow user brand */
-    --primary-foreground: 355.7 100% 97.3%;
-
-    /* Using Black for primary actions like the reference "New Task" button */
-    --accent-black: 0 0% 10%;
-    --accent-lime: 78 92% 65%;
-    /* The "Lime" from the header reference */
-
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 142 76% 36%;
-
-    --radius: 1.5rem;
-    /* Very rounded corners like the reference */
-  }
-
-  /* Force Light Mode mostly, but keep dark variables just in case */
-  .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 0 0% 95%;
-    --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 142 70% 50%;
-    --primary-foreground: 144.9 80.4% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 64.9%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 142 70% 50%;
-  }
+    .dark {
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%;
+        --card: 240 10% 3.9%;
+        --card-foreground: 0 0% 98%;
+        --popover: 240 10% 3.9%;
+        --popover-foreground: 0 0% 98%;
+        --primary: 142 71% 45%;
+        /* emerald-500 */
+        --primary-foreground: 240 10% 3.9%;
+        --secondary: 240 3.7% 15.9%;
+        --secondary-foreground: 0 0% 98%;
+        --muted: 240 3.7% 15.9%;
+        --muted-foreground: 240 5% 64.9%;
+        --accent: 240 3.7% 15.9%;
+        --accent-foreground: 0 0% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 240 3.7% 15.9%;
+        --input: 240 3.7% 15.9%;
+        --ring: 142 71% 45%;
+        --subtext: 240 5% 64.9%;
+        --slate: 215 20.2% 65.1%;
+    }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+    * {
+        @apply border-border;
+    }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-lime-200 selection:text-black;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-bold tracking-tight text-foreground;
-  }
-}
-
-@layer components {
-
-  /* Organic Card - The reference has fluid shapes */
-  .organic-card {
-    @apply bg-white rounded-[24px] shadow-sm border border-black/5 hover:shadow-md transition-all duration-300;
-  }
-
-  /* Pill Button - Black mostly */
-  .btn-pill {
-    @apply rounded-full bg-[#1a1a1a] text-white hover:bg-[#000000] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-black/10;
-  }
-
-  /* Lime Accent Card */
-  .lime-card {
-    @apply bg-[#ccf381] text-[#0f172a] rounded-[24px];
-  }
-
-  /* Sidebar Icon Button */
-  .nav-icon {
-    @apply w-12 h-12 flex items-center justify-center rounded-full text-gray-500 hover:bg-white hover:text-black hover:shadow-md transition-all duration-200;
-  }
-
-  .nav-icon.active {
-    @apply bg-black text-white shadow-lg;
-  }
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
 }
 
 @layer utilities {
-  .text-gradient {
-    background: var(--gradient-brand);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+    .vouchy-card {
+        @apply bg-card text-card-foreground rounded-2xl border border-border/20 p-6;
+    }
 
-  .mask-gradient-b {
-    mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
-  }
+    .organic-card {
+        @apply bg-white/80 backdrop-blur-md rounded-2xl border border-zinc-200 shadow-sm;
+    }
 
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
+    .dark .organic-card {
+        @apply bg-zinc-900/80 border-zinc-700;
+    }
 
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
+    .scrollbar-none::-webkit-scrollbar {
+        display: none;
+    }
 
-  ::-webkit-scrollbar-thumb {
-    @apply bg-secondary rounded-full hover:bg-muted-foreground/30;
-  }
+    .scrollbar-none {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
 
-  .text-heading {
-    font-size: 2.5rem;
-    font-weight: 300;
-    /* Light weight large text */
-    letter-spacing: -0.05em;
-  }
+/* Shimmer animation for buttons */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
 
-  /* Hide Scrollbar but allow scroll */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+    100% {
+        transform: translateX(100%);
+    }
 }

@@ -25,7 +25,7 @@ export default function Hero() {
   return (
     <section className="relative bg-white pt-24 pb-20 lg:pt-32 lg:pb-32 overflow-hidden">
       {/* Engineering Grid Background - Subtle Precision */}
-      <div className="absolute inset-0 z-0 opacity-[0.03]"
+      <div className="absolute inset-0 z-0 opacity-[0.03] [mask-image:linear-gradient(to_bottom,black_60%,transparent)]"
         style={{
           backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
           backgroundSize: '40px 40px'
@@ -67,7 +67,7 @@ export default function Hero() {
 
             {/* Subhead */}
             <motion.p variants={fadeIn} className="text-lg md:text-xl text-zinc-500 mb-8 leading-relaxed font-light">
-              Send a link. Get a video. Embed it anywhere. <br className="hidden md:block" />
+              Send a link. Get testimonials. Embed it anywhere. <br className="hidden md:block" />
               Turn your happy customers into your best marketing team.
             </motion.p>
 

@@ -9,7 +9,7 @@ const Footer = () => {
       {/* Hero-style background */}
       <div className="absolute inset-0 bg-primary overflow-hidden">
         {/* Grid Pattern */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="absolute inset-0 opacity-10 pointer-events-none [mask-image:linear-gradient(to_bottom,transparent,black_50%)]">
           <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id="footer-grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -91,7 +91,7 @@ const Footer = () => {
               viewport={{ once: true }}
             >
               <p className="text-xs text-white/60">
-                © {currentYear} Vouchy Inc. Crafted with precision for creators worldwide.
+                © {currentYear} Vouchy. Crafted with precision for creators worldwide.
               </p>
             </motion.div>
           </motion.div>

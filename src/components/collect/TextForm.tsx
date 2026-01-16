@@ -19,9 +19,10 @@ interface TextFormProps {
     }, avatarFile: File | null) => void;
     onBack: () => void;
     submitting: boolean;
+    spaceId?: string;
 }
 
-export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormProps) => {
+export const TextForm = ({ canUseAI, onSubmit, onBack, submitting, spaceId }: TextFormProps) => {
     const { toast } = useToast();
     const avatarInputRef = useRef<HTMLInputElement>(null);
 
@@ -89,17 +90,17 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
         >
-            <h2 className="text-2xl font-black text-primary mb-2 text-center">
+            <h2 className="text-2xl font-black text-zinc-900 mb-2 text-center">
                 Write your review
             </h2>
-            <p className="text-subtext mb-8 text-center">
+            <p className="text-zinc-500 mb-8 text-center">
                 Share what you loved about your experience
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Star Rating */}
                 <div className="flex flex-col items-center gap-3 mb-2">
-                    <p className="text-sm text-subtext">How would you rate your experience?</p>
+                    <p className="text-sm text-zinc-500">How would you rate your experience?</p>
                     <div className="flex gap-2">
                         {[1, 2, 3, 4, 5].map((rating) => (
                             <motion.button
@@ -112,8 +113,8 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
                             >
                                 <Star
                                     className={`w-9 h-9 transition-all duration-200 ${rating <= textForm.rating
-                                            ? "text-amber-400 fill-amber-400 drop-shadow-sm"
-                                            : "text-border/30 hover:text-amber-300"
+                                        ? "text-amber-400 fill-amber-400 drop-shadow-sm"
+                                        : "text-zinc-200 hover:text-amber-300"
                                         }`}
                                 />
                             </motion.button>
@@ -122,7 +123,7 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
                 </div>
 
                 {/* Photo Upload */}
-                <div className="flex flex-col items-center gap-3 p-5 bg-slate rounded-xl border border-border/[0.08]">
+                <div className="flex flex-col items-center gap-3 organic-card p-6 border-dashed border-2 hover:border-primary/50 transition-colors group/upload">
                     <input
                         ref={avatarInputRef}
                         type="file"
@@ -136,7 +137,7 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => avatarInputRef.current?.click()}
-                            className="relative w-20 h-20 rounded-full bg-primary/10 border-2 border-dashed border-primary/30 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary/50 transition-colors"
+                            className="relative w-16 h-16 rounded-2xl bg-white border border-zinc-200 shadow-sm flex items-center justify-center cursor-pointer overflow-hidden group-hover/upload:border-primary/50 transition-colors"
                         >
                             {avatarPreview ? (
                                 <>
@@ -151,22 +152,23 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
                                 </>
                             ) : (
                                 <div className="flex flex-col items-center">
-                                    <Camera className="w-6 h-6 text-primary/50 group-hover:text-primary transition-colors" />
+                                    <Camera className="w-6 h-6 text-zinc-400 group-hover/upload:text-primary transition-colors" />
                                 </div>
                             )}
                         </motion.div>
 
-                        <div className="text-left">
-                            <p className="text-sm font-medium text-foreground">Add your photo</p>
-                            <p className="text-xs text-subtext">Optional • JPG, PNG up to 5MB</p>
+                        <div className="text-left cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
+                            <p className="text-sm font-bold text-zinc-900 group-hover/upload:text-primary transition-colors">Add your photo</p>
+                            <p className="text-xs text-zinc-400">Optional • JPG, PNG up to 5MB</p>
                             {avatarPreview && (
                                 <button
                                     type="button"
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        e.stopPropagation();
                                         setAvatarFile(null);
                                         setAvatarPreview(null);
                                     }}
-                                    className="text-xs text-red-500 hover:text-red-600 mt-1"
+                                    className="text-xs text-red-500 hover:text-red-600 mt-1 font-medium"
                                 >
                                     Remove photo
                                 </button>
@@ -181,7 +183,7 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
                             placeholder="Your name *"
                             value={textForm.name}
                             onChange={(e) => setTextForm({ ...textForm, name: e.target.value })}
-                            className={errors.name ? "border-red-500" : ""}
+                            className={`bg-white border-zinc-200 focus:border-primary focus:ring-primary/20 ${errors.name ? "border-red-500" : ""}`}
                             maxLength={100}
                         />
                         {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
@@ -190,6 +192,7 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
                         placeholder="Job title (optional)"
                         value={textForm.title}
                         onChange={(e) => setTextForm({ ...textForm, title: e.target.value })}
+                        className="bg-white border-zinc-200 focus:border-primary focus:ring-primary/20"
                         maxLength={100}
                     />
                 </div>
@@ -201,7 +204,7 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
                             placeholder="Email address *"
                             value={textForm.email}
                             onChange={(e) => setTextForm({ ...textForm, email: e.target.value })}
-                            className={errors.email ? "border-red-500" : ""}
+                            className={`bg-white border-zinc-200 focus:border-primary focus:ring-primary/20 ${errors.email ? "border-red-500" : ""}`}
                             maxLength={255}
                         />
                         {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
@@ -210,22 +213,24 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
                         placeholder="Company (optional)"
                         value={textForm.company}
                         onChange={(e) => setTextForm({ ...textForm, company: e.target.value })}
+                        className="bg-white border-zinc-200 focus:border-primary focus:ring-primary/20"
                         maxLength={100}
                     />
                 </div>
 
                 <div>
                     <div className="flex items-center justify-between mb-2">
-                        <label className="text-sm text-subtext">Your testimonial</label>
+                        <label className="text-sm text-zinc-500">Your testimonial</label>
                         <TextMagic
                             text={textForm.testimonial}
                             onTextUpdated={(newText) => setTextForm({ ...textForm, testimonial: newText })}
                             isLocked={!canUseAI}
+                            spaceId={spaceId}
                         />
                     </div>
                     <Textarea
                         placeholder="Share your experience..."
-                        className={`min-h-[120px] resize-none ${errors.testimonial ? "border-red-500" : ""}`}
+                        className={`min-h-[120px] resize-none bg-white border-zinc-200 focus:border-primary focus:ring-primary/20 ${errors.testimonial ? "border-red-500" : ""}`}
                         value={textForm.testimonial}
                         onChange={(e) => setTextForm({ ...textForm, testimonial: e.target.value })}
                         maxLength={2000}
@@ -236,16 +241,16 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
                 </div>
 
                 <Button
-                    variant="hero"
-                    className="w-full gap-2"
+                    variant="default"
+                    className="w-full gap-2 py-6 text-base font-semibold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
                     type="submit"
                     disabled={submitting}
                 >
                     {submitting ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
                         <>
-                            <Send className="w-4 h-4" />
+                            <Send className="w-5 h-5" />
                             Submit Review
                         </>
                     )}
@@ -254,7 +259,7 @@ export const TextForm = ({ canUseAI, onSubmit, onBack, submitting }: TextFormPro
 
             <button
                 onClick={onBack}
-                className="block mx-auto mt-6 text-sm text-subtext hover:text-primary transition-colors"
+                className="block mx-auto mt-6 text-sm text-zinc-400 hover:text-primary transition-colors"
             >
                 ← Back to options
             </button>

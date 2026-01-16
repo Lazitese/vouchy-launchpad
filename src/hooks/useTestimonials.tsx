@@ -1,23 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Tables } from "@/integrations/supabase/types";
 
-export interface Testimonial {
-  id: string;
-  space_id: string;
-  type: "video" | "text";
-  content: string | null;
-  video_url: string | null;
-  author_name: string;
-  author_email: string | null;
-  author_title: string | null;
-  author_company: string | null;
-  author_avatar_url: string | null;
-  rating: number | null;
-  status: "pending" | "approved" | "rejected";
-  created_at: string;
-  ai_summary: string | null;
-  golden_quote: string | null;
-}
+export type Testimonial = Tables<"testimonials">;
 
 export const useTestimonials = (spaceIds: string[]) => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -41,7 +26,7 @@ export const useTestimonials = (spaceIds: string[]) => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setTestimonials((data as Testimonial[]) || []);
+      setTestimonials(data || []);
     } catch (error) {
       console.error("Error fetching testimonials:", error);
     } finally {
@@ -57,7 +42,7 @@ export const useTestimonials = (spaceIds: string[]) => {
         .eq("id", id);
 
       if (error) throw error;
-      setTestimonials(testimonials.map(t => 
+      setTestimonials(testimonials.map(t =>
         t.id === id ? { ...t, status } : t
       ));
       return { error: null };
@@ -173,7 +158,7 @@ export const useSubmitTestimonial = () => {
     setLoading(true);
     try {
       let avatarUrl: string | null = null;
-      
+
       if (data.avatarFile) {
         avatarUrl = await uploadAvatar(data.spaceId, data.avatarFile);
       }
@@ -184,11 +169,11 @@ export const useSubmitTestimonial = () => {
           space_id: data.spaceId,
           type: "text",
           content: data.content,
-          author_name: data.name,
-          author_email: data.email,
-          author_company: data.company || null,
-          author_title: data.title || null,
-          author_avatar_url: avatarUrl,
+          name: data.name,
+          email: data.email,
+          company: data.company || null,
+          title: data.title || null,
+          avatar_url: avatarUrl,
           rating: data.rating,
           status: "pending",
         });
@@ -208,6 +193,7 @@ export const useSubmitTestimonial = () => {
     email: string;
     company?: string;
     title?: string;
+    content?: string;
     videoBlob: Blob;
     rating: number;
   }) => {
@@ -238,10 +224,11 @@ export const useSubmitTestimonial = () => {
           space_id: data.spaceId,
           type: "video",
           video_url: publicUrl,
-          author_name: data.name,
-          author_email: data.email,
-          author_company: data.company || null,
-          author_title: data.title || null,
+          content: data.content || null,
+          name: data.name,
+          email: data.email,
+          company: data.company || null,
+          title: data.title || null,
           rating: data.rating,
           status: "pending",
         });

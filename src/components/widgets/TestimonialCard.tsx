@@ -12,9 +12,10 @@ interface ExpandableContentProps {
     darkMode?: boolean;
     isVideo?: boolean;
     videoUrl?: string | null;
+    textColor?: string;
 }
 
-export const ExpandableContent = ({ content, maxLength = 140, darkMode = false, isVideo = false, videoUrl }: ExpandableContentProps) => {
+export const ExpandableContent = ({ content, maxLength = 140, darkMode = false, isVideo = false, videoUrl, textColor }: ExpandableContentProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
     // Video Preview Mode
@@ -33,7 +34,10 @@ export const ExpandableContent = ({ content, maxLength = 140, darkMode = false, 
 
     return (
         <div className="space-y-2">
-            <p className={`text-sm leading-relaxed transition-all duration-300 ${darkMode ? "text-gray-300" : "text-gray-600"} ${isVideo && (!content || content.trim() === '') ? 'italic' : ''}`}>
+            <p
+                className={`text-sm leading-relaxed transition-all duration-300 ${!textColor ? (darkMode ? "text-gray-300" : "text-gray-600") : ""} ${isVideo && (!content || content.trim() === '') ? 'italic' : ''}`}
+                style={textColor ? { color: textColor } : undefined}
+            >
                 "{displayContent}{!isExpanded && needsTruncation ? "..." : ""}"
             </p>
             {needsTruncation && (
@@ -134,9 +138,11 @@ interface TestimonialStarsProps {
     rating?: number;
     className?: string;
     size?: string;
+    color?: string;
+    darkMode?: boolean;
 }
 
-export const TestimonialStars = ({ rating = 5, className = "", size = "w-4 h-4" }: TestimonialStarsProps) => {
+export const TestimonialStars = ({ rating = 5, className = "", size = "w-4 h-4", color, darkMode = false }: TestimonialStarsProps) => {
     // Ensure rating is at least 1 and at most 5
     const finalRating = Math.max(1, Math.min(5, rating || 5));
 
@@ -145,7 +151,12 @@ export const TestimonialStars = ({ rating = 5, className = "", size = "w-4 h-4" 
             {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                     key={i}
-                    className={`${size} transition-all ${i < finalRating ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]" : "text-gray-200 dark:text-gray-800"}`}
+                    className={`${size} transition-all ${i < finalRating ? "" : (darkMode ? "text-gray-800" : "text-gray-200")}`}
+                    style={{
+                        fill: i < finalRating ? (color || "#fbbf24") : "transparent",
+                        color: i < finalRating ? (color || "#fbbf24") : undefined,
+                        stroke: i < finalRating ? (color || "#fbbf24") : "currentColor"
+                    }}
                 />
             ))}
         </div>

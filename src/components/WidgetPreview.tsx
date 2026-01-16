@@ -5,15 +5,21 @@ import { Tables } from "@/integrations/supabase/types";
 import { CustomStyles, hexToHSL, defaultStyles } from "@/utils/widgetUtils";
 
 // Import Layouts
-import { MinimalLayout } from "./widgets/layouts/MinimalLayout";
 import { CardsLayout } from "./widgets/layouts/CardsLayout";
-import { MasonryLayout } from "./widgets/layouts/MasonryLayout";
-import { AvatarLayout } from "./widgets/layouts/AvatarLayout";
 import { BentoLayout } from "./widgets/layouts/BentoLayout";
 import { MarqueeLayout } from "./widgets/layouts/MarqueeLayout";
-import { StackLayout } from "./widgets/layouts/StackLayout";
-import { SpotlightLayout } from "./widgets/layouts/SpotlightLayout";
 import { TimelineLayout } from "./widgets/layouts/TimelineLayout";
+import { FloatingCardsLayout } from "./widgets/layouts/FloatingCardsLayout";
+import { GlassPrismLayout } from "./widgets/layouts/GlassPrismLayout";
+import { PolaroidStackLayout } from "./widgets/layouts/PolaroidStackLayout";
+import { ParallaxScrollLayout } from "./widgets/layouts/ParallaxScrollLayout";
+import { MinimalStackedLayout } from "./widgets/layouts/MinimalStackedLayout";
+import { CinematicSliderLayout } from "./widgets/layouts/CinematicSliderLayout";
+import { OrbitRingLayout } from "./widgets/layouts/OrbitRingLayout";
+import { RadialBurstLayout } from "./widgets/layouts/RadialBurstLayout";
+import { NewsTickerHeroLayout } from "./widgets/layouts/NewsTickerHeroLayout";
+import { MasonryWallLayout } from "./widgets/layouts/MasonryWallLayout";
+import { StackedCardsLayout } from "./widgets/layouts/StackedCardsLayout";
 import { VideoModal } from "./widgets/VideoModal";
 
 interface WidgetPreviewProps {
@@ -78,7 +84,7 @@ const DesktopFrame = ({ children, darkMode }: { children: React.ReactNode, darkM
       </div>
       {/* Address Bar */}
       <div className="flex-1 max-w-2xl mx-auto h-7 bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-[5px] shadow-sm flex items-center justify-center text-[11px] text-slate-400 font-medium">
-        <span className="opacity-50 mr-1">🔒</span> vouchy.io/widgets/preview
+        <span className="opacity-50 mr-1">🔒</span> vouchy.click/widgets/preview
       </div>
       <div className="w-16" /> {/* Balance */}
     </div>
@@ -141,18 +147,24 @@ export const WidgetPreview = ({
     };
 
     const layouts: Record<string, JSX.Element> = {
-      minimal: <MinimalLayout {...layoutProps} />,
       cards: <CardsLayout {...layoutProps} />,
-      masonry: <MasonryLayout {...layoutProps} />,
-      avatar: <AvatarLayout {...layoutProps} />,
       bento: <BentoLayout {...layoutProps} />,
       marquee: <MarqueeLayout {...layoutProps} />,
-      stack: <StackLayout {...layoutProps} carouselIndex={carouselIndex} nextSlide={() => setCarouselIndex(i => (i + 1) % Math.max(displayItems.length, 1))} prevSlide={() => setCarouselIndex(i => (i - 1 + displayItems.length) % Math.max(displayItems.length, 1))} />,
-      spotlight: <SpotlightLayout {...layoutProps} carouselIndex={carouselIndex} setCarouselIndex={setCarouselIndex} activeStyle={layout} nextSlide={() => setCarouselIndex(i => (i + 1) % Math.max(displayItems.length, 1))} prevSlide={() => setCarouselIndex(i => (i - 1 + displayItems.length) % Math.max(displayItems.length, 1))} />,
       timeline: <TimelineLayout {...layoutProps} />,
+      floating: <FloatingCardsLayout {...layoutProps} />,
+      glass: <GlassPrismLayout {...layoutProps} />,
+      polaroid: <PolaroidStackLayout {...layoutProps} />,
+      parallax: <ParallaxScrollLayout {...layoutProps} />,
+      minimalStacked: <MinimalStackedLayout {...layoutProps} />,
+      cinematic: <CinematicSliderLayout {...layoutProps} />,
+      orbit: <OrbitRingLayout {...layoutProps} />,
+      radial: <RadialBurstLayout {...layoutProps} />,
+      news: <NewsTickerHeroLayout {...layoutProps} />,
+      masonryWall: <MasonryWallLayout {...layoutProps} />,
+      deck: <StackedCardsLayout {...layoutProps} />,
     };
 
-    return layouts[layout] || <MinimalLayout {...layoutProps} />;
+    return layouts[layout] || <CardsLayout {...layoutProps} />;
   };
 
   // Embed Mode (No Lab Frame)
@@ -178,31 +190,7 @@ export const WidgetPreview = ({
         color: effectiveStyles.textColor || (darkMode ? "#fff" : "#000"),
       }}
     >
-      {/* Lab-Only Header: Premium Design with Disclaimer */}
-      {!readOnly && (
-        <div className="mb-8 md:mb-16 text-center px-2 pt-6 space-y-4">
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter leading-tight break-words"
-            style={{ color: effectiveStyles.textColor || (darkMode ? "#fff" : "#000") }}
-          >
-            Vouchy Testimonies
-          </motion.h1>
 
-          <div className="relative flex items-center justify-center py-4 px-4">
-            <div className="absolute left-4 right-4 h-px bg-current opacity-10" />
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="relative z-10 px-3 bg-inherit text-[9px] md:text-xs font-semibold text-muted-foreground/60 uppercase tracking-widest text-center"
-              style={{ backgroundColor: effectiveStyles.backgroundColor || (darkMode ? "#000" : "#fff") }}
-            >
-              * Header not included in embed
-            </motion.span>
-          </div>
-        </div>
-      )}
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -220,19 +208,7 @@ export const WidgetPreview = ({
 
   return (
     <div className="w-full h-full flex items-center justify-center p-0">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={previewDevice}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.1 }}
-          transition={{ duration: 0.3 }}
-        >
-          {previewDevice === "mobile" && <MobileFrame darkMode={darkMode}>{Content}</MobileFrame>}
-          {previewDevice === "tablet" && <TabletFrame darkMode={darkMode}>{Content}</TabletFrame>}
-          {previewDevice === "desktop" && <DesktopFrame darkMode={darkMode}>{Content}</DesktopFrame>}
-        </motion.div>
-      </AnimatePresence>
+      {Content}
 
       <VideoModal
         isOpen={!!selectedVideo}

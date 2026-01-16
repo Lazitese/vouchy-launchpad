@@ -17,10 +17,10 @@ const Navigation = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const navItems = [
-        { label: "How it Works", id: "how-it-works" },
+    const navItems: { label: string; id?: string; path?: string }[] = [
         { label: "Features", id: "features" },
-        { label: "Design Library", path: "/templates" },
+        { label: "How it Works", id: "how-it-works" },
+        { label: "Various Designs", id: "design-showcase" },
         { label: "Pricing", id: "pricing" },
     ];
 

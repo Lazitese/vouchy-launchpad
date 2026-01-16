@@ -3,7 +3,7 @@ import { TbVideo, TbMessage, TbCode, TbBolt, TbPlayerPlayFilled, TbTrendingUp, T
 
 const BentoGrid = () => {
   return (
-    <section id="features" className="py-24 bg-zinc-50 dark:bg-zinc-950">
+    <section id="features" className="py-24 bg-gradient-to-b from-white via-zinc-50 to-white dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
       <div className="container mx-auto px-6">
 
         {/* Header */}

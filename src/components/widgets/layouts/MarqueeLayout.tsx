@@ -40,32 +40,45 @@ export const MarqueeLayout = ({
                 ${customStyles.showShadow ? "shadow-lg shadow-black/5" : ""}
             `}
             style={{
-                backgroundColor: customStyles.backgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
-                color: customStyles.textColor || (darkMode ? '#ffffff' : '#000000'),
+                backgroundColor: customStyles.cardBackgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
+                color: customStyles.contentColor || customStyles.textColor || (darkMode ? '#ffffff' : '#000000'),
                 borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'),
                 borderRadius: customStyles.borderRadius,
             }}
         >
             <div className="flex flex-col h-full">
-                <TestimonialStars rating={t.rating} size="w-3.5 h-3.5" className="mb-4" />
+                <TestimonialStars darkMode={darkMode} rating={t.rating} size="w-3.5 h-3.5" className="mb-4" color={customStyles.primaryColor} />
 
                 <div className="mb-6 flex-1">
-                    <ExpandableContent
-                        content={t.content || ""}
-                        id={`${t.id}-${i}`}
-                        maxLength={isMobile ? 100 : 150}
-                        darkMode={darkMode}
-                        isVideo={t.type === 'video'}
-                        videoUrl={t.video_url}
-                    />
+                    <div style={{ color: customStyles.contentColor || customStyles.textColor || (darkMode ? "#ffffff" : "#000000") }}>
+                        <ExpandableContent
+                            content={t.content || ""}
+                            id={`${t.id}-${i}`}
+                            maxLength={isMobile ? 100 : 150}
+                            darkMode={darkMode}
+                            isVideo={t.type === 'video'}
+                            videoUrl={t.video_url}
+                            textColor={customStyles.contentColor || customStyles.textColor || (darkMode ? "#ffffff" : "#000000")}
+                        />
+                    </div>
                 </div>
 
                 <div className="mt-auto flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <TestimonialAvatar testimonial={t} size="sm" />
                         <div className="min-w-0">
-                            <p className="text-sm font-bold truncate">{t.author_name}</p>
-                            <p className={`text-xs truncate ${subtextClasses(darkMode)}`}>{t.author_company || "Verified Customer"}</p>
+                            <p
+                                className="text-sm font-bold truncate"
+                                style={{ color: customStyles.authorColor || customStyles.textColor || (darkMode ? "#ffffff" : "#000000") }}
+                            >
+                                {t.name}
+                            </p>
+                            <p
+                                className={`text-xs truncate ${subtextClasses(darkMode)}`}
+                                style={{ color: customStyles.roleColor || (darkMode ? "#9ca3af" : "#6b7280") }}
+                            >
+                                {t.company || "Verified Customer"}
+                            </p>
                         </div>
                     </div>
                     <Quote className="w-4 h-4 text-primary/20" />

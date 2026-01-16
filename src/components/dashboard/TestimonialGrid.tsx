@@ -36,13 +36,13 @@ export const TestimonialGrid = ({
     if (testimonials.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-16">
-                <div className="w-20 h-20 mb-6 rounded-full bg-slate flex items-center justify-center">
-                    <Heart className="w-8 h-8 text-primary/40" />
+                <div className="w-20 h-20 mb-6 rounded-full bg-zinc-50 flex items-center justify-center border border-zinc-100">
+                    <Heart className="w-8 h-8 text-zinc-300" />
                 </div>
-                <h2 className="text-xl font-bold text-primary mb-2">
+                <h2 className="text-xl font-bold text-zinc-900 mb-2">
                     No testimonials yet
                 </h2>
-                <p className="text-subtext mb-6 text-center max-w-md">
+                <p className="text-zinc-500 mb-6 text-center max-w-md">
                     Share your collection link with customers to start receiving testimonials.
                 </p>
             </div>
@@ -59,24 +59,24 @@ export const TestimonialGrid = ({
                 >
 
 
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-5">
                         {/* Header: Avatar + Meta */}
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-3">
-                                <Avatar className="w-10 h-10 ring-2 ring-gray-50 border border-gray-100">
-                                    {testimonial.author_avatar_url ? (
-                                        <AvatarImage src={testimonial.author_avatar_url} alt={testimonial.author_name} />
+                                <Avatar className="w-10 h-10 ring-2 ring-white border border-zinc-200 shadow-sm">
+                                    {testimonial.avatar_url ? (
+                                        <AvatarImage src={testimonial.avatar_url} alt={testimonial.name} />
                                     ) : null}
-                                    <AvatarFallback className="bg-gray-100 text-gray-500 font-bold text-sm">
-                                        {testimonial.author_name.charAt(0)}
+                                    <AvatarFallback className="bg-[#14873e] text-white font-bold text-sm">
+                                        {testimonial.name.charAt(0)}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <h3 className="font-bold text-black text-sm leading-tight">
-                                        {testimonial.author_name}
+                                    <h3 className="font-bold text-zinc-900 text-sm leading-tight">
+                                        {testimonial.name}
                                     </h3>
-                                    <p className="text-xs text-gray-400 font-medium">
-                                        {testimonial.author_title || "Verified Customer"}
+                                    <p className="text-xs text-zinc-500 font-medium">
+                                        {testimonial.company || "Verified Customer"}
                                     </p>
                                 </div>
                             </div>
@@ -85,41 +85,43 @@ export const TestimonialGrid = ({
                             {testimonial.rating && (
                                 <div className="flex gap-0.5">
                                     {[...Array(5)].map((_, i) => (
-                                        <span key={i} className={`text-xs ${i < testimonial.rating ? 'text-black' : 'text-gray-200'}`}>★</span>
+                                        <span key={i} className={`text-xs ${i < testimonial.rating ? 'text-zinc-900' : 'text-zinc-200'}`}>★</span>
                                     ))}
                                 </div>
                             )}
                         </div>
 
                         {/* Content */}
-                        <div className="text-sm text-gray-600 leading-relaxed">
+                        <div className="text-sm text-zinc-600 leading-relaxed font-normal">
                             {testimonial.type === "video" && testimonial.video_url ? (
                                 <div
-                                    className="relative w-full h-32 rounded-xl bg-black flex items-center justify-center cursor-pointer group/play overflow-hidden border border-black/5 shadow-inner"
+                                    className="relative w-full h-32 rounded-xl bg-zinc-900 flex items-center justify-center cursor-pointer group/play overflow-hidden border border-zinc-900/5 shadow-inner"
                                     onClick={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
                                         setSelectedVideo(testimonial.video_url);
                                     }}
                                 >
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-20" />
-                                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/play:scale-110">
-                                        <Play className="w-5 h-5 text-black fill-current ml-0.5" />
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-20" />
+                                    <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/play:scale-110 group-hover/play:bg-white group-hover/play:text-zinc-900 text-white border border-white/20">
+                                        <Play className="w-5 h-5 fill-current ml-0.5" />
                                     </div>
                                     <span className="absolute bottom-3 text-[10px] font-bold text-white/50 uppercase tracking-widest group-hover/play:text-white/80 transition-colors">
                                         Watch Video
                                     </span>
                                 </div>
                             ) : (
-                                <p className="italic">
-                                    "{testimonial.content}"
+                                <p className="italic text-zinc-600 relative">
+                                    <span className="text-zinc-300 absolute -left-2 -top-1 opacity-50 text-2xl leading-none">"</span>
+                                    {testimonial.content}
+                                    <span className="text-zinc-300 ml-1 opacity-50 text-sm leading-none">"</span>
                                 </p>
                             )}
                         </div>
 
                         {/* Footer: Date & Actions */}
-                        <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-2">
-                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
+                        <div className="flex items-center justify-between pt-4 border-t border-zinc-100 mt-1">
+                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest font-mono">
                                 {timeAgo(testimonial.created_at)}
                             </span>
 
@@ -128,29 +130,29 @@ export const TestimonialGrid = ({
                                     <>
                                         <button
                                             onClick={() => onApprove(testimonial.id)}
-                                            className="w-8 h-8 rounded-full bg-lime-100 text-lime-700 hover:bg-lime-200 flex items-center justify-center transition-colors"
+                                            className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-100 flex items-center justify-center transition-colors"
                                             title="Approve"
                                         >
                                             <Check className="w-3.5 h-3.5" />
                                         </button>
                                         <button
                                             onClick={() => onReject(testimonial.id)}
-                                            className="w-8 h-8 rounded-full bg-red-50 text-red-600 hover:bg-red-100 flex items-center justify-center transition-colors"
+                                            className="w-8 h-8 rounded-full bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 flex items-center justify-center transition-colors"
                                             title="Reject"
                                         >
                                             <X className="w-3.5 h-3.5" />
                                         </button>
                                     </>
                                 ) : (
-                                    <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${testimonial.status === 'approved' ? 'bg-lime-100 text-lime-800' : 'bg-red-50 text-red-600'}`}>
+                                    <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${testimonial.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
                                         {testimonial.status}
                                     </div>
                                 )}
 
-                                <div className="w-px h-4 bg-gray-200 mx-1" />
+                                <div className="w-px h-4 bg-zinc-200 mx-1" />
 
                                 <button
-                                    className="w-8 h-8 rounded-full hover:bg-gray-50 text-gray-400 hover:text-black flex items-center justify-center transition-colors"
+                                    className="w-8 h-8 rounded-full hover:bg-zinc-100 text-zinc-400 hover:text-zinc-900 flex items-center justify-center transition-colors"
                                     onClick={() => onDelete(testimonial.id)}
                                     title="Delete"
                                 >

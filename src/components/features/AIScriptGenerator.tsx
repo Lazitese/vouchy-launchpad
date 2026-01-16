@@ -9,12 +9,14 @@ interface AIScriptGeneratorProps {
   questions: string[];
   onScriptGenerated: (script: string) => void;
   isLocked?: boolean;
+  spaceId?: string;
 }
 
-export const AIScriptGenerator = ({ 
-  questions, 
+export const AIScriptGenerator = ({
+  questions,
   onScriptGenerated,
-  isLocked = false 
+  isLocked = false,
+  spaceId
 }: AIScriptGeneratorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [keywords, setKeywords] = useState("");
@@ -22,8 +24,8 @@ export const AIScriptGenerator = ({
 
   const handleGenerate = async () => {
     if (!keywords.trim()) return;
-    
-    const script = await generateScript(keywords, questions);
+
+    const script = await generateScript(keywords, questions, spaceId);
     if (script) {
       onScriptGenerated(script);
       setIsOpen(false);

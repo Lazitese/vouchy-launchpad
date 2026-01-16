@@ -18,7 +18,7 @@ export interface UserPlan {
 const PLAN_FEATURES: Record<PlanType, UserPlan> = {
   free: {
     plan: "free",
-    testimonialLimit: 5,
+    testimonialLimit: 10,
     activeSpacesLimit: 1,
     videoDurationSeconds: 60,
     aiCredits: 0,
@@ -31,7 +31,7 @@ const PLAN_FEATURES: Record<PlanType, UserPlan> = {
     testimonialLimit: 50,
     activeSpacesLimit: 3,
     videoDurationSeconds: 180, // 3 minutes
-    aiCredits: 20,
+    aiCredits: 200,
     hasTeleprompter: true,
     hasCustomBranding: true,
     hasWhiteLabel: false,
@@ -41,7 +41,7 @@ const PLAN_FEATURES: Record<PlanType, UserPlan> = {
     testimonialLimit: 250,
     activeSpacesLimit: 15,
     videoDurationSeconds: 300, // 5 minutes
-    aiCredits: 100,
+    aiCredits: 500,
     hasTeleprompter: true,
     hasCustomBranding: true,
     hasWhiteLabel: true,
@@ -111,13 +111,13 @@ export const useUserPlan = () => {
 export const useAIFeatures = () => {
   const [loading, setLoading] = useState(false);
 
-  const generateScript = async (keywords: string, questions: string[]): Promise<string | null> => {
+  const generateScript = async (keywords: string, questions: string[], spaceId?: string): Promise<string | null> => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-features', {
         body: {
           action: 'generate-script',
-          data: { keywords, questions },
+          data: { keywords, questions, spaceId },
         },
       });
 
@@ -131,13 +131,13 @@ export const useAIFeatures = () => {
     }
   };
 
-  const enhanceText = async (text: string, mode: 'shorten' | 'simplify' | 'translate'): Promise<string | null> => {
+  const enhanceText = async (text: string, mode: 'shorten' | 'medium' | 'longer' | 'simplify' | 'fix' | 'translate', spaceId?: string): Promise<string | null> => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-features', {
         body: {
           action: 'enhance-text',
-          data: { text, mode },
+          data: { text, mode, spaceId },
         },
       });
 
@@ -151,13 +151,13 @@ export const useAIFeatures = () => {
     }
   };
 
-  const summarizeVideo = async (transcript: string, authorName: string): Promise<{ summary: string; goldenQuote: string } | null> => {
+  const summarizeVideo = async (transcript: string, authorName: string, spaceId?: string): Promise<{ summary: string; goldenQuote: string } | null> => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-features', {
         body: {
           action: 'summarize-video',
-          data: { transcript, authorName },
+          data: { transcript, authorName, spaceId },
         },
       });
 

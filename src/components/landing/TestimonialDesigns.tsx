@@ -32,12 +32,7 @@ const CardPreviewContainer = ({ children, title, description, colorClass, delay 
           {children}
         </div>
 
-        {/* Action Pill (Hidden by default, shows on hover) */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
-          <span className="bg-white/90 backdrop-blur-md text-zinc-900 border border-zinc-200 px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-2">
-            Preview Template <ArrowRight size={12} />
-          </span>
-        </div>
+
       </div>
 
       <div className='mt-6 px-2'>
@@ -50,9 +45,9 @@ const CardPreviewContainer = ({ children, title, description, colorClass, delay 
 
 const TestimonialDesigns = () => {
   return (
-    <section id="design-showcase" className='py-32 bg-zinc-50/50 relative overflow-hidden'>
+    <section id="design-showcase" className='py-32 bg-white relative overflow-hidden'>
       {/* Dynamic Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]"></div>
       <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary/20 opacity-20 blur-[100px]"></div>
 
       <div className='container mx-auto px-6 relative z-10'>
@@ -66,7 +61,7 @@ const TestimonialDesigns = () => {
             className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-zinc-200 shadow-sm mb-8'
           >
             <span className='flex h-2 w-2 rounded-full bg-primary animate-pulse'></span>
-            <span className='text-xs font-bold text-zinc-600 uppercase tracking-wider'>Design Library</span>
+            <span className='text-xs font-bold text-zinc-600 uppercase tracking-wider'>Various Designs</span>
           </motion.div>
 
           <motion.h2

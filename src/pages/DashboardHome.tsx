@@ -1,13 +1,20 @@
 
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Plus, ExternalLink, Copy, Check, X, ArrowUpRight, MessageSquare, Play, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ExternalLink, Copy, Play, MessageSquare, ChevronLeft, ChevronRight, ArrowUpRight, TrendingUp, MoreVertical, Edit2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, Tooltip, ResponsiveContainer } from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { VideoModal } from "@/components/widgets/VideoModal";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 
 interface DashboardHomeProps {
     user: any;
@@ -17,6 +24,8 @@ interface DashboardHomeProps {
     copyCollectionLink: (slug: string) => void;
     setActiveView: (view: any) => void;
     onManageSpace: (spaceId: string) => void;
+    updateSpace: (id: string, updates: any) => Promise<any>;
+    deleteSpace: (id: string) => Promise<any>;
 }
 
 export const DashboardHome = ({
@@ -26,15 +35,13 @@ export const DashboardHome = ({
     setCreateDialogOpen,
     copyCollectionLink,
     setActiveView,
-    onManageSpace
+    onManageSpace,
+    updateSpace,
+    deleteSpace
 }: DashboardHomeProps) => {
     const { toast } = useToast();
     const [filter, setFilter] = useState("All");
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-
-    const totalTestimonials = testimonials.length;
-    const approvedCount = testimonials.filter(t => t.status === "approved").length;
-    const pendingCount = testimonials.filter(t => t.status === "pending").length;
 
     // Filter Logic
     const filteredTestimonials = useMemo(() => {
@@ -66,56 +73,54 @@ export const DashboardHome = ({
         // 2. Aggregate Stats
         const totalRating = testimonials.reduce((acc, t) => acc + (t.rating || 0), 0);
         const avgRating = totalRating > 0 ? (totalRating / testimonials.length).toFixed(1) : "0.0";
-
         const videoCount = testimonials.filter(t => t.type === 'video').length;
         const videoPercentage = testimonials.length > 0 ? Math.round((videoCount / testimonials.length) * 100) : 0;
 
         return { dailyCounts, avgRating, videoPercentage };
     }, [testimonials]);
 
-    function handleCopyLink(slug: any) {
-        throw new Error("Function not implemented.");
-    }
-
     return (
         <div className="space-y-12">
 
-            {/* Header Row Removed */}
-
             {/* Top Section: Analytics & Insights */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
-                <div className="lg:col-span-2 organic-card p-4 md:p-8 flex flex-col justify-between relative overflow-hidden">
-                    {/* Header */}
-                    <div className="flex flex-col sm:flex-row items-start justify-between mb-4 md:mb-8 z-10 gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Main Curve Chart */}
+                <div className="lg:col-span-2 organic-card min-h-[320px] p-8 flex flex-col justify-between relative overflow-hidden group">
+                    <div className="flex items-start justify-between z-10 relative">
                         <div>
-                            <h3 className="text-lg md:text-2xl font-light text-black mb-1">Activity & Insights</h3>
-                            <p className="text-xs md:text-sm text-gray-400 font-medium">Last 7 Days</p>
+                            <h3 className="text-2xl font-light text-zinc-900 mb-1">Impact Overview</h3>
+                            <div className="flex items-center gap-2 text-sm text-zinc-500 font-medium">
+                                <TrendingUp className="w-4 h-4 text-[#ccf381]-600" />
+                                <span>+12% vs last week</span>
+                            </div>
                         </div>
-                        <div className="flex bg-gray-50 p-1 rounded-xl">
+                        <div className="flex bg-zinc-100/50 p-1 rounded-xl backdrop-blur-sm">
                             {['7D', '30D', '3M'].map((range, i) => (
-                                <button key={range} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${i === 0 ? 'bg-black text-white shadow-md' : 'text-gray-400 hover:text-black'}`}>
+                                <button
+                                    key={range}
+                                    className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${i === 0 ? 'bg-white text-black shadow-sm' : 'text-zinc-400 hover:text-black'}`}
+                                >
                                     {range}
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Chart */}
-                    <div className="h-32 md:h-48 w-full z-10">
+                    <div className="h-48 w-[110%] -ml-4 z-10 relative mt-4">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={analyticsData.dailyCounts}>
                                 <defs>
                                     <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#ccf381" stopOpacity={0.8} />
-                                        <stop offset="95%" stopColor="#ccf381" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#14873e" stopOpacity={0.2} />
+                                        <stop offset="95%" stopColor="#14873e" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <Tooltip
-                                    cursor={{ stroke: '#000', strokeWidth: 1, strokeDasharray: '4 4' }}
+                                    cursor={{ stroke: '#14873e', strokeWidth: 1, strokeDasharray: '4 4' }}
                                     content={({ active, payload, label }) => {
                                         if (active && payload && payload.length) {
                                             return (
-                                                <div className="bg-black text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xl flex flex-col gap-1">
+                                                <div className="bg-[#14873e] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xl flex flex-col gap-1">
                                                     <span className="opacity-70 font-normal">{label}</span>
                                                     <span>{payload[0].value} Reviews</span>
                                                 </div>
@@ -127,8 +132,8 @@ export const DashboardHome = ({
                                 <Area
                                     type="monotone"
                                     dataKey="value"
-                                    stroke="#000"
-                                    strokeWidth={3}
+                                    stroke="#14873e"
+                                    strokeWidth={2.5}
                                     fill="url(#colorValue)"
                                     animationDuration={1500}
                                 />
@@ -138,40 +143,38 @@ export const DashboardHome = ({
                 </div>
 
                 {/* Quick Stats Column */}
-                <div className="grid grid-cols-2 lg:grid-cols-1 gap-4">
-                    <div className="organic-card p-4 md:p-6 flex-1 flex flex-col justify-center">
-                        <div className="w-10 h-10 rounded-full bg-lime-100 flex items-center justify-center mb-4 text-lime-700">
-                            <ExternalLink className="w-5 h-5" />
+                <div className="grid grid-cols-2 lg:grid-cols-1 gap-6">
+                    <div className="organic-card p-6 flex flex-col justify-center relative overflow-hidden group hover:border-[#ccf381]/50 transition-colors">
+                        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                            <ExternalLink className="w-16 h-16" />
                         </div>
-                        <p className="text-2xl md:text-3xl font-bold text-black mb-1">{analyticsData.avgRating}</p>
-                        <p className="text-xs md:text-sm text-gray-400 font-medium">Avg Rating</p>
+                        <p className="text-4xl font-bold text-zinc-900 mb-2 tracking-tight">{analyticsData.avgRating}</p>
+                        <p className="text-sm text-zinc-500 font-medium">Average Rating</p>
                     </div>
-                    <div className="organic-card p-4 md:p-6 flex-1 flex flex-col justify-center">
-                        <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mb-4 text-blue-600">
-                            <MessageSquare className="w-5 h-5" />
+                    <div className="organic-card p-6 flex flex-col justify-center relative overflow-hidden group hover:border-black/20 transition-colors">
+                        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                            <MessageSquare className="w-16 h-16" />
                         </div>
-                        <p className="text-2xl md:text-3xl font-bold text-black mb-1">{analyticsData.videoPercentage}%</p>
-                        <p className="text-xs md:text-sm text-gray-400 font-medium">Video Ratio</p>
+                        <p className="text-4xl font-bold text-zinc-900 mb-2 tracking-tight">{analyticsData.videoPercentage}%</p>
+                        <p className="text-sm text-zinc-500 font-medium">Video Response Rate</p>
                     </div>
                 </div>
             </div>
 
-
             {/* Main Section: New Leads (Testimonials) */}
-            < div className="space-y-6" >
+            <div className="space-y-6">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="flex items-baseline gap-3 md:gap-4">
-                        <h3 className="text-xl md:text-2xl font-normal text-black">New Reviews</h3>
-                        <span className="text-xs md:text-sm font-medium text-gray-400 border-b border-gray-200 pb-0.5">{testimonials.length} reviews</span>
+                    <div className="flex items-baseline gap-4">
+                        <h3 className="text-2xl font-light text-zinc-900">Latest Feedback</h3>
+                        <span className="text-sm font-medium text-zinc-400 border-b border-zinc-200 pb-0.5">{testimonials.length} total</span>
                     </div>
 
-                    {/* Pill Filters */}
-                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
-                        {['All', 'Video', 'Text', 'High Rating', 'Low Rating'].map((f) => (
+                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2">
+                        {['All', 'Video', 'Text', 'High Rating'].map((f) => (
                             <button
                                 key={f}
                                 onClick={() => setFilter(f)}
-                                className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${filter === f ? 'bg-black text-white shadow-lg shadow-black/10 scale-105' : 'bg-transparent text-gray-400 hover:bg-white hover:text-black hover:shadow-sm'}`}
+                                className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${filter === f ? 'bg-[#14873e] text-white shadow-lg shadow-[#14873e]/20' : 'bg-white text-zinc-400 hover:text-black hover:shadow-sm'}`}
                             >
                                 {f}
                             </button>
@@ -182,12 +185,12 @@ export const DashboardHome = ({
                 {/* Horizontal Scroll List of Cards */}
                 <div
                     id="testimonials-container"
-                    className="flex gap-6 overflow-x-auto no-scrollbar pb-10 -mx-4 px-4 md:px-0"
+                    className="flex gap-6 overflow-x-auto scrollbar-hide pb-10 -mx-4 px-4 md:px-6"
                 >
                     {filteredTestimonials.length === 0 ? (
-                        <div className="w-full h-64 border-2 border-dashed border-gray-200 rounded-[2rem] flex flex-col items-center justify-center text-gray-400 bg-gray-50/50">
-                            <p className="mb-4 font-medium">No reviews match this filter</p>
-                            <Button variant="outline" onClick={() => setFilter("All")} className="rounded-full">Clear Filters</Button>
+                        <div className="w-full h-48 border border-dashed border-zinc-200 rounded-2xl flex flex-col items-center justify-center text-zinc-400 bg-white/50">
+                            <p className="mb-4 font-medium text-sm">No reviews match your filter</p>
+                            <Button variant="outline" onClick={() => setFilter("All")} className="rounded-full h-8 text-xs">Clear Filters</Button>
                         </div>
                     ) : (
                         filteredTestimonials.map((t, i) => (
@@ -195,212 +198,190 @@ export const DashboardHome = ({
                                 key={t.id}
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.1 }}
-                                className="organic-card min-w-[300px] max-w-[300px] h-[320px] p-6 flex flex-col justify-between relative group hover:shadow-xl transition-all duration-300"
+                                transition={{ delay: i * 0.05 }}
+                                className="organic-card min-w-[320px] max-w-[320px] h-[340px] p-6 flex flex-col justify-between relative group hover:shadow-2xl hover:shadow-black/5 hover:-translate-y-1 transition-all duration-300 bg-white"
                             >
-                                {/* Background Decorative Quote */}
-                                <div className="absolute top-6 right-6 opacity-5 pointer-events-none">
-                                    <svg width="80" height="80" viewBox="0 0 100 100" fill="currentColor">
-                                        <path d="M30 60 C30 75 25 85 10 90 L10 80 C20 75 20 70 20 60 L10 60 L10 30 L40 30 L40 60 Z M80 60 C80 75 75 85 60 90 L60 80 C70 75 70 70 70 60 L60 60 L60 30 L90 30 L90 60 Z" />
-                                    </svg>
-                                </div>
-
                                 <div>
-                                    {/* Header: Avatar + Stars */}
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <Avatar className="w-10 h-10 ring-2 ring-gray-50">
-                                            <AvatarImage src={t.author_avatar_url} />
-                                            <AvatarFallback className="bg-black text-white text-xs font-bold">
-                                                {t.author_name.charAt(0)}
-                                            </AvatarFallback>
-                                        </Avatar>
-
-                                        <div className="flex gap-0.5">
-                                            {[...Array(5)].map((_, idx) => (
-                                                <svg
-                                                    key={idx}
-                                                    className={`w-4 h-4 ${idx < (t.rating || 5) ? 'text-amber-400 fill-current' : 'text-gray-200 fill-current'}`}
-                                                    viewBox="0 0 20 20"
-                                                >
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                </svg>
-                                            ))}
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="w-10 h-10 ring-2 ring-white shadow-sm">
+                                                <AvatarImage src={t.author_avatar_url} />
+                                                <AvatarFallback className="bg-[#14873e] text-white text-xs font-bold">
+                                                    {t.author_name.charAt(0)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <h4 className="font-bold text-sm text-zinc-900 leading-none mb-1">{t.author_name}</h4>
+                                                <div className="flex gap-0.5">
+                                                    {[...Array(5)].map((_, idx) => (
+                                                        <div key={idx} className={`w-1 h-1 rounded-full ${idx < (t.rating || 5) ? 'bg-zinc-900' : 'bg-zinc-200'}`} />
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
+                                        <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">{t.type}</span>
                                     </div>
 
                                     {/* Content */}
-                                    <div className="relative z-10 flex-1 flex flex-col justify-center">
+                                    <div className="relative">
                                         {t.type === 'video' ? (
                                             <div
-                                                className="w-full h-32 rounded-2xl bg-black flex flex-col items-center justify-center gap-2 cursor-pointer group/play overflow-hidden border border-black/5 shadow-inner transition-transform hover:scale-[1.02]"
+                                                className="w-full h-36 rounded-xl bg-zinc-900 flex flex-col items-center justify-center gap-2 cursor-pointer group/play overflow-hidden relative shadow-inner"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setSelectedVideo(t.video_url);
                                                 }}
                                             >
-                                                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/play:scale-110">
-                                                    <Play className="w-5 h-5 text-black fill-current ml-0.5" />
+                                                {/* Gradient Overlay */}
+                                                <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-20" />
+
+                                                <div className="w-12 h-12 rounded-full bg-white backdrop-blur-sm flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/play:scale-110 group-hover/play:bg-[#ccf381]">
+                                                    <Play className="w-4 h-4 text-black fill-black ml-0.5" />
                                                 </div>
-                                                <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest group-hover/play:text-white/80 transition-colors">
-                                                    Watch Video
-                                                </span>
                                             </div>
                                         ) : (
-                                            <>
-                                                <p className="text-sm font-medium text-gray-700 leading-relaxed line-clamp-4 mb-2 italic">
-                                                    "{t.content || 'No text content provided.'}"
+                                            <div className="relative">
+                                                <span className="absolute -top-3 -left-1 text-4xl text-zinc-200 font-serif opacity-50">"</span>
+                                                <p className="text-sm font-medium text-zinc-600 leading-relaxed line-clamp-5 pt-2 pl-2">
+                                                    {t.content || 'No text content provided.'}
                                                 </p>
-                                                <button className="text-xs font-bold text-lime-600 hover:underline flex items-center gap-1">
-                                                    See more <span className="text-[10px]">↓</span>
-                                                </button>
-                                            </>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* Footer: Author Info */}
-                                <div className="pt-4 mt-2 border-t border-gray-50 flex items-center justify-between">
-                                    <div>
-                                        <h4 className="font-bold text-black text-sm">{t.author_name}</h4>
-                                        <p className="text-xs text-gray-400">{t.author_title || "Verified Customer"}</p>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${t.status === 'approved' ? 'bg-lime-100 text-lime-700' : 'bg-orange-50 text-orange-600'}`}>
-                                            {t.status}
-                                        </span>
-                                        <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
-                                            {t.type === 'video' ? <Play className="w-3 h-3 fill-current" /> : <MessageSquare className="w-3 h-3" />}
-                                        </div>
+                                {/* Footer */}
+                                <div className="pt-4 border-t border-zinc-50 flex items-center justify-between">
+                                    <p className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider">
+                                        {new Date(t.created_at).toLocaleDateString()}
+                                    </p>
+                                    <div className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${t.status === 'approved' ? 'bg-[#ccf381] text-black' : 'bg-zinc-100 text-zinc-500'}`}>
+                                        {t.status}
                                     </div>
                                 </div>
-
-
                             </motion.div>
                         ))
-
                     )}
                 </div>
 
-                {/* Carousel Navigation Buttons */}
-                <div className="flex justify-end gap-2 pr-4 md:pr-0">
+                {/* Navigation Arrows */}
+                <div className="flex justify-end gap-3 pr-6">
                     <button
-                        onClick={() => {
-                            const container = document.getElementById('testimonials-container');
-                            if (container) container.scrollBy({ left: -340, behavior: 'smooth' });
-                        }}
-                        className="w-10 h-10 rounded-full bg-white border border-gray-100 shadow-sm flex items-center justify-center text-black hover:bg-black hover:text-white transition-all transform hover:scale-110 active:scale-95"
+                        onClick={() => document.getElementById('testimonials-container')?.scrollBy({ left: -340, behavior: 'smooth' })}
+                        className="w-12 h-12 rounded-full bg-white border border-zinc-100 shadow-sm flex items-center justify-center text-zinc-900 hover:bg-[#14873e] hover:text-white transition-all duration-300"
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
-                        onClick={() => {
-                            const container = document.getElementById('testimonials-container');
-                            if (container) container.scrollBy({ left: 340, behavior: 'smooth' });
-                        }}
-                        className="w-10 h-10 rounded-full bg-white border border-gray-100 shadow-sm flex items-center justify-center text-black hover:bg-black hover:text-white transition-all transform hover:scale-110 active:scale-95"
+                        onClick={() => document.getElementById('testimonials-container')?.scrollBy({ left: 340, behavior: 'smooth' })}
+                        className="w-12 h-12 rounded-full bg-white border border-zinc-100 shadow-sm flex items-center justify-center text-zinc-900 hover:bg-[#14873e] hover:text-white transition-all duration-300"
                     >
                         <ChevronRight className="w-5 h-5" />
                     </button>
                 </div>
 
-            </div> {/* Closing div for "Main Section: New Leads (Testimonials)" */}
+            </div>
 
-
-            {/* Lower Section: Tasks / Spaces */}
-            < div className="grid grid-cols-1 lg:grid-cols-2 gap-8" >
-                {/* "Your Days Tasks" -> Recent Activity */}
-                < div className="space-y-6" >
+            {/* Lower Section: Spaces & Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
+                {/* Active Spaces */}
+                <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-baseline gap-4">
-                            <h3 className="text-2xl font-normal text-black">Active Spaces</h3>
-                            <span className="text-sm font-medium text-gray-400 border-b border-gray-200 pb-0.5">{spaces.length} spaces</span>
-                        </div>
+                        <h3 className="text-2xl font-light text-zinc-900">Your Spaces</h3>
+                        <Button variant="ghost" className="text-xs font-bold uppercase tracking-wider hover:bg-transparent hover:text-black">View All</Button>
                     </div>
 
-                    {/* Lime Card Feature */}
-                    <div className="lime-card p-8 relative overflow-hidden group hover:shadow-lg hover:bg-[#bef065] transition-all duration-300">
-                        <div className="absolute top-6 right-6 flex gap-2">
-                            <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
-                            <div className="w-2 h-2 rounded-full bg-black/20" />
-                        </div>
-
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-lg shadow-[#ccf381]/50">
-                                <ExternalLink className="w-5 h-5 text-black" />
-                            </div>
-                            <div>
-                                <p className="font-bold text-lg text-black">Widget Embed</p>
-                                <p className="text-sm opacity-60 font-medium">Active on 3 pages</p>
-                            </div>
-                        </div>
-
-                        <Button
-                            onClick={() => setActiveView('widget')}
-                            className="w-full bg-black text-white rounded-xl h-12 hover:bg-gray-900 transition-colors shadow-lg shadow-black/10 font-medium"
+                    <div className="grid gap-4">
+                        {/* New Space Button */}
+                        <button
+                            onClick={() => setCreateDialogOpen(true)}
+                            className="w-full h-16 rounded-xl border-2 border-dashed border-zinc-200 hover:border-black hover:bg-zinc-50 transition-all duration-300 flex items-center justify-center gap-2 group"
                         >
-                            Manage Widgets
-                        </Button>
-                    </div>
+                            <div className="w-6 h-6 rounded-full bg-zinc-100 group-hover:bg-black group-hover:text-white flex items-center justify-center transition-colors">
+                                <Plus className="w-4 h-4" />
+                            </div>
+                            <span className="text-sm font-bold text-zinc-400 group-hover:text-black transition-colors">Create New Space</span>
+                        </button>
 
-                    {/* Grid Layout for Spaces */}
-                    <div className="grid grid-cols-2 gap-4">
-                        {spaces.map((space, index) => (
+                        {spaces.map((space) => (
                             <div
                                 key={space.id}
                                 onClick={() => onManageSpace(space.id)}
-                                className="group flex flex-col justify-between bg-white rounded-[24px] p-5 border border-gray-100 transition-all duration-300 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-1 hover:border-black/5 cursor-pointer relative overflow-hidden h-40"
+                                className="group flex items-center justify-between p-4 bg-white/60 backdrop-blur-md rounded-xl border border-zinc-200/60 hover:border-black/20 hover:shadow-lg hover:bg-white transition-all cursor-pointer"
                             >
-
-                                {/* Decorative Gradient Blob */}
-                                <div className="absolute -right-4 -top-4 w-20 h-20 bg-gray-50 rounded-full blur-2xl group-hover:bg-[#ccf381]/50 transition-colors duration-500" />
-
-                                <div className="relative z-10">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <Avatar className="w-10 h-10 shadow-sm">
-                                            <AvatarFallback className={`text-sm font-bold ${index % 2 === 0 ? 'bg-black text-white' : 'bg-gray-100 text-black'}`}>
-                                                {space.name.charAt(0)}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={(e) => { e.stopPropagation(); handleCopyLink(space.slug); }}
-                                            className="w-8 h-8 -mr-2 -mt-2 rounded-full hover:bg-white/80"
-                                        >
-                                            <Copy className="w-3.5 h-3.5 text-gray-400 group-hover:text-black transition-colors" />
-                                        </Button>
+                                <div className="flex items-center gap-4">
+                                    <Avatar className="w-10 h-10 rounded-lg shadow-sm group-hover:scale-105 transition-transform">
+                                        <AvatarFallback className="bg-[#14873e] text-white text-xs font-bold rounded-lg rounded-tl-sm">
+                                            {space.name.charAt(0)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <h4 className="font-bold text-sm text-zinc-900 group-hover:underline">{space.name}</h4>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-mono text-zinc-400">/{space.slug}</span>
+                                            <span className="w-1 h-1 rounded-full bg-zinc-200" />
+                                            <span className="text-[10px] font-bold text-zinc-400">
+                                                {testimonials.filter(t => t.space_id === space.id).length} items
+                                            </span>
+                                        </div>
                                     </div>
-                                    <h4 className="font-bold text-lg text-black leading-tight line-clamp-1 group-hover:underline decoration-2 underline-offset-4 decoration-[#ccf381] decoration-wavy transition-all">{space.name}</h4>
-                                    <p className="text-[10px] font-medium text-gray-400 tracking-wider uppercase mt-1">/{space.slug}</p>
                                 </div>
-
-                                <div className="relative z-10 flex items-center justify-between pt-4 mt-auto">
-                                    <span className="text-xs font-bold text-gray-300 group-hover:text-black transition-colors">Manage</span>
-                                    <div className="w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors">
-                                        <ExternalLink className="w-3 h-3" />
+                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="h-8 w-8 rounded-full hover:bg-zinc-100"
+                                        onClick={(e) => { e.stopPropagation(); copyCollectionLink(space.slug); }}
+                                    >
+                                        <Copy className="w-3.5 h-3.5" />
+                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                            <button className="h-8 w-8 rounded-full hover:bg-zinc-100 flex items-center justify-center text-zinc-400 hover:text-zinc-900 transition-colors">
+                                                <MoreVertical className="w-4 h-4" />
+                                            </button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onManageSpace(space.id); }}>
+                                                <Edit2 className="w-4 h-4 mr-2" /> Edit
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); window.open(`/collect/${space.slug}`, '_blank'); }}>
+                                                <ExternalLink className="w-4 h-4 mr-2" /> Open Page
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    if (confirm(`Delete "${space.name}"?`)) {
+                                                        const { error } = await deleteSpace(space.id);
+                                                        if (error) {
+                                                            toast({ variant: "destructive", title: "Error deleting space" });
+                                                        } else {
+                                                            toast({ title: "Space deleted" });
+                                                        }
+                                                    }
+                                                }}
+                                                className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                                            >
+                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                    <div className="w-8 h-8 rounded-full bg-[#14873e] text-white flex items-center justify-center">
+                                        <ArrowUpRight className="w-3.5 h-3.5" />
                                     </div>
                                 </div>
                             </div>
                         ))}
-
-                        {/* Add New Button - Solid Black Card */}
-                        <button
-                            onClick={() => setCreateDialogOpen(true)}
-                            className="h-40 rounded-[24px] bg-black hover:bg-gray-900 transition-all duration-300 flex flex-col items-center justify-center gap-3 shadow-lg shadow-black/10 hover:shadow-black/20 hover:scale-[1.02] active:scale-95 group"
-                        >
-                            <div className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                                <Plus className="w-6 h-6" />
-                            </div>
-                            <span className="text-base font-bold text-white tracking-wide">New Space</span>
-                        </button>
                     </div>
                 </div>
 
+                {/* Recent Activity Feed */}
                 <div className="space-y-6">
-                    <h3 className="text-2xl font-normal text-black">Summary</h3>
-
-                    <RecentActivity testimonials={testimonials} />
+                    <h3 className="text-2xl font-light text-zinc-900">Latest Actions</h3>
+                    <div className="organic-card p-0 overflow-hidden bg-white/40">
+                        <RecentActivity testimonials={testimonials} />
+                    </div>
                 </div>
             </div>
 

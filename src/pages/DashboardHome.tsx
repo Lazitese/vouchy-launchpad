@@ -206,13 +206,13 @@ export const DashboardHome = ({
                                     <div className="flex items-center justify-between mb-6">
                                         <div className="flex items-center gap-3">
                                             <Avatar className="w-10 h-10 ring-2 ring-white shadow-sm">
-                                                <AvatarImage src={t.author_avatar_url} />
+                                                <AvatarImage src={t.avatar_url} />
                                                 <AvatarFallback className="bg-[#14873e] text-white text-xs font-bold">
-                                                    {t.author_name.charAt(0)}
+                                                    {t.name.charAt(0)}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <h4 className="font-bold text-sm text-zinc-900 leading-none mb-1">{t.author_name}</h4>
+                                                <h4 className="font-bold text-sm text-zinc-900 leading-none mb-1">{t.name}</h4>
                                                 <div className="flex gap-0.5">
                                                     {[...Array(5)].map((_, idx) => (
                                                         <div key={idx} className={`w-1 h-1 rounded-full ${idx < (t.rating || 5) ? 'bg-zinc-900' : 'bg-zinc-200'}`} />

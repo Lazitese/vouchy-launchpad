@@ -19,6 +19,9 @@ export interface WidgetSettings {
   layout: string;
   show_video_first: boolean;
   appearance?: any;
+  space_filtering?: string[];
+  display_limit?: number;
+  ordering?: string;
 }
 
 export const useWorkspace = () => {

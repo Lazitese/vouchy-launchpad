@@ -76,13 +76,13 @@ export const CardsLayout = ({
                                 className="font-bold text-sm truncate"
                                 style={{ color: customStyles.authorColor || customStyles.textColor || (darkMode ? '#ffffff' : '#000000') }}
                             >
-                                {t.author_name}
+                                {t.name}
                             </p>
                             <p
                                 className={`text-xs mt-0.5 truncate ${subtextClasses(darkMode)}`}
                                 style={{ color: customStyles.roleColor || (darkMode ? '#9ca3af' : '#6b7280') }}
                             >
-                                {t.author_title || t.author_company || "Verified Customer"}
+                                {t.title || t.company || "Verified Customer"}
                             </p>
                         </div>
                     </motion.div>

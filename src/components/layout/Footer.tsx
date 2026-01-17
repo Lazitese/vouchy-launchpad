@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import logoIconLarge from "@/assets/logo-icon-large.svg";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -41,9 +42,9 @@ const Footer = () => {
               className="mb-4"
             >
               <img
-                src="/Vouchy (512 x 512 px).svg"
+                src={logoIconLarge}
                 alt="Vouchy Logo"
-                className="w-40 h-40 object-contain mx-auto drop-shadow-2xl"
+                className="h-32 w-auto object-contain mx-auto drop-shadow-2xl"
               />
             </motion.div>
 

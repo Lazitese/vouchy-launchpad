@@ -7,10 +7,10 @@ import { useState } from 'react';
 const demoTestimonial = {
   id: '1',
   content: "Vouchy transformed our user feedback loop. It's incredibly intuitive, and our conversion rate jumped by 24% in the first week.",
-  author_name: 'Sarah Chen',
-  author_title: 'Product Director',
-  author_company: 'TechFlow',
-  author_avatar_url: 'https://i.pravatar.cc/150?u=sarah_chen_vouchy',
+  name: 'Sarah Chen',
+  title: 'Product Director',
+  company: 'TechFlow',
+  avatar_url: 'https://i.pravatar.cc/150?u=sarah_chen_vouchy',
   rating: 5
 };
 
@@ -102,12 +102,12 @@ const TestimonialDesigns = () => {
               <div className='flex justify-between items-start mb-4'>
                 <div className='flex items-center gap-3'>
                   <Avatar className="h-10 w-10 ring-2 ring-zinc-50">
-                    <AvatarImage src={demoTestimonial.author_avatar_url} />
+                    <AvatarImage src={demoTestimonial.avatar_url} />
                     <AvatarFallback className="bg-zinc-100 text-zinc-500">SC</AvatarFallback>
                   </Avatar>
                   <div>
-                    <div className='font-bold text-sm text-zinc-900'>{demoTestimonial.author_name}</div>
-                    <div className='text-xs text-zinc-500'>{demoTestimonial.author_company}</div>
+                    <div className='font-bold text-sm text-zinc-900'>{demoTestimonial.name}</div>
+                    <div className='text-xs text-zinc-500'>{demoTestimonial.company}</div>
                   </div>
                 </div>
                 <div className='flex gap-0.5'>
@@ -139,12 +139,12 @@ const TestimonialDesigns = () => {
                 </p>
                 <div className='flex items-center gap-3 border-t border-zinc-50 pt-4'>
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src={demoTestimonial.author_avatar_url} />
+                    <AvatarImage src={demoTestimonial.avatar_url} />
                     <AvatarFallback>SC</AvatarFallback>
                   </Avatar>
                   <div className='flex flex-col'>
-                    <span className='text-sm font-bold text-zinc-900'>{demoTestimonial.author_name}</span>
-                    <span className='text-xs text-blue-600 font-medium'>{demoTestimonial.author_title}</span>
+                    <span className='text-sm font-bold text-zinc-900'>{demoTestimonial.name}</span>
+                    <span className='text-xs text-blue-600 font-medium'>{demoTestimonial.title}</span>
                   </div>
                 </div>
               </div>
@@ -165,7 +165,7 @@ const TestimonialDesigns = () => {
 
               <div className='relative z-10 flex flex-col items-center text-center'>
                 <Avatar className="h-14 w-14 ring-4 ring-zinc-900 mb-4 shadow-xl">
-                  <AvatarImage src={demoTestimonial.author_avatar_url} />
+                  <AvatarImage src={demoTestimonial.avatar_url} />
                   <AvatarFallback>SC</AvatarFallback>
                 </Avatar>
                 <div className='flex gap-1 text-purple-400 mb-4'>
@@ -175,8 +175,8 @@ const TestimonialDesigns = () => {
                   "{demoTestimonial.content}"
                 </p>
                 <div>
-                  <div className='text-white font-bold text-sm'>{demoTestimonial.author_name}</div>
-                  <div className='text-zinc-500 text-xs mt-0.5'>{demoTestimonial.author_company}</div>
+                  <div className='text-white font-bold text-sm'>{demoTestimonial.name}</div>
+                  <div className='text-zinc-500 text-xs mt-0.5'>{demoTestimonial.company}</div>
                 </div>
               </div>
             </div>
@@ -205,11 +205,11 @@ const TestimonialDesigns = () => {
 
               <div className="flex items-center gap-3 pt-3 border-t border-dashed border-zinc-100">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={demoTestimonial.author_avatar_url} />
+                  <AvatarImage src={demoTestimonial.avatar_url} />
                   <AvatarFallback>SC</AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="text-xs font-bold text-zinc-900">{demoTestimonial.author_name}</div>
+                  <div className="text-xs font-bold text-zinc-900">{demoTestimonial.name}</div>
                   <div className="flex text-emerald-500 gap-0.5 mt-0.5">
                     {[...Array(5)].map((_, i) => <Star key={i} size={8} fill="currentColor" />)}
                   </div>
@@ -247,10 +247,10 @@ const TestimonialDesigns = () => {
                   <div className="absolute bottom-2 left-2 right-2 flex justify-between items-end">
                     <div className="flex items-center gap-2">
                       <Avatar className="h-5 w-5 border border-white/20">
-                        <AvatarImage src={demoTestimonial.author_avatar_url} />
+                        <AvatarImage src={demoTestimonial.avatar_url} />
                         <AvatarFallback>SC</AvatarFallback>
                       </Avatar>
-                      <span className="text-[10px] text-white font-medium">{demoTestimonial.author_name}</span>
+                      <span className="text-[10px] text-white font-medium">{demoTestimonial.name}</span>
                     </div>
                   </div>
                 </div>
@@ -275,7 +275,7 @@ const TestimonialDesigns = () => {
             <div className="mt-8 bg-white rounded-2xl shadow-sm border border-rose-100 p-6 pt-0 text-center relative">
               <div className="absolute -top-6 left-1/2 -translate-x-1/2">
                 <Avatar className="h-14 w-14 ring-4 ring-white shadow-md">
-                  <AvatarImage src={demoTestimonial.author_avatar_url} />
+                  <AvatarImage src={demoTestimonial.avatar_url} />
                   <AvatarFallback>SC</AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-1 -right-1 bg-rose-500 rounded-full p-1 border-2 border-white">
@@ -284,8 +284,8 @@ const TestimonialDesigns = () => {
               </div>
 
               <div className="mt-10 mb-3">
-                <div className="font-bold text-zinc-900">{demoTestimonial.author_name}</div>
-                <div className="text-xs text-rose-500 font-semibold">{demoTestimonial.author_company}</div>
+                <div className="font-bold text-zinc-900">{demoTestimonial.name}</div>
+                <div className="text-xs text-rose-500 font-semibold">{demoTestimonial.company}</div>
               </div>
 
               <p className="text-sm text-zinc-600 italic leading-relaxed mb-4">

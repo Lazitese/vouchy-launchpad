@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, ArrowLeft, Check, Upload, Sparkles, Loader2 } from "lucide-react";
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useToast } from "@/hooks/use-toast";
-import logoPrimary from "@/assets/logo-primary.svg";
+import logoFull from "@/assets/logo-full.svg";
 
 const colorOptions = [
   { name: "Ocean", value: "#1a3f64" },
@@ -52,13 +52,13 @@ const Onboarding = () => {
         });
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onload = (e) => {
-        setWorkspaceData({ 
-          ...workspaceData, 
+        setWorkspaceData({
+          ...workspaceData,
           logoFile: file,
-          logoPreview: e.target?.result as string 
+          logoPreview: e.target?.result as string
         });
       };
       reader.readAsDataURL(file);
@@ -73,7 +73,7 @@ const Onboarding = () => {
       setLoading(true);
       try {
         let logoUrl: string | undefined;
-        
+
         if (workspaceData.logoFile) {
           const { url, error } = await uploadLogo(workspaceData.logoFile);
           if (error) {
@@ -86,13 +86,13 @@ const Onboarding = () => {
           }
           logoUrl = url || undefined;
         }
-        
+
         const { error } = await createWorkspace(
           workspaceData.name,
           workspaceData.color,
           logoUrl
         );
-        
+
         if (error) {
           toast({
             variant: "destructive",
@@ -101,7 +101,7 @@ const Onboarding = () => {
           });
           return;
         }
-        
+
         navigate("/dashboard", { state: { plan } });
       } finally {
         setLoading(false);
@@ -135,26 +135,24 @@ const Onboarding = () => {
       <div className="flex-1 flex flex-col p-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-12">
-          <img src={logoPrimary} alt="Vouchy" className="h-8" />
+          <img src={logoFull} alt="Vouchy" className="h-8" />
           <div className="flex items-center gap-2">
             {steps.map((s, i) => (
               <div key={s.number} className="flex items-center gap-2">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
-                    step > s.number
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${step > s.number
                       ? "bg-primary text-primary-foreground"
                       : step === s.number
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-slate text-subtext"
-                  }`}
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-slate text-subtext"
+                    }`}
                 >
                   {step > s.number ? <Check className="w-4 h-4" /> : s.number}
                 </div>
                 {i < steps.length - 1 && (
                   <div
-                    className={`w-8 h-0.5 transition-all duration-300 ${
-                      step > s.number ? "bg-primary" : "bg-border/[0.08]"
-                    }`}
+                    className={`w-8 h-0.5 transition-all duration-300 ${step > s.number ? "bg-primary" : "bg-border/[0.08]"
+                      }`}
                   />
                 )}
               </div>
@@ -215,11 +213,10 @@ const Onboarding = () => {
                         onClick={() =>
                           setWorkspaceData({ ...workspaceData, color: color.value })
                         }
-                        className={`p-4 rounded-[12px] border-2 transition-all duration-300 ${
-                          workspaceData.color === color.value
+                        className={`p-4 rounded-[12px] border-2 transition-all duration-300 ${workspaceData.color === color.value
                             ? "border-primary shadow-lg"
                             : "border-border/[0.08] hover:border-primary/30"
-                        }`}
+                          }`}
                       >
                         <div
                           className="w-full h-12 rounded-[8px] mb-2"

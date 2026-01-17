@@ -66,7 +66,7 @@ export const SpacesManagementView = ({
     const spaceTestimonials = testimonials.filter(t => t.space_id === selectedSpaceId);
     const filteredTestimonials = spaceTestimonials.filter(t => {
         const matchesSearch = t.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            t.author_name.toLowerCase().includes(searchQuery.toLowerCase());
+            t.name.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesStatus = statusFilter === "all" || t.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
@@ -314,11 +314,11 @@ export const SpacesManagementView = ({
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex items-center gap-3">
                                                         <Avatar className="w-9 h-9 ring-1 ring-zinc-100">
-                                                            <AvatarImage src={t.author_avatar_url || ''} />
-                                                            <AvatarFallback className="text-xs bg-[#14873e] text-white font-bold">{t.author_name.charAt(0)}</AvatarFallback>
+                                                            <AvatarImage src={t.avatar_url || ''} />
+                                                            <AvatarFallback className="text-xs bg-[#14873e] text-white font-bold">{t.name.charAt(0)}</AvatarFallback>
                                                         </Avatar>
                                                         <div>
-                                                            <h4 className="font-bold text-sm text-zinc-900 leading-tight">{t.author_name}</h4>
+                                                            <h4 className="font-bold text-sm text-zinc-900 leading-tight">{t.name}</h4>
                                                             <div className="flex gap-0.5 mt-0.5">
                                                                 {[...Array(5)].map((_, i) => (
                                                                     <span key={i} className={`text-[10px] ${i < t.rating ? 'text-zinc-900' : 'text-zinc-200'}`}>★</span>

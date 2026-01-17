@@ -40,7 +40,7 @@ export const WidgetLabView = ({
 }: WidgetLabViewProps) => {
     const { toast } = useToast();
     const [previewDevice, setPreviewDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
-    const [selectedSpaceIds, setSelectedSpaceIds] = useState<string[]>([]);
+    const [selectedSpaceIds, setSelectedSpaceIds] = useState<string[]>(widgetSettings?.space_filtering || []);
     const [activeMobileTab, setActiveMobileTab] = useState<"editor" | "preview">("editor");
 
     // Fallback to defaultStyles to ensure type safety
@@ -52,10 +52,15 @@ export const WidgetLabView = ({
     const [scale, setScale] = useState(1);
 
     useEffect(() => {
-        if (widgetSettings?.appearance) {
-            setLocalCustomStyles(widgetSettings.appearance as CustomStyles);
+        if (widgetSettings) {
+            if (widgetSettings.appearance) {
+                setLocalCustomStyles(widgetSettings.appearance as CustomStyles);
+            }
+            if (widgetSettings.space_filtering) {
+                setSelectedSpaceIds(widgetSettings.space_filtering);
+            }
         }
-    }, [widgetSettings?.appearance]);
+    }, [widgetSettings?.id]); // Use ID dependency to avoid loops on local property updates if any
 
     // Scaling Logic: Ensures the "True" desktop/mobile size fits in the preview area
     useEffect(() => {
@@ -109,19 +114,21 @@ export const WidgetLabView = ({
     };
 
     const toggleSpaceSelection = (spaceId: string) => {
-        setSelectedSpaceIds(prev =>
-            prev.includes(spaceId)
-                ? prev.filter(id => id !== spaceId)
-                : [...prev, spaceId]
-        );
+        const next = selectedSpaceIds.includes(spaceId)
+            ? selectedSpaceIds.filter(id => id !== spaceId)
+            : [...selectedSpaceIds, spaceId];
+
+        setSelectedSpaceIds(next);
+        updateWidgetSettings({ space_filtering: next });
     };
 
     const toggleAllSpaces = () => {
-        if (selectedSpaceIds.length === spaces.length) {
-            setSelectedSpaceIds([]);
-        } else {
-            setSelectedSpaceIds(spaces.map(s => s.id));
+        let next: string[] = [];
+        if (selectedSpaceIds.length !== spaces.length) {
+            next = spaces.map(s => s.id);
         }
+        setSelectedSpaceIds(next);
+        updateWidgetSettings({ space_filtering: next });
     };
 
     // Filter testimonials based on selected spaces

@@ -1,7 +1,7 @@
 project_id = "xeceghiuhubcxrnaclky"
 
 [functions.create-checkout]
-verify_jwt = false
+verify_jwt = true
 
 [functions.ai-features]
 verify_jwt = false

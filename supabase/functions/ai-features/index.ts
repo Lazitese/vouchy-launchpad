@@ -3,12 +3,35 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-forwarded-for',
 };
 
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+// In-memory rate limiting (resets on function restart)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+const RATE_LIMIT_MAX = 5; // max AI requests per window
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (!record || now > record.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false;
+  }
+
+  record.count++;
+  return true;
+}
 
 async function callAI(prompt: string): Promise<string> {
   console.log('Calling Gemini AI with prompt:', prompt.substring(0, 100) + '...');
@@ -43,6 +66,25 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    // Rate limiting by IP for anonymous users
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      req.headers.get('x-real-ip') ||
+      'unknown';
+
+    const authHeader = req.headers.get('Authorization');
+
+    // Only rate limit if no auth header (anonymous users)
+    if (!authHeader && !checkRateLimit(ip)) {
+      console.warn(`Rate limit exceeded for IP: ${ip}`);
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again in 10 minutes.' }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 429
+        }
+      );
+    }
+
     const { action, data } = await req.json();
     console.log('AI Features request - Action:', action);
 
@@ -54,8 +96,50 @@ Deno.serve(async (req: Request) => {
     let userId: string | null = null;
     let spaceId = data.spaceId || null;
 
+    // Space-based validation: If spaceId provided, verify it exists and is active
+    if (spaceId) {
+      const { data: space, error: spaceError } = await supabaseAdmin
+        .from('spaces')
+        .select('id, is_active, workspace_id')
+        .eq('id', spaceId)
+        .single();
+
+      if (spaceError || !space) {
+        console.error('Space not found:', spaceId, spaceError);
+        return new Response(
+          JSON.stringify({ error: 'Invalid space ID' }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 404
+          }
+        );
+      }
+
+      if (!space.is_active) {
+        console.error('Space is not active:', spaceId);
+        return new Response(
+          JSON.stringify({ error: 'Space is not active' }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 403
+          }
+        );
+      }
+
+      // Get workspace owner for billing
+      const { data: workspace } = await supabaseAdmin
+        .from('workspaces')
+        .select('user_id')
+        .eq('id', space.workspace_id)
+        .single();
+
+      if (workspace) {
+        userId = workspace.user_id;
+        console.log(`Found owner ${userId} for space ${spaceId}`);
+      }
+    }
+
     // 1. Try to get user from Auth Header
-    const authHeader = req.headers.get('Authorization');
     if (authHeader) {
       const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(authHeader.replace('Bearer ', ''));
       if (!authError && user) {
@@ -63,35 +147,8 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // 2. If no authenticated user, but spaceId provided, try to find owner
-    if (!userId && spaceId) {
-      console.log(`No auth user, looking up owner in space ${spaceId}`);
-      // Find space -> workspace -> user_id
-      const { data: spaceData, error: spaceError } = await supabaseAdmin
-        .from('spaces')
-        .select('workspace_id')
-        .eq('id', spaceId)
-        .single();
-
-      if (spaceData) {
-        const { data: workspaceData } = await supabaseAdmin
-          .from('workspaces')
-          .select('user_id')
-          .eq('id', spaceData.workspace_id)
-          .single();
-
-        if (workspaceData) {
-          userId = workspaceData.user_id;
-          console.log(`Found owner ${userId} for space ${spaceId}`);
-        }
-      }
-    }
-
     if (!userId) {
       console.error("Could not determine user for billing.");
-      // Note: We might want to allow it for free/testing or throw error.
-      // For now, if we can't tie it to a user, we can't bill. 
-      // Throwing Unauthorized is safer to prevent abuse.
       throw new Error('Unauthorized: No user or valid space context found.');
     }
 

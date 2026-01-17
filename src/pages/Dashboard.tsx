@@ -92,7 +92,7 @@ const Dashboard = () => {
 
   const handleShare = (testimonial: Testimonial) => {
     const shareText = testimonial.type === "video"
-      ? `Check out this video testimonial from ${testimonial.author_name}!`
+      ? `Check out this video testimonial from ${testimonial.name}!`
       : testimonial.content || "";
     navigator.clipboard.writeText(shareText);
     toast({ title: "Testimonial copied to clipboard" });

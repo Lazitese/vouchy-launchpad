@@ -24,9 +24,9 @@ export const RecentActivity = ({ testimonials }: { testimonials: any[] }) => {
                         >
                             <div className="relative">
                                 <Avatar className="w-10 h-10 border border-zinc-100 ring-2 ring-white">
-                                    <AvatarImage src={item.author_avatar_url} />
+                                    <AvatarImage src={item.avatar_url} />
                                     <AvatarFallback className="bg-[#14873e] text-white font-bold">
-                                        {item.author_name?.charAt(0)}
+                                        {item.name?.charAt(0)}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="absolute -bottom-1 -right-1 bg-white shadow-sm border border-zinc-100 rounded-full p-0.5">
@@ -40,7 +40,7 @@ export const RecentActivity = ({ testimonials }: { testimonials: any[] }) => {
 
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-zinc-900">
-                                    <span className="font-bold">{item.author_name}</span> left a review
+                                    <span className="font-bold">{item.name}</span> left a review
                                 </p>
                                 <p className="text-xs text-zinc-500 truncate mt-0.5">
                                     "{item.content || "Video testimonial"}"

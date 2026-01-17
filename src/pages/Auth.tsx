@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
 import { Video } from "lucide-react";
-import logoPrimary from "@/assets/logo-primary.svg";
+import logoFull from "@/assets/logo-full.svg";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -277,7 +277,7 @@ const Auth = () => {
           <div className="flex flex-col items-center text-center mb-8">
             <div className="mb-6 relative">
               <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-50"></div>
-              <img src="/Vouchy (64 x 64 px).svg" alt="Vouchy" className="h-16 w-16 object-contain relative z-10" />
+              <img src={logoFull} alt="Vouchy" className="h-10 w-auto object-contain relative z-10" />
             </div>
 
             <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">

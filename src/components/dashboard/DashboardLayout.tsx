@@ -78,7 +78,7 @@ export const DashboardLayout = ({
             activities.push({
                 type: 'testimonial',
                 icon: t.type === 'video' ? Play : MessageSquare,
-                title: `New ${t.type} testimonial from ${t.author_name}`,
+                title: `New ${t.type} testimonial from ${t.name}`,
                 time: new Date(t.created_at).toLocaleDateString(),
                 data: t
             });

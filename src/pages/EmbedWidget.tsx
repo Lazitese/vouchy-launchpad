@@ -37,13 +37,13 @@ const EmbedWidget = () => {
 
                 const settingsPromise = supabase
                     .from("widget_settings")
-                    .select("workspace_id, layout, dark_mode, show_video_first, appearance")
+                    .select("workspace_id, layout, dark_mode, show_video_first, appearance, space_filtering")
                     .eq("workspace_id", workspaceId)
                     .single();
 
                 const testimonialsPromise = supabase
                     .from("testimonials")
-                    .select("id, space_id, type, content, video_url, author_name, author_title, author_company, author_avatar_url, rating, status, created_at, ai_summary, golden_quote, space:spaces!inner(workspace_id)")
+                    .select("id, space_id, type, content, video_url, name, title, company, avatar_url, rating, status, created_at, ai_summary, golden_quote, space:spaces!inner(workspace_id)")
                     .eq("space.workspace_id", workspaceId)
                     .eq("status", "approved")
                     .order("created_at", { ascending: false })
@@ -65,7 +65,12 @@ const EmbedWidget = () => {
                 }
 
                 const settings = (settingsResult.data || {}) as any;
-                const testimonials = testimonialsResult.data || [];
+                let testimonials = testimonialsResult.data || [];
+
+                // Apply space filtering if defined
+                if (settings.space_filtering && Array.isArray(settings.space_filtering) && settings.space_filtering.length > 0) {
+                    testimonials = testimonials.filter(t => settings.space_filtering.includes(t.space_id));
+                }
 
                 // Fallback / Defaults logic
                 const finalSettings = {

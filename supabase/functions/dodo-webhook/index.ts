@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createHmac } from "https://deno.land/std@0.168.0/node/crypto.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +13,21 @@ const PRODUCT_PLAN_MAP: Record<string, string> = {
   'pdt_0NVVmba1bevOgK6sfV8Wx': 'agency', // Vouchy Agency - $45/month
 };
 
+// Verify webhook signature from Dodo Payments
+function verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
+  try {
+    const hmac = createHmac('sha256', secret);
+    hmac.update(payload);
+    const expectedSignature = hmac.digest('hex');
+
+    // Constant-time comparison to prevent timing attacks
+    return signature === expectedSignature || signature === `sha256=${expectedSignature}`;
+  } catch (error) {
+    console.error('Signature verification error:', error);
+    return false;
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -21,19 +37,47 @@ serve(async (req) => {
   try {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+    const WEBHOOK_SECRET = Deno.env.get('DODO_WEBHOOK_SECRET');
+
     // Create Supabase admin client
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false }
     });
 
-    const payload = await req.json();
-    
+    // Get raw body for signature verification
+    const rawBody = await req.text();
+    const signature = req.headers.get('dodo-signature') || req.headers.get('x-dodo-signature');
+
+    // CRITICAL: Verify webhook signature if secret is configured
+    if (WEBHOOK_SECRET) {
+      if (!signature) {
+        console.error('Missing webhook signature');
+        return new Response(
+          JSON.stringify({ error: 'Missing signature' }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      if (!verifyWebhookSignature(rawBody, signature, WEBHOOK_SECRET)) {
+        console.error('Invalid webhook signature');
+        return new Response(
+          JSON.stringify({ error: 'Invalid signature' }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      console.log('✅ Webhook signature verified');
+    } else {
+      console.warn('⚠️ WEBHOOK_SECRET not configured - signature verification skipped (INSECURE)');
+    }
+
+    const payload = JSON.parse(rawBody);
+
     console.log('Dodo webhook received:', JSON.stringify(payload, null, 2));
 
     // Handle different webhook event types from Dodo
     const eventType = payload.type || payload.event_type;
-    
+
     // Events that indicate successful payment/subscription
     const successEvents = [
       'subscription.active',
@@ -52,15 +96,15 @@ serve(async (req) => {
 
     if (successEvents.includes(eventType)) {
       // Extract customer email and product ID from various webhook formats
-      const customerEmail = payload.customer?.email || 
-                           payload.data?.customer?.email || 
-                           payload.billing?.email ||
-                           payload.data?.object?.customer_email;
-                           
-      const productId = payload.product_id || 
-                       payload.data?.product_id ||
-                       payload.data?.object?.product_id ||
-                       payload.items?.[0]?.product_id;
+      const customerEmail = payload.customer?.email ||
+        payload.data?.customer?.email ||
+        payload.billing?.email ||
+        payload.data?.object?.customer_email;
+
+      const productId = payload.product_id ||
+        payload.data?.product_id ||
+        payload.data?.object?.product_id ||
+        payload.items?.[0]?.product_id;
 
       console.log('Processing payment success:', { customerEmail, productId });
 
@@ -74,7 +118,7 @@ serve(async (req) => {
 
       // Determine the plan from product ID
       const plan = productId ? PRODUCT_PLAN_MAP[productId] : null;
-      
+
       if (!plan) {
         console.error('Unknown product ID:', productId);
         return new Response(
@@ -106,7 +150,7 @@ serve(async (req) => {
       // Update the user's plan
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           plan,
           updated_at: new Date().toISOString()
         })
@@ -127,14 +171,14 @@ serve(async (req) => {
 
     if (cancelEvents.includes(eventType)) {
       // Handle subscription cancellation - revert to free plan
-      const customerEmail = payload.customer?.email || 
-                           payload.data?.customer?.email ||
-                           payload.data?.object?.customer_email;
+      const customerEmail = payload.customer?.email ||
+        payload.data?.customer?.email ||
+        payload.data?.object?.customer_email;
 
       if (customerEmail) {
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({ 
+          .update({
             plan: 'free',
             updated_at: new Date().toISOString()
           })

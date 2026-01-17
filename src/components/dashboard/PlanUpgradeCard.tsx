@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Crown, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PlanUpgradeCardProps {
     currentPlan: string;
@@ -50,30 +51,21 @@ export const PlanUpgradeCard = ({
 
         setLoading(planName);
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-checkout`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-                    },
-                    body: JSON.stringify({
-                        productId,
-                        customerEmail: user.email,
-                        customerName: user.user_metadata?.full_name || user.email,
-                        returnUrl: `${window.location.origin}/dashboard?payment=success`,
-                    }),
-                }
-            );
+            const { data, error } = await supabase.functions.invoke('create-checkout', {
+                body: {
+                    productId,
+                    customerEmail: user.email,
+                    customerName: user.user_metadata?.full_name || user.email,
+                    returnUrl: `${window.location.origin}/dashboard?payment=success`,
+                },
+            });
 
-            if (!response.ok) throw new Error('Failed to create checkout session');
-            const data = await response.json();
+            if (error) throw error;
 
             if (data?.paymentLink) {
                 window.location.href = data.paymentLink;
             } else {
-                throw new Error('No payment link received');
+                throw new Error(data?.error || 'No payment link received');
             }
         } catch (err) {
             console.error('Checkout error:', err);

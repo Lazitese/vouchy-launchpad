@@ -119,14 +119,14 @@ export const TestimonialAvatar = ({ testimonial: t, size = "md" }: TestimonialAv
     return (
         <div className="relative">
             <Avatar className={`${sizeClasses[size]} ring-2 ring-primary/30 shadow-lg shadow-primary/10`}>
-                {t.author_avatar_url ? (
-                    <AvatarImage src={t.author_avatar_url} alt={t.author_name} />
+                {t.avatar_url ? (
+                    <AvatarImage src={t.avatar_url} alt={t.name} />
                 ) : null}
                 <AvatarFallback className="bg-primary/10 text-primary font-bold">
                     {t.type === 'video' ? (
                         <Play className={size === 'sm' ? "w-3 h-3 fill-current" : size === 'lg' ? "w-6 h-6 fill-current" : "w-4 h-4 fill-current"} />
                     ) : (
-                        <span className={textSizes[size]}>{t.author_name.charAt(0)}</span>
+                        <span className={textSizes[size]}>{t.name.charAt(0)}</span>
                     )}
                 </AvatarFallback>
             </Avatar>

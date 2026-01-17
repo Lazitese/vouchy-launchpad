@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { TbMenu2, TbX } from "react-icons/tb";
+import logoIcon from "@/assets/favicon.svg";
 
 const Navigation = () => {
     const navigate = useNavigate();
@@ -40,12 +41,11 @@ const Navigation = () => {
                     <Link to="/" className="flex items-center gap-2 group">
                         <div className="bg-primary/10 p-1.5 rounded-full shadow-sm group-hover:scale-105 transition-transform duration-200">
                             <img
-                                src="/Vouchy (64 x 64 px).svg"
+                                src={logoIcon}
                                 alt="Vouchy"
                                 className="w-8 h-8 object-contain"
                             />
                         </div>
-                        <span className="text-xl font-bold text-zinc-900 tracking-tight hidden sm:block">Vouchy</span>
                     </Link>
 
                     {/* Desktop Nav */}

@@ -12,7 +12,7 @@ import {
 import { useSpaceBySlug } from "@/hooks/useSpaces";
 import { useSubmitTestimonial } from "@/hooks/useTestimonials";
 import { useToast } from "@/hooks/use-toast";
-import logoPrimary from "@/assets/logo-primary.svg";
+import logoFull from "@/assets/logo-full.svg";
 import { supabase } from "@/integrations/supabase/client";
 import { VideoRecorder } from "@/components/collect/VideoRecorder";
 import { TextForm } from "@/components/collect/TextForm";
@@ -165,7 +165,7 @@ const Collect = () => {
       />
       {/* Header */}
       <header className="border-b border-zinc-200/50 px-6 py-4 bg-white/60 backdrop-blur-md sticky top-0 z-50">
-        <img src={logoPrimary} alt="Vouchy" className="h-6" />
+        <img src={logoFull} alt="Vouchy" className="h-6" />
       </header>
 
       {/* Main */}

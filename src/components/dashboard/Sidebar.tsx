@@ -20,7 +20,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import logoIcon from "@/assets/logo-icon.svg";
+import logoIcon from "@/assets/favicon.svg";
 
 export type View = "spaces" | "analytics" | "wall" | "settings" | "widget";
 

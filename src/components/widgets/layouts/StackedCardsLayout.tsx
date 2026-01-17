@@ -138,10 +138,10 @@ export const StackedCardsLayout = ({
 
                                     <div className="flex items-center justify-between pt-2 border-t" style={{ borderColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }}>
                                         <div className="flex items-center gap-3 min-w-0">
-                                            {testimonial.author_avatar_url ? (
+                                            {testimonial.avatar_url ? (
                                                 <img
-                                                    src={testimonial.author_avatar_url}
-                                                    alt={testimonial.author_name}
+                                                    src={testimonial.avatar_url}
+                                                    alt={testimonial.name}
                                                     className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0 ring-2"
                                                     style={{ '--tw-ring-color': `${primary}10` } as React.CSSProperties}
                                                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150'; }}
@@ -151,12 +151,12 @@ export const StackedCardsLayout = ({
                                                     className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center flex-shrink-0"
                                                     style={{ backgroundColor: `${primary}20` }}
                                                 >
-                                                    <span className="font-medium text-sm sm:text-base" style={{ color: primary }}>{testimonial.author_name[0]}</span>
+                                                    <span className="font-medium text-sm sm:text-base" style={{ color: primary }}>{testimonial.name[0]}</span>
                                                 </div>
                                             )}
                                             <div className="min-w-0">
-                                                <p className="font-bold text-sm sm:text-base truncate" style={{ color: authorText }}>{testimonial.author_name}</p>
-                                                <p className={`text-xs ${subtextClasses(darkMode)} truncate`} style={{ color: roleText }}>{testimonial.author_company}</p>
+                                                <p className="font-bold text-sm sm:text-base truncate" style={{ color: authorText }}>{testimonial.name}</p>
+                                                <p className={`text-xs ${subtextClasses(darkMode)} truncate`} style={{ color: roleText }}>{testimonial.company}</p>
                                             </div>
                                         </div>
                                         {isVideo && <TestimonialStars rating={testimonial.rating} size="w-3.5 h-3.5" color={primary} darkMode={darkMode} />}

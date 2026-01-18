@@ -7,6 +7,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+// ... (existing imports)
+
+
+
+// ... (rest of the file)
+
 const plans = [
   {
     name: "Starter",
@@ -28,7 +34,7 @@ const plans = [
     price: "$12",
     period: "/mo",
     description: "The Essential plan for growing businesses",
-    productId: "pdt_0NVVmIlZrdWC90xs1ZgOm",
+    productId: "pdt_0NWYVCyQdmrQ6theVIHik",
     features: [
       "50 testimonials total",
       "3 active spaces",
@@ -45,7 +51,7 @@ const plans = [
     price: "$45",
     period: "/mo",
     description: "The Studio plan for teams & agencies",
-    productId: "pdt_0NVVmba1bevOgK6sfV8Wx",
+    productId: "pdt_0NWYW0CEpophu7xCowSWa",
     features: [
       "250 testimonials total",
       "15 active spaces",
@@ -84,16 +90,47 @@ const Pricing = () => {
 
     setLoadingPlan(plan.name);
     try {
+      // FIX: Get fresh session
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("No active session found. Please log in again.");
+      }
+
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
           productId: plan.productId,
           customerEmail: user.email,
           customerName: user.user_metadata?.full_name || user.email,
           returnUrl: `${window.location.origin}/dashboard?payment=success`,
+          currency: 'USD',
         },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase Function Error:', error);
+
+        let errorMessage = "Failed to create checkout session";
+        // Attempt to extract detailed error message from response
+        if (error instanceof Error && 'context' in error) {
+          try {
+            const context = (error as any).context;
+            if (context instanceof Response) {
+              const body = await context.json();
+              if (body?.error) {
+                errorMessage = body.error;
+              }
+            }
+          } catch (e) {
+            console.error('Error parsing error response:', e);
+          }
+        }
+
+        throw new Error(errorMessage);
+      }
 
       if (data?.paymentLink) {
         window.location.href = data.paymentLink;
@@ -101,11 +138,11 @@ const Pricing = () => {
         throw new Error('No payment link received');
       }
     } catch (err) {
-      console.error('Checkout error:', err);
+      console.error('Checkout flow error:', err);
       toast({
         variant: "destructive",
         title: "Payment Error",
-        description: "Failed to create checkout session. Please try again.",
+        description: err instanceof Error ? err.message : "Failed to create checkout session. Please try again.",
       });
     } finally {
       setLoadingPlan(null);

@@ -75,7 +75,7 @@ export const OrbitRingLayout = ({
 
                 {/* Desktop Layout - Orbit with hover */}
                 {!isMobile && (
-                    <div className="hidden sm:flex max-w-4xl mx-auto relative z-10 items-center justify-center min-h-[400px]">
+                    <div className="flex max-w-4xl mx-auto relative z-10 items-center justify-center min-h-[400px]">
                         {/* Orbiting avatars */}
                         <div className="relative w-[400px] h-[400px] sm:w-[500px] sm:h-[500px]">
                             {displayItems.slice(0, 8).map((t, i) => {

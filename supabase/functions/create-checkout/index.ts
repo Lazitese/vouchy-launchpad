@@ -11,6 +11,7 @@ interface CheckoutRequest {
   customerEmail: string;
   customerName: string;
   returnUrl: string;
+  currency?: string;
 }
 
 Deno.serve(async (req: Request) => {
@@ -21,8 +22,11 @@ Deno.serve(async (req: Request) => {
 
   try {
     // Verify JWT and get authenticated user
+    // Verify JWT and get authenticated user
     const authHeader = req.headers.get('Authorization');
+
     if (!authHeader) {
+      console.error('Missing Authorization header');
       return new Response(
         JSON.stringify({ error: 'Unauthorized: Missing authorization header' }),
         {
@@ -48,14 +52,16 @@ Deno.serve(async (req: Request) => {
 
     const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(
-      authHeader.replace('Bearer ', '')
-    );
+    // Extract token
+    const token = authHeader.replace('Bearer ', '');
+
+    // Verify the user
+    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
 
     if (authError || !user) {
       console.error('Auth error:', authError);
       return new Response(
-        JSON.stringify({ error: 'Unauthorized: Invalid token' }),
+        JSON.stringify({ error: `Unauthorized: Invalid token. ${(authError as any)?.message || ''}` }),
         {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 401
@@ -78,15 +84,41 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { productId, customerEmail, customerName, returnUrl }: CheckoutRequest = await req.json();
+    const { productId, customerEmail, customerName, returnUrl, currency }: CheckoutRequest = await req.json();
 
-    console.log('Creating checkout session for:', { productId, customerEmail, customerName });
+    console.log('Creating checkout session for:', { productId, customerEmail, customerName, currency });
 
     // Automatically determine environment based on key prefix
-    const isTestMode = DODO_API_KEY.startsWith('test_');
+    const isTestMode = DODO_API_KEY.startsWith('test_') || DODO_API_KEY.startsWith('cdcj');
+    console.log(`Create Checkout: Dodo API Key configured. Prefix: ${DODO_API_KEY.substring(0, 7)}... Mode: ${isTestMode ? 'TEST' : 'LIVE'}`);
+
     const apiBaseUrl = isTestMode ? 'https://test.dodopayments.com' : 'https://live.dodopayments.com';
 
-    console.log(`Using Dodo Payments (${isTestMode ? 'TEST' : 'LIVE'})`);
+    console.log(`Using Dodo Payments URL: ${apiBaseUrl}`);
+
+    // Construct payload
+    const payload: any = {
+      product_cart: [
+        {
+          product_id: productId,
+          quantity: 1,
+        }
+      ],
+      billing_currency: 'USD',
+      customer: {
+        email: customerEmail,
+        name: customerName,
+        billing_address: {
+          country: 'US'
+        }
+      },
+      payment_link: true,
+      success_url: returnUrl || 'https://vouchy.click/dashboard?payment=success',
+      metadata: {
+        customer_email: customerEmail,
+        user_id: userId,
+      },
+    };
 
     const response = await fetch(`${apiBaseUrl}/checkouts`, {
       method: 'POST',
@@ -94,29 +126,13 @@ Deno.serve(async (req: Request) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${DODO_API_KEY}`,
       },
-      body: JSON.stringify({
-        product_cart: [
-          {
-            product_id: productId,
-            quantity: 1,
-          }
-        ],
-        customer: {
-          email: customerEmail,
-          name: customerName,
-        },
-        payment_link: true,
-        success_url: returnUrl || 'https://vouchy.click/dashboard?payment=success',
-        metadata: {
-          customer_email: customerEmail,
-        },
-      }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Dodo API error:', response.status, errorText);
-      throw new Error(`Failed to create checkout session: ${response.status}`);
+      throw new Error(`Failed to create checkout session: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();

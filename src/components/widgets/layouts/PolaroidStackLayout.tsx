@@ -29,7 +29,7 @@ export const PolaroidStackLayout = ({
 
     return (
         <div className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent p-4">
-            <div className={`grid gap-8 ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"}`}>
+            <div className={`grid gap-8 ${previewDevice === "mobile" ? "grid-cols-1" : previewDevice === "tablet" ? "grid-cols-2" : "grid-cols-4"}`}>
                 {displayItems.map((testimonial, index) => {
                     const isEven = index % 2 === 0;
                     const rotation = (index * 7) % 3 - 1.5; // Subtle random rotation

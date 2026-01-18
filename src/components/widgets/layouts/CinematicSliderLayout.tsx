@@ -91,7 +91,7 @@ export const CinematicSliderLayout = ({
                             transition={{ duration: 0.6, ease: [0.32, 0.72, 0, 1] }}
                             className={`relative overflow-hidden shadow-2xl ${isMobile
                                 ? 'rounded-xl'
-                                : 'rounded-[2rem] md:grid md:grid-cols-12'
+                                : 'rounded-[2rem] grid grid-cols-12'
                                 }`}
                             style={{
                                 backgroundColor: isMobile ? cardBg : (darkMode ? 'rgba(30, 41, 59, 0.8)' : 'rgba(255, 255, 255, 0.9)'),
@@ -328,24 +328,28 @@ export const CinematicSliderLayout = ({
 
                     {/* Navigation Buttons */}
                     {/* Navigation Buttons (Desktop) */}
-                    <div className={`absolute top-1/2 -translate-y-1/2 -left-16 hidden lg:block`}>
-                        <button
-                            onClick={prev}
-                            className="p-3 rounded-full bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-white/10 text-current hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group"
-                            style={{ color: mainText }}
-                        >
-                            <ChevronLeft className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" />
-                        </button>
-                    </div>
-                    <div className={`absolute top-1/2 -translate-y-1/2 -right-16 hidden lg:block`}>
-                        <button
-                            onClick={next}
-                            className="p-3 rounded-full bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-white/10 text-current hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group"
-                            style={{ color: mainText }}
-                        >
-                            <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" />
-                        </button>
-                    </div>
+                    {!isMobile && (
+                        <div className={`absolute top-1/2 -translate-y-1/2 -left-16`}>
+                            <button
+                                onClick={prev}
+                                className="p-3 rounded-full bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-white/10 text-current hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group"
+                                style={{ color: mainText }}
+                            >
+                                <ChevronLeft className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" />
+                            </button>
+                        </div>
+                    )}
+                    {!isMobile && (
+                        <div className={`absolute top-1/2 -translate-y-1/2 -right-16`}>
+                            <button
+                                onClick={next}
+                                className="p-3 rounded-full bg-white/10 dark:bg-black/10 backdrop-blur-md border border-white/20 dark:border-white/10 text-current hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 group"
+                                style={{ color: mainText }}
+                            >
+                                <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Mobile Navigation Buttons (Simple) */}

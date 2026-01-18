@@ -29,9 +29,10 @@ export const GlassPrismLayout = ({
     const roleText = customStyles.roleColor || (darkMode ? '#9ca3af' : '#6b7280');
     const primary = customStyles.primaryColor || '#10b981'; // emerald-500 as default
 
-    // Masonry distribution
-    const columns = [[], [], []] as typeof displayItems[];
-    displayItems.forEach((t, i) => columns[i % 3].push(t));
+    // Masonry distribution based on device
+    const numCols = previewDevice === "mobile" ? 1 : previewDevice === "tablet" ? 2 : 3;
+    const columns = Array.from({ length: numCols }, () => [] as typeof displayItems);
+    displayItems.forEach((t, i) => columns[i % numCols].push(t));
 
     return (
         <div className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent relative">
@@ -43,7 +44,7 @@ export const GlassPrismLayout = ({
                 }}
             />
 
-            <div className={`grid gap-4 lg:gap-6 pb-20 pt-4 px-6 relative z-10 ${isMobile ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}`}>
+            <div className={`grid gap-4 lg:gap-6 pb-20 pt-4 px-6 relative z-10 ${previewDevice === "mobile" ? "grid-cols-1" : previewDevice === "tablet" ? "grid-cols-2" : "grid-cols-3"}`}>
                 {columns.map((column, colIndex) => (
                     <div key={colIndex} className="flex flex-col gap-4 lg:gap-6">
                         {column.map((testimonial, index) => {

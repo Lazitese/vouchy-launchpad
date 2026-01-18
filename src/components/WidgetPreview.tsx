@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Quote, Loader2, Heart } from "lucide-react";
+import { Quote } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Tables } from "@/integrations/supabase/types";
 import { CustomStyles, hexToHSL, defaultStyles } from "@/utils/widgetUtils";
@@ -33,68 +33,6 @@ interface WidgetPreviewProps {
   readOnly?: boolean;
   previewDevice?: "desktop" | "tablet" | "mobile";
 }
-
-// --- Device Frames ---
-const MobileFrame = ({ children, darkMode }: { children: React.ReactNode, darkMode: boolean }) => (
-  <div className="relative rounded-[3rem] border-[14px] border-[#1a1a1a] bg-[#1a1a1a] shadow-2xl overflow-hidden w-[400px] h-[840px] shrink-0">
-    {/* Side Buttons */}
-    <div className="absolute top-28 -left-[16px] w-[4px] h-10 bg-[#2a2a2a] rounded-l-md" />
-    <div className="absolute top-44 -left-[16px] w-[4px] h-16 bg-[#2a2a2a] rounded-l-md" />
-    <div className="absolute top-36 -right-[16px] w-[4px] h-24 bg-[#2a2a2a] rounded-r-md" />
-
-    {/* Inner Screen */}
-    <div className={`relative w-full h-full rounded-[2.2rem] overflow-hidden ${darkMode ? "bg-black" : "bg-white"}`}>
-      {/* Dynamic Island */}
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 min-w-[120px] h-[32px] bg-black rounded-full z-50 flex justify-center items-center shadow-sm">
-        <div className="w-[80px] h-[20px] bg-neutral-900/50 rounded-full" />
-        <div className="relative left-[6px] w-2 h-2 bg-[#1a1a2a] rounded-full opacity-60" />
-      </div>
-
-      {/* Status Bar Indicators (Mock) */}
-      <div className="absolute top-1.5 right-6 text-[10px] font-bold text-white z-50">5G</div>
-      <div className="absolute top-1.5 left-8 text-[10px] font-bold text-white z-50">9:41</div>
-
-      {children}
-
-      {/* Home Indicator */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-neutral-500/50 rounded-full z-50" />
-    </div>
-  </div>
-);
-
-const TabletFrame = ({ children, darkMode }: { children: React.ReactNode, darkMode: boolean }) => (
-  <div className="relative rounded-[2rem] border-[12px] border-[#1a1a1a] bg-[#1a1a1a] shadow-2xl overflow-hidden w-[840px] h-[1100px] shrink-0">
-    {/* Inner Screen */}
-    <div className={`relative w-full h-full rounded-[1.4rem] overflow-hidden ${darkMode ? "bg-black" : "bg-white"}`}>
-      {/* Camera Dot */}
-      <div className="absolute top-3 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/80 rounded-full z-50" />
-      {children}
-    </div>
-  </div>
-);
-
-const DesktopFrame = ({ children, darkMode }: { children: React.ReactNode, darkMode: boolean }) => (
-  <div className="relative rounded-lg bg-white dark:bg-slate-900 shadow-2xl overflow-hidden w-[1280px] h-[840px] flex flex-col shrink-0 border border-slate-200 dark:border-slate-800">
-    {/* Browser Bar */}
-    <div className="h-10 bg-slate-100 dark:bg-slate-900 border-b dark:border-slate-800 flex items-center px-4 gap-4 shrink-0">
-      <div className="flex gap-1.5">
-        <div className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E]" />
-        <div className="w-3 h-3 rounded-full bg-[#FEBC2E] border border-[#D89E24]" />
-        <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]" />
-      </div>
-      {/* Address Bar */}
-      <div className="flex-1 max-w-2xl mx-auto h-7 bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-[5px] shadow-sm flex items-center justify-center text-[11px] text-slate-400 font-medium">
-        <span className="opacity-50 mr-1">🔒</span> vouchy.click/widgets/preview
-      </div>
-      <div className="w-16" /> {/* Balance */}
-    </div>
-    {/* Content */}
-    <div className={`flex-1 w-full relative ${darkMode ? "bg-black" : "bg-white"}`}>
-      {children}
-    </div>
-  </div>
-);
-
 
 export const WidgetPreview = ({
   testimonials,
@@ -183,15 +121,13 @@ export const WidgetPreview = ({
 
   // Lab Mode Content (Scrollable Inner)
   const Content = (
-    <div className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 p-4 md:p-10"
+    <div className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 p-4"
       style={{
         ...(effectiveStyles.primaryColor ? { "--primary": hexToHSL(effectiveStyles.primaryColor) } as any : {}),
         backgroundColor: effectiveStyles.backgroundColor || (darkMode ? "#000" : "#fff"),
         color: effectiveStyles.textColor || (darkMode ? "#fff" : "#000"),
       }}
     >
-
-
       <AnimatePresence mode="wait">
         <motion.div
           key={`${layout}-${previewDevice}-${darkMode}`}
@@ -207,9 +143,8 @@ export const WidgetPreview = ({
   );
 
   return (
-    <div className="w-full h-full flex items-center justify-center p-0">
+    <div className="w-full h-full p-0 overflow-hidden">
       {Content}
-
       <VideoModal
         isOpen={!!selectedVideo}
         onClose={() => setSelectedVideo(null)}

@@ -23,9 +23,9 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
     const BentoCard = ({ t, i, isLarge }: { t: Testimonial, i: number, isLarge?: boolean }) => {
         const spanClass = isMobile ? "w-[280px] shrink-0 min-h-[220px]" : (() => {
             switch (i) {
-                case 0: return "md:col-span-2 md:row-span-2";
-                case 3: return "md:col-span-1 md:row-span-2";
-                default: return "md:col-span-1 md:row-span-1";
+                case 0: return "col-span-2 row-span-2";
+                case 3: return "col-span-1 row-span-2";
+                default: return "col-span-1 row-span-1";
             }
         })();
 
@@ -168,7 +168,7 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
             w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent
             ${isMobile ? "max-h-[600px] px-4" : "max-h-[650px] px-6"}
         `}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-fr pb-20 pt-4">
+            <div className={`grid gap-6 auto-rows-fr pb-20 pt-4 ${previewDevice === "tablet" ? "grid-cols-2" : "grid-cols-3"}`}>
                 {displayItems.map((t, i) => (
                     <BentoCard key={t.id} t={t} i={i} isLarge={i === 0} />
                 ))}

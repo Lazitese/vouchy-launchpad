@@ -51,9 +51,9 @@ export const NewsTickerHeroLayout = ({
                 <div className="max-w-6xl mx-auto px-4">
                     {/* Desktop Layout */}
                     {!isMobile && (
-                        <div className="grid lg:grid-cols-5 gap-8">
+                        <div className="grid grid-cols-5 gap-8">
                             {/* Main feature */}
-                            <div className="lg:col-span-3">
+                            <div className="col-span-3">
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={activeIndex}
@@ -159,7 +159,7 @@ export const NewsTickerHeroLayout = ({
                             </div>
 
                             {/* Side list */}
-                            <div className="lg:col-span-2 space-y-3 h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
+                            <div className="col-span-2 space-y-3 h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800">
                                 {displayItems.slice(0, 8).map((testimonial, index) => {
                                     const isActive = index === activeIndex;
 

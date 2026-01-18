@@ -4,6 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+// ... (existing imports)
+
+
+
+// ... (rest of the file)
+
 interface PlanUpgradeCardProps {
     currentPlan: string;
     features: {
@@ -32,7 +38,7 @@ export const PlanUpgradeCard = ({
         {
             name: "Pro",
             price: "$12/mo",
-            productId: "pdt_0NVVmIlZrdWC90xs1ZgOm",
+            productId: "pdt_0NWYVCyQdmrQ6theVIHik",
             features: ["50 testimonials", "3 spaces", "3min video", "AI Magic", "Teleprompter"],
             current: currentPlan === "pro",
             popular: true,
@@ -40,7 +46,7 @@ export const PlanUpgradeCard = ({
         {
             name: "Agency",
             price: "$45/mo",
-            productId: "pdt_0NVVmba1bevOgK6sfV8Wx",
+            productId: "pdt_0NWYW0CEpophu7xCowSWa",
             features: ["250 testimonials", "15 spaces", "5min video", "Full AI Suite", "White-label"],
             current: currentPlan === "agency",
         },
@@ -51,6 +57,19 @@ export const PlanUpgradeCard = ({
 
         setLoading(planName);
         try {
+            // Force get the latest session            // FIX: Get fresh session
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+            if (sessionError || !session) {
+                console.error("Session error:", sessionError);
+                toast({
+                    variant: "destructive",
+                    title: "Authentication Error",
+                    description: "Your session has expired. Please log out and log back in.",
+                });
+                return;
+            }
+
             const { data, error } = await supabase.functions.invoke('create-checkout', {
                 body: {
                     productId,
@@ -58,6 +77,10 @@ export const PlanUpgradeCard = ({
                     customerName: user.user_metadata?.full_name || user.email,
                     returnUrl: `${window.location.origin}/dashboard?payment=success`,
                 },
+                // Explicitly pass the Authorization header
+                headers: {
+                    Authorization: `Bearer ${session?.access_token}`
+                }
             });
 
             if (error) throw error;
@@ -67,8 +90,12 @@ export const PlanUpgradeCard = ({
             } else {
                 throw new Error(data?.error || 'No payment link received');
             }
-        } catch (err) {
-            console.error('Checkout error:', err);
+        } catch (err: any) {
+            console.error('Checkout error object:', err);
+            // Try to extract more details if available
+            if (err?.context?.json) {
+                err.context.json().then((json: any) => console.error('Checkout error details:', json));
+            }
             toast({
                 variant: "destructive",
                 title: "Payment Error",

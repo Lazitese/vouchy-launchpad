@@ -28,7 +28,7 @@ export const CardsLayout = ({
             {/* Grid Layout: 1 col mobile, 2 cols desktop */}
             <div className={`
                 grid gap-6 pb-20 pt-4
-                ${isMobile ? "grid-cols-1" : "grid-cols-2"}
+                ${previewDevice === "mobile" ? "grid-cols-1" : previewDevice === "tablet" ? "grid-cols-2" : "grid-cols-3"}
             `}>
                 {displayItems.map((t, i) => (
                     <motion.div

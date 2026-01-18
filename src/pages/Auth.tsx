@@ -20,8 +20,8 @@ const authSchema = z.object({
 });
 
 const planProductIds: Record<string, string> = {
-  Pro: "pdt_0NVVmIlZrdWC90xs1ZgOm",
-  Agency: "pdt_0NVVmba1bevOgK6sfV8Wx",
+  Pro: "pdt_0NWYVCyQdmrQ6theVIHik",
+  Agency: "pdt_0NWYW0CEpophu7xCowSWa",
 };
 
 const Auth = () => {

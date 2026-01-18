@@ -20,6 +20,8 @@ export const SettingsView = ({ user, workspace, plan, features, signOut }: Setti
     const [loadingUsage, setLoadingUsage] = useState(false);
     const [totalUsed, setTotalUsed] = useState(0);
 
+    const [profile, setProfile] = useState<any>(null);
+
     const tabs = [
         { id: "profile", label: "My Profile", icon: User },
         { id: "workspace", label: "Workspace", icon: Layout },
@@ -27,10 +29,28 @@ export const SettingsView = ({ user, workspace, plan, features, signOut }: Setti
     ];
 
     useEffect(() => {
+        if (user) {
+            fetchProfile();
+        }
         if (activeTab === "plan" && user) {
             fetchUsageStats();
         }
     }, [activeTab, user]);
+
+    const fetchProfile = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (error) throw error;
+            if (data) setProfile(data);
+        } catch (err) {
+            console.error("Error fetching profile:", err);
+        }
+    };
 
     const fetchUsageStats = async () => {
         setLoadingUsage(true);
@@ -116,9 +136,9 @@ export const SettingsView = ({ user, workspace, plan, features, signOut }: Setti
                             <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-8 text-black">Profile Information</h2>
                             <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8">
                                 <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-gray-50 shadow-xl">
-                                    <AvatarImage src={user?.user_metadata?.avatar_url} />
+                                    <AvatarImage src={profile?.avatar_url || user?.user_metadata?.avatar_url} />
                                     <AvatarFallback className="bg-[#14873e] text-white text-4xl font-bold">
-                                        {user?.email?.charAt(0).toUpperCase()}
+                                        {(profile?.full_name || user?.user_metadata?.full_name || user?.email)?.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="space-y-4 md:space-y-6 flex-1 w-full">
@@ -126,13 +146,13 @@ export const SettingsView = ({ user, workspace, plan, features, signOut }: Setti
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Full Name</label>
                                             <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-100">
-                                                <p className="font-medium text-lg text-black">{user?.user_metadata?.full_name || "N/A"}</p>
+                                                <p className="font-medium text-lg text-black">{profile?.full_name || user?.user_metadata?.full_name || "N/A"}</p>
                                             </div>
                                         </div>
                                         <div className="space-y-2">
                                             <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</label>
                                             <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-100">
-                                                <p className="font-medium text-lg text-black">{user?.email}</p>
+                                                <p className="font-medium text-lg text-black">{profile?.email || user?.email}</p>
                                             </div>
                                         </div>
                                     </div>

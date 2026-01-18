@@ -466,47 +466,60 @@ export const WidgetLabView = ({
                 {/* Main Canvas */}
                 <div ref={containerRef} className="flex-1 w-full h-full flex items-center justify-center relative overflow-hidden pt-20 pb-10">
 
-                    {/* Scaled Browser Frame Wrapper */}
+                    {/* Wrapper that takes scaled dimensions in layout */}
                     <div
                         style={{
-                            transform: `scale(${scale})`,
-                            transformOrigin: 'center center',
-                            width: previewDevice === "mobile" ? 400 : previewDevice === "tablet" ? 840 : 1280,
-                            height: previewDevice === "mobile" ? 850 : previewDevice === "tablet" ? 1000 : 800, // Slightly reduced height for better fit
+                            width: (previewDevice === "mobile" ? 400 : previewDevice === "tablet" ? 840 : 1280) * scale,
+                            height: (previewDevice === "mobile" ? 850 : previewDevice === "tablet" ? 1000 : 800) * scale,
+                            position: 'relative',
                         }}
-                        className="flex flex-col bg-white rounded-xl shadow-[0_30px_60px_-12px_rgba(0,0,0,0.15)] ring-1 ring-zinc-900/5 transition-all duration-500 will-change-transform"
+                        className="transition-all duration-500"
                     >
-                        {/* Browser Chrome Header */}
-                        <div className="h-10 bg-[#fbfbfb] border-b border-zinc-200/80 rounded-t-xl flex items-center px-4 justify-between shrink-0 select-none">
-                            <div className="flex gap-2 w-16">
-                                <div className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E]" />
-                                <div className="w-3 h-3 rounded-full bg-[#FEBC2E] border border-[#D89E24]" />
-                                <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]" />
+                        {/* Scaled Browser Frame - actual dimensions, visually scaled */}
+                        <div
+                            style={{
+                                transform: `scale(${scale})`,
+                                transformOrigin: 'top left',
+                                width: previewDevice === "mobile" ? 400 : previewDevice === "tablet" ? 840 : 1280,
+                                height: previewDevice === "mobile" ? 850 : previewDevice === "tablet" ? 1000 : 800,
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                            }}
+                            className="flex flex-col bg-white rounded-xl shadow-[0_30px_60px_-12px_rgba(0,0,0,0.15)] ring-1 ring-zinc-900/5 will-change-transform"
+                        >
+                            {/* Browser Chrome Header */}
+                            <div className="h-10 bg-[#fbfbfb] border-b border-zinc-200/80 rounded-t-xl flex items-center px-4 justify-between shrink-0 select-none">
+                                <div className="flex gap-2 w-16">
+                                    <div className="w-3 h-3 rounded-full bg-[#FF5F57] border border-[#E0443E]" />
+                                    <div className="w-3 h-3 rounded-full bg-[#FEBC2E] border border-[#D89E24]" />
+                                    <div className="w-3 h-3 rounded-full bg-[#28C840] border border-[#1AAB29]" />
+                                </div>
+
+                                <div className="flex items-center gap-2 px-3 py-1 bg-white border border-zinc-200 rounded-md shadow-sm max-w-sm flex-1 justify-center mx-4 group cursor-default">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-[10px] font-medium text-zinc-400 group-hover:text-zinc-600 transition-colors bg-transparent border-none outline-none text-center truncate">
+                                        https://your-website.com/testimonials
+                                    </span>
+                                </div>
+
+                                <div className="w-16 flex justify-end">
+                                    {/* Optional: Right side controls placeholder */}
+                                </div>
                             </div>
 
-                            <div className="flex items-center gap-2 px-3 py-1 bg-white border border-zinc-200 rounded-md shadow-sm max-w-sm flex-1 justify-center mx-4 group cursor-default">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                <span className="text-[10px] font-medium text-zinc-400 group-hover:text-zinc-600 transition-colors bg-transparent border-none outline-none text-center truncate">
-                                    https://your-website.com/testimonials
-                                </span>
-                            </div>
-
-                            <div className="w-16 flex justify-end">
-                                {/* Optional: Right side controls placeholder */}
-                            </div>
-                        </div>
-
-                        {/* Viewport Content */}
-                        <div className="flex-1 bg-white relative overflow-hidden flex flex-col rounded-b-xl">
-                            <div className="flex-1 overflow-y-auto scrollbar-hide">
-                                <WidgetPreview
-                                    testimonials={filteredTestimonials}
-                                    darkMode={widgetSettings?.dark_mode || false}
-                                    layout={(widgetSettings?.layout as any) || "grid"}
-                                    showVideoFirst={widgetSettings?.show_video_first || false}
-                                    customStyles={localCustomStyles || defaultStyles}
-                                    previewDevice={previewDevice}
-                                />
+                            {/* Viewport Content */}
+                            <div className="flex-1 bg-white relative overflow-hidden flex flex-col rounded-b-xl">
+                                <div className="flex-1 overflow-y-auto scrollbar-hide">
+                                    <WidgetPreview
+                                        testimonials={filteredTestimonials}
+                                        darkMode={widgetSettings?.dark_mode || false}
+                                        layout={(widgetSettings?.layout as any) || "grid"}
+                                        showVideoFirst={widgetSettings?.show_video_first || false}
+                                        customStyles={localCustomStyles || defaultStyles}
+                                        previewDevice={previewDevice}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

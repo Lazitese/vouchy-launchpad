@@ -102,7 +102,6 @@ export const useSubmitTestimonial = () => {
   }): Promise<{ signedUrl: string; publicUrl: string }> => {
     const { data, error } = await supabase.functions.invoke("signed-upload", {
       body: {
-        bucket: "testimonials",
         spaceId: params.spaceId,
         kind: params.kind,
         contentType: params.contentType,

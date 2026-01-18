@@ -148,20 +148,36 @@ export const useWorkspace = () => {
     if (!user) return { error: new Error("Not authenticated") };
 
     const fileExt = file.name.split(".").pop();
-    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
     try {
-      const { error: uploadError } = await supabase.storage
-        .from("logos")
-        .upload(fileName, file);
+      // Get presigned URL from R2 upload edge function
+      const { data, error: fnError } = await supabase.functions.invoke("r2-upload", {
+        body: {
+          folder: "logos",
+          contentType: file.type,
+          fileExt: fileExt,
+        },
+      });
 
-      if (uploadError) throw uploadError;
+      if (fnError) throw fnError;
+      if (!data?.signedUrl || !data?.publicUrl) {
+        throw new Error("Failed to get upload URL");
+      }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("logos")
-        .getPublicUrl(fileName);
+      // Upload file directly to R2 using presigned URL
+      const uploadRes = await fetch(data.signedUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
 
-      return { url: publicUrl, error: null };
+      if (!uploadRes.ok) {
+        throw new Error(`Upload failed: ${uploadRes.status}`);
+      }
+
+      return { url: data.publicUrl, error: null };
     } catch (error) {
       return { url: null, error };
     }

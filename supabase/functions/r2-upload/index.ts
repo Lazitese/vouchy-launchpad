@@ -5,31 +5,8 @@ import { getSignedUrl } from "npm:@aws-sdk/s3-request-presigner@3.658.0";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-forwarded-for',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-// In-memory rate limiting (resets on function restart)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-
-const RATE_LIMIT_MAX = 10; // max requests per window
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
-
-function checkRateLimit(ip: string): boolean {
-    const now = Date.now();
-    const record = rateLimitMap.get(ip);
-
-    if (!record || now > record.resetAt) {
-        rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-        return true;
-    }
-
-    if (record.count >= RATE_LIMIT_MAX) {
-        return false;
-    }
-
-    record.count++;
-    return true;
-}
 
 // Initialize R2 client
 function getR2Client() {
@@ -57,22 +34,6 @@ Deno.serve(async (req: Request) => {
     }
 
     try {
-        // Rate limiting by IP
-        const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-            req.headers.get('x-real-ip') ||
-            'unknown';
-
-        if (!checkRateLimit(ip)) {
-            console.warn(`Rate limit exceeded for IP: ${ip}`);
-            return new Response(
-                JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }),
-                {
-                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                    status: 429
-                }
-            );
-        }
-
         const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
         const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
         const R2_BUCKET_NAME = Deno.env.get('R2_BUCKET_NAME') || 'vouchy';
@@ -86,14 +47,40 @@ Deno.serve(async (req: Request) => {
             throw new Error('R2_PUBLIC_URL not configured');
         }
 
+        // Verify auth token
+        const authHeader = req.headers.get('Authorization');
+        if (!authHeader) {
+            return new Response(
+                JSON.stringify({ error: 'Missing authorization header' }),
+                {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 401
+                }
+            );
+        }
+
         const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-        const { bucket, spaceId, kind, contentType, fileExt } = await req.json();
+        // Verify the user's token
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+
+        if (authError || !user) {
+            return new Response(
+                JSON.stringify({ error: 'Invalid or expired token' }),
+                {
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                    status: 401
+                }
+            );
+        }
+
+        const { folder, contentType, fileExt } = await req.json();
 
         // Validate required fields
-        if (!spaceId || !kind || !contentType) {
+        if (!folder || !contentType) {
             return new Response(
-                JSON.stringify({ error: 'Missing required fields: spaceId, kind, contentType' }),
+                JSON.stringify({ error: 'Missing required fields: folder, contentType' }),
                 {
                     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                     status: 400
@@ -101,31 +88,14 @@ Deno.serve(async (req: Request) => {
             );
         }
 
-        // Space-based validation: Check if space exists and is active
-        const { data: space, error: spaceError } = await supabaseAdmin
-            .from('spaces')
-            .select('id, is_active')
-            .eq('id', spaceId)
-            .single();
-
-        if (spaceError || !space) {
-            console.error('Space not found:', spaceId, spaceError);
+        // Validate folder type
+        const allowedFolders = ['logos', 'avatars', 'profiles'];
+        if (!allowedFolders.includes(folder)) {
             return new Response(
-                JSON.stringify({ error: 'Invalid space ID' }),
+                JSON.stringify({ error: 'Invalid folder type' }),
                 {
                     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                    status: 404
-                }
-            );
-        }
-
-        if (!space.is_active) {
-            console.error('Space is not active:', spaceId);
-            return new Response(
-                JSON.stringify({ error: 'Space is not active' }),
-                {
-                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-                    status: 403
+                    status: 400
                 }
             );
         }
@@ -133,8 +103,8 @@ Deno.serve(async (req: Request) => {
         // Generate unique file path
         const timestamp = Date.now();
         const randomId = crypto.randomUUID().split('-')[0];
-        const extension = fileExt || (kind === 'video' ? 'webm' : 'png');
-        const filePath = `testimonials/${spaceId}/${kind}/${timestamp}-${randomId}.${extension}`;
+        const extension = fileExt || 'png';
+        const filePath = `${folder}/${user.id}/${timestamp}-${randomId}.${extension}`;
 
         console.log('Generating R2 signed URL for:', filePath);
 
@@ -165,7 +135,7 @@ Deno.serve(async (req: Request) => {
             }
         );
     } catch (error) {
-        console.error('Signed upload error:', error);
+        console.error('R2 upload error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
         return new Response(

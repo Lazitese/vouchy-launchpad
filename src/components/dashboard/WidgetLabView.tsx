@@ -20,6 +20,7 @@ import { Testimonial } from "@/hooks/useTestimonials";
 import { WidgetSettings } from "@/hooks/useWorkspace";
 import { widgetStyles, CustomStyles, defaultStyles } from "@/utils/widgetUtils";
 import { Space } from "@/hooks/useSpaces";
+import { MiniTour, WIDGET_LAB_TOUR } from "@/components/dashboard/MiniTour";
 
 interface WidgetLabViewProps {
     widgetSettings: WidgetSettings | null;
@@ -222,8 +223,13 @@ export const WidgetLabView = ({
                 <div className="hidden md:flex p-5 border-b border-zinc-100/50 shrink-0 items-center justify-between">
                     <h2 className="text-lg font-bold flex items-center gap-2 text-zinc-900">
                         <Sparkles className="w-5 h-5 text-zinc-900" strokeWidth={1.5} />
-                        Widget Lab
+                        Website Embeds
                     </h2>
+                    <MiniTour
+                        tourId="widget-lab"
+                        steps={WIDGET_LAB_TOUR}
+                        triggerLabel="Learn"
+                    />
                 </div>
 
                 {/* Scrollable Controls */}
@@ -231,11 +237,11 @@ export const WidgetLabView = ({
                     <div className="p-5 space-y-8">
 
                         {/* SECTION 0: Space Filter */}
-                        <div className="space-y-4">
+                        <div className="space-y-4" data-tour-id="widget-collection-filter">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
                                     <Filter className="w-3.5 h-3.5" />
-                                    Space Filter
+                                    Collection Filter
                                 </div>
                                 <button
                                     onClick={toggleAllSpaces}
@@ -296,7 +302,7 @@ export const WidgetLabView = ({
                         <div className="h-px bg-gray-100" />
 
                         {/* SECTION 1: Layouts */}
-                        <div className="space-y-4">
+                        <div className="space-y-4" data-tour-id="widget-layout-style">
                             <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
                                 <Layout className="w-3.5 h-3.5" />
                                 Layout Style
@@ -323,7 +329,7 @@ export const WidgetLabView = ({
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="text-sm font-semibold">{style.name}</div>
-                                                <div className={`text-[10px] truncate ${isActive ? "text-white/80" : "text-gray-400"}`}>
+                                                <div className={`text-xs truncate ${isActive ? "text-white/80" : "text-gray-400"}`}>
                                                     {style.description}
                                                 </div>
                                             </div>
@@ -337,7 +343,7 @@ export const WidgetLabView = ({
                         <div className="h-px bg-gray-100" />
 
                         {/* SECTION 2: Customization */}
-                        <div className="space-y-4">
+                        <div className="space-y-4" data-tour-id="widget-customization">
                             <div className="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
                                 <Palette className="w-3.5 h-3.5" />
                                 Customization
@@ -374,7 +380,7 @@ export const WidgetLabView = ({
                 </div>
 
                 {/* Footer: Embed */}
-                <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-3 shrink-0">
+                <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-3 shrink-0" data-tour-id="widget-embed-button">
                     <Dialog>
                         <DialogTrigger asChild>
                             <Button
@@ -428,7 +434,7 @@ export const WidgetLabView = ({
                 <div className="absolute top-6 left-0 right-0 z-30 px-6 flex items-center justify-between pointer-events-none">
 
                     {/* Device Switcher */}
-                    <div className="flex items-center gap-1 bg-white/90 backdrop-blur-xl border border-zinc-200/60 p-1 rounded-full shadow-lg shadow-zinc-200/20 pointer-events-auto">
+                    <div className="flex items-center gap-1 bg-white/90 backdrop-blur-xl border border-zinc-200/60 p-1 rounded-full shadow-lg shadow-zinc-200/20 pointer-events-auto" data-tour-id="widget-device-preview">
                         {(["desktop", "tablet", "mobile"] as const).map((device) => (
                             <button
                                 key={device}

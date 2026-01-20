@@ -54,7 +54,7 @@ export const SpaceSettingsView = ({
             });
         } else {
             toast({
-                title: "Space updated",
+                title: "Collection updated",
                 description: "Your changes have been saved.",
             });
         }
@@ -73,8 +73,8 @@ export const SpaceSettingsView = ({
             });
         } else {
             toast({
-                title: "Space deleted",
-                description: "The space has been removed.",
+                title: "Collection deleted",
+                description: "The collection has been removed.",
             });
             onBack();
         }
@@ -102,7 +102,7 @@ export const SpaceSettingsView = ({
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-black">{space.name}</h1>
-                    <p className="text-gray-500 mt-1">Manage your collection space settings</p>
+                    <p className="text-gray-500 mt-1">Manage your collection settings</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={copyLink} className="rounded-full">
@@ -124,7 +124,7 @@ export const SpaceSettingsView = ({
 
                     <div className="space-y-6 max-w-xl">
                         <div className="space-y-2">
-                            <Label>Space Name</Label>
+                            <Label>Collection Name</Label>
                             <Input
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -176,8 +176,7 @@ export const SpaceSettingsView = ({
                 {/* Danger Zone */}
                 <div className="organic-card p-8 border border-red-100 bg-red-50/10">
                     <h2 className="text-xl font-bold text-red-600 mb-2">Danger Zone</h2>
-                    <p className="text-gray-500 mb-6 text-sm">Once you delete a space, there is no going back. Please be certain.</p>
-
+                    <p className="text-gray-500 mb-6 text-sm">Once you delete a collection, there is no going back. Please be certain.</p>
                     {!confirmDelete ? (
                         <Button
                             variant="destructive"
@@ -185,7 +184,7 @@ export const SpaceSettingsView = ({
                             className="bg-white text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 rounded-full"
                         >
                             <Trash2 className="w-4 h-4 mr-2" />
-                            Delete Space
+                            Delete Collection
                         </Button>
                     ) : (
                         <div className="flex items-center gap-4 animate-in fade-in slide-in-from-left-4">

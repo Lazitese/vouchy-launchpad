@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
@@ -15,7 +16,7 @@ export interface UserPlan {
   hasWhiteLabel: boolean;
 }
 
-const PLAN_FEATURES: Record<PlanType, UserPlan> = {
+export const PLAN_FEATURES: Record<PlanType, UserPlan> = {
   free: {
     plan: "free",
     testimonialLimit: 10,
@@ -52,12 +53,32 @@ export const useUserPlan = () => {
   const { user } = useAuth();
   const [plan, setPlan] = useState<PlanType>("free");
   const [loading, setLoading] = useState(true);
+  const [overrides, setOverrides] = useState<{
+    testimonialLimit?: number;
+    activeSpacesLimit?: number;
+    videoDurationSeconds?: number;
+    aiCredits?: number;
+  }>({});
+
+  const { data: dbPlans } = useQuery({
+    queryKey: ['plans-definitions'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('plans').select('*');
+      if (error) {
+        console.error("Error fetching plans:", error);
+        return null;
+      }
+      return data;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
 
   useEffect(() => {
     if (user) {
       fetchPlan();
     } else {
       setPlan("free");
+      setOverrides({});
       setLoading(false);
     }
   }, [user?.id]);
@@ -78,6 +99,17 @@ export const useUserPlan = () => {
       // Default to free if no plan found
       const userPlan = ((data as any)?.plan as PlanType) || "free";
       setPlan(userPlan);
+
+      // Set overrides from profile data
+      if (data) {
+        const profileData = data as any;
+        setOverrides({
+          testimonialLimit: profileData.override_testimonial_limit,
+          activeSpacesLimit: profileData.override_active_spaces_limit,
+          videoDurationSeconds: profileData.override_video_duration,
+          aiCredits: profileData.override_ai_credits,
+        });
+      }
     } catch (error) {
       console.error("Error fetching user plan:", error);
       setPlan("free");
@@ -86,7 +118,27 @@ export const useUserPlan = () => {
     }
   };
 
-  const features = PLAN_FEATURES[plan];
+
+
+  const dbPlan = dbPlans?.find((p: any) => p.id === plan);
+  const baseFeatures = dbPlan ? {
+    plan: plan,
+    testimonialLimit: dbPlan.testimonial_limit,
+    activeSpacesLimit: dbPlan.active_spaces_limit,
+    videoDurationSeconds: dbPlan.video_duration_seconds,
+    aiCredits: dbPlan.ai_credits,
+    hasTeleprompter: plan === 'pro' || plan === 'agency',
+    hasCustomBranding: plan === 'pro' || plan === 'agency',
+    hasWhiteLabel: plan === 'agency',
+  } : PLAN_FEATURES[plan];
+
+  const features = {
+    ...baseFeatures,
+    testimonialLimit: overrides.testimonialLimit ?? baseFeatures.testimonialLimit,
+    activeSpacesLimit: overrides.activeSpacesLimit ?? baseFeatures.activeSpacesLimit,
+    videoDurationSeconds: overrides.videoDurationSeconds ?? baseFeatures.videoDurationSeconds,
+    aiCredits: overrides.aiCredits ?? baseFeatures.aiCredits,
+  };
 
   const canUseAI = plan === "pro" || plan === "agency";
   const canUseTeleprompter = plan === "pro" || plan === "agency";

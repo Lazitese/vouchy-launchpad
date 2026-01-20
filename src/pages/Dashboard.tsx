@@ -138,6 +138,7 @@ const Dashboard = () => {
       {activeView === "wall" && (
         <TestimonialsView
           testimonials={testimonials}
+          spaces={spaces}
           onApprove={handleApprove}
           onReject={handleReject}
           onDelete={deleteTestimonial}

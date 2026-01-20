@@ -59,11 +59,19 @@ export const WidgetPreview = ({
   const renderWidget = () => {
     if (displayItems.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-[300px] text-center p-8">
-          <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="w-16 h-16 mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Quote className="w-8 h-8 text-primary/40" />
+        <div className="flex flex-col items-center justify-center min-h-[300px] text-center p-8 max-w-md mx-auto">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-16 h-16 mb-6 rounded-2xl bg-zinc-100 flex items-center justify-center border border-zinc-200"
+          >
+            <Quote className="w-8 h-8 text-zinc-400" />
           </motion.div>
-          <p className="text-sm font-medium opacity-60">Add testmonials to view preview</p>
+
+          <h3 className="text-xl font-semibold text-zinc-900 mb-2">Device & Design Preview</h3>
+          <p className="text-base text-zinc-500 leading-relaxed max-w-sm">
+            Preview your widgets on all devices. Approved Testimonials will appear here once you collect feedback.
+          </p>
         </div>
       );
     }

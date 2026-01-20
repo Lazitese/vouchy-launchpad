@@ -41,10 +41,10 @@ interface SidebarProps {
 }
 
 const sidebarItems = [
-    { id: "spaces" as View, icon: LayoutGrid, label: "Spaces" },
+    { id: "spaces" as View, icon: LayoutGrid, label: "Collections" },
     { id: "analytics" as View, icon: BarChart3, label: "Analytics" },
-    { id: "wall" as View, icon: Heart, label: "Wall of Love" },
-    { id: "widget" as View, icon: Palette, label: "Widget Lab" },
+    { id: "wall" as View, icon: Heart, label: "All Reviews" },
+    { id: "widget" as View, icon: Palette, label: "Website Embeds" },
     { id: "settings" as View, icon: Settings, label: "Settings" },
 ];
 
@@ -115,22 +115,31 @@ export const Sidebar = ({
                 </div>
 
                 {/* Nav items */}
-                <nav className="flex-1 px-4 space-y-1">
+                <nav className="flex-1 px-3 space-y-2 py-4">
                     {sidebarItems.map((item) => (
                         <button
                             key={item.id}
                             onClick={() => setActiveView(item.id)}
-                            className={`w-full rounded-xl flex items-center transition-all duration-300 relative group overflow-hidden
-                                ${sidebarOpen ? "px-4 py-3 gap-3" : "px-0 py-3 justify-center"}
+                            className={`w-full rounded-xl flex items-center transition-all duration-300 relative group
+                                ${sidebarOpen ? "px-4 py-3.5 gap-3" : "px-0 py-3.5 justify-center"}
                                 ${activeView === item.id
-                                    ? "bg-[#14873e] text-white shadow-lg shadow-[#14873e]/20"
-                                    : "text-zinc-500 hover:bg-zinc-50 hover:text-black"}
+                                    ? "bg-zinc-900 text-white shadow-lg shadow-zinc-900/20"
+                                    : "text-zinc-500 hover:bg-zinc-100/80 hover:text-zinc-900"}
                             `}
                         >
-                            <item.icon className={`w-[20px] h-[20px] shrink-0 transition-colors ${activeView === item.id ? "text-white" : "group-hover:text-black"}`} />
-                            {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
+                            <item.icon
+                                strokeWidth={activeView === item.id ? 2.5 : 2}
+                                className={`w-5 h-5 shrink-0 transition-colors ${activeView === item.id ? "text-white" : "group-hover:text-zinc-900"}`}
+                            />
+                            {sidebarOpen && (
+                                <span className={`text-[13px] font-semibold tracking-wide ${activeView === item.id ? "text-white" : ""}`}>
+                                    {item.label}
+                                </span>
+                            )}
+
+                            {/* Active Indicator for Collapsed Mode */}
                             {!sidebarOpen && activeView === item.id && (
-                                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white/20 rounded-r-full" />
+                                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-full" />
                             )}
                         </button>
                     ))}
@@ -144,17 +153,17 @@ export const Sidebar = ({
                                 className={`w-full bg-zinc-500  hover:bg-black text-white rounded-xl shadow-lg shadow-black/5 transition-all duration-300 ${!sidebarOpen && "p-0 aspect-square flex items-center justify-center"}`}
                             >
                                 <Plus className="w-5 h-5" />
-                                {sidebarOpen && <span className="ml-2 font-medium">New Space</span>}
+                                {sidebarOpen && <span className="ml-2 font-medium">New Collection</span>}
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="organic-card border-none shadow-2xl">
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold">Create new space</DialogTitle>
+                                <DialogTitle className="text-2xl font-bold">Create new collection</DialogTitle>
                             </DialogHeader>
                             <div className="space-y-4 pt-4">
                                 <div className="p-1 bg-zinc-100 rounded-xl">
                                     <Input
-                                        placeholder="Space name (e.g., Product Reviews)"
+                                        placeholder="Collection name (e.g., Product Reviews)"
                                         value={newSpaceName}
                                         onChange={(e) => setNewSpaceName(e.target.value)}
                                         maxLength={100}
@@ -169,7 +178,7 @@ export const Sidebar = ({
                                     {creatingSpace ? (
                                         <Loader2 className="w-5 h-5 animate-spin" />
                                     ) : (
-                                        "Create Space"
+                                        "Create Collection"
                                     )}
                                 </Button>
                             </div>

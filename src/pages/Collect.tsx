@@ -45,7 +45,7 @@ const Collect = () => {
       if (!space?.id) return;
 
       try {
-        const { data, error } = await supabase.rpc('get_space_owner_plan', {
+        const { data, error } = await (supabase.rpc as any)('get_space_owner_plan', {
           _space_id: space.id
         });
 
@@ -182,10 +182,10 @@ const Collect = () => {
               transition={{ duration: 0.3 }}
             >
               <h1 className="text-3xl md:text-5xl font-bold mb-6 tracking-tight text-zinc-900">
-                Share your experience
+                Share your experience with <span className="text-primary">{space.name}</span>
               </h1>
               <p className="text-lg text-zinc-500 mb-12 max-w-lg mx-auto leading-relaxed">
-                Help others by sharing your honest feedback. Choose how you'd like to contribute.
+                {(space as any).custom_message || "Help others by sharing your honest feedback. It only takes a minute and means a lot to us."}
               </p>
 
               <div className={`grid grid-cols-1 ${!isFreePlan ? 'md:grid-cols-2' : 'max-w-md mx-auto'} gap-4 md:gap-6`}>

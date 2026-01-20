@@ -7,6 +7,7 @@ import { ArrowRight, ArrowLeft, Check, Upload, Sparkles, Loader2, Play } from "l
 import { useWorkspace } from "@/hooks/useWorkspace";
 import { useToast } from "@/hooks/use-toast";
 import logoFull from "@/assets/logo-full.svg";
+import { supabase } from "@/integrations/supabase/client";
 
 const colorOptions = [
   { name: "Ocean", value: "#1a3f64" },
@@ -36,9 +37,27 @@ const Onboarding = () => {
 
   // If user already has a workspace, redirect to dashboard
   useEffect(() => {
-    if (!workspaceLoading && workspace) {
-      navigate("/dashboard", { replace: true });
-    }
+    const checkAdminAndWorkspace = async () => {
+      if (workspaceLoading) return;
+
+      // Check if admin
+      const { data: adminRole } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (adminRole) {
+        navigate("/admin", { replace: true });
+        return;
+      }
+
+      if (workspace) {
+        navigate("/dashboard", { replace: true });
+      }
+    };
+
+    checkAdminAndWorkspace();
   }, [workspace, workspaceLoading, navigate]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -162,10 +181,10 @@ const Onboarding = () => {
               <div key={s.number} className="flex items-center gap-2">
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 border-2 ${step > s.number
-                      ? "bg-primary border-primary text-primary-foreground"
-                      : step === s.number
-                        ? "bg-primary border-primary text-primary-foreground shadow-[0_0_15px_-3px_rgba(0,0,0,0.2)] shadow-primary/40"
-                        : "bg-transparent border-zinc-200 dark:border-zinc-800 text-zinc-400"
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : step === s.number
+                      ? "bg-primary border-primary text-primary-foreground shadow-[0_0_15px_-3px_rgba(0,0,0,0.2)] shadow-primary/40"
+                      : "bg-transparent border-zinc-200 dark:border-zinc-800 text-zinc-400"
                     }`}
                 >
                   {step > s.number ? <Check className="w-4 h-4" /> : s.number}
@@ -244,8 +263,8 @@ const Onboarding = () => {
                           setWorkspaceData({ ...workspaceData, color: color.value })
                         }
                         className={`group relative p-4 rounded-2xl border-2 text-left transition-all duration-300 overflow-hidden ${workspaceData.color === color.value
-                            ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-                            : "border-zinc-200 dark:border-zinc-800 hover:border-primary/30 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+                          ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
+                          : "border-zinc-200 dark:border-zinc-800 hover:border-primary/30 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
                           }`}
                       >
                         <div className="flex items-center justify-between mb-3 relative z-10">

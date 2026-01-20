@@ -87,6 +87,21 @@ const Auth = () => {
       }
     }
 
+    // Check if user is admin
+    if (user) {
+      const { data: adminRole } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (adminRole) {
+        navigate("/admin", { replace: true });
+        return;
+      }
+    }
+
     if (mode === "signup") {
       navigate("/onboarding", { replace: true });
     } else {

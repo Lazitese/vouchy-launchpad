@@ -20,6 +20,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { MiniTour, SPACES_TOUR } from "@/components/dashboard/MiniTour";
 
 interface SpacesManagementViewProps {
     spaces: Space[];
@@ -120,7 +121,7 @@ export const SpacesManagementView = ({
                     )}
                 >
                     <Folder className="w-3.5 h-3.5" />
-                    Spaces
+                    Collections
                 </button>
                 <button
                     onClick={() => setActiveMobileTab("testimonials")}
@@ -141,12 +142,20 @@ export const SpacesManagementView = ({
             )}>
                 {/* Header */}
                 <div className="mb-4 flex items-center justify-between">
-                    <h2 className="text-xl font-light text-zinc-900">Your Spaces</h2>
+                    <div className="flex items-center gap-2">
+                        <h2 className="text-xl font-light text-zinc-900">Your Collections</h2>
+                        <MiniTour
+                            tourId="spaces-management"
+                            steps={SPACES_TOUR}
+                            triggerLabel="Learn"
+                        />
+                    </div>
                     <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => setIsCreatingSpace(true)}
                         className="h-8 w-8 rounded-full bg-[#14873e] text-white hover:bg-[#0f6b30] p-0 shadow-sm"
+                        data-tour-id="spaces-create"
                     >
                         <Plus className="w-4 h-4" />
                     </Button>
@@ -157,7 +166,7 @@ export const SpacesManagementView = ({
                         <Input
                             value={newSpaceName}
                             onChange={(e) => setNewSpaceName(e.target.value)}
-                            placeholder="Space Name..."
+                            placeholder="Collection Name..."
                             className="mb-2 bg-zinc-50 border-zinc-200 h-9 text-sm"
                             autoFocus
                             onKeyDown={(e) => e.key === "Enter" && handleCreateSpace()}
@@ -170,10 +179,18 @@ export const SpacesManagementView = ({
                 )}
 
                 {/* List Container */}
-                <div className="flex-1 overflow-y-auto space-y-3 pb-4 scrollbar-hide">
+                <div className="flex-1 overflow-y-auto space-y-3 pb-4 scrollbar-hide" data-tour-id="spaces-list">
                     {spaces.length === 0 ? (
-                        <div className="text-center py-10 border-2 border-dashed border-zinc-200 rounded-2xl">
-                            <p className="text-sm text-zinc-400 font-medium">No spaces yet</p>
+                        <div className="text-center py-10 border-2 border-dashed border-zinc-200 rounded-2xl px-4">
+                            <p className="text-sm text-zinc-400 font-medium mb-3">No collections yet</p>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setIsCreatingSpace(true)}
+                                className="w-full text-xs"
+                            >
+                                <Plus className="w-3.5 h-3.5 mr-1" /> Create Collection
+                            </Button>
                         </div>
                     ) : (
                         spaces.map((space) => {
@@ -234,168 +251,87 @@ export const SpacesManagementView = ({
                 </div>
             </aside>
 
-            {/* MAIN CONTENT: Testimonials */}
-            <main className={cn(
-                "flex-1 flex flex-col min-w-0 bg-white/40 backdrop-blur-xl border border-zinc-200/50 rounded-2xl overflow-hidden shadow-sm",
-                activeMobileTab === "testimonials" ? "flex" : "hidden md:flex"
-            )}>
+            {/* MAIN CONTENT: Collection Preview */}
+            <main className="flex-1 flex flex-col min-w-0 bg-white/40 backdrop-blur-xl border border-zinc-200/50 rounded-2xl overflow-hidden shadow-sm hidden md:flex">
                 {selectedSpace ? (
-                    <>
-                        {/* Toolbar */}
-                        <div className="p-4 md:p-6 border-b border-zinc-100 flex flex-col gap-4">
+                    <div className="flex flex-col h-full">
+                        {/* Header */}
+                        <div className="p-4 md:p-6 border-b border-zinc-100 flex flex-col gap-4 bg-white/50">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div>
-                                    <h1 className="text-2xl font-light text-zinc-900 flex items-center gap-2">
+                                    <h1 className="text-2xl font-light text-zinc-900 flex items-center gap-3">
                                         {selectedSpace.name}
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-6 w-6 rounded-full p-0 text-zinc-400 hover:text-white hover:bg-[#14873e]"
-                                            onClick={() => copyCollectionLink(selectedSpace.slug)}
-                                            title="Copy Collection Link"
-                                        >
-                                            <Copy className="w-3 h-3" />
-                                        </Button>
-                                    </h1>
-                                    <p className="text-xs text-zinc-500 mt-1">
-                                        Showing {filteredTestimonials.length} of {spaceTestimonials.length} items
-                                    </p>
-                                </div>
-                                <div className="flex gap-2">
-                                    <div className="relative">
-                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
-                                        <Input
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            placeholder="Search..."
-                                            className="pl-9 w-full md:w-64 bg-white border-zinc-200 h-9 text-sm"
-                                        />
-                                    </div>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="outline" className="h-9 gap-2 bg-white px-3">
-                                                <Filter className="w-3.5 h-3.5" />
-                                                <span className="hidden sm:inline capitalize">{statusFilter}</span>
-                                                <ChevronDown className="w-3.5 h-3.5 opacity-50" />
+                                        <div className="flex items-center gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-8 gap-2 text-xs font-bold border-zinc-200 text-zinc-600 hover:text-white hover:bg-[#14873e] hover:border-[#14873e]"
+                                                onClick={() => copyCollectionLink(selectedSpace.slug)}
+                                                data-tour-id="spaces-share"
+                                            >
+                                                <Copy className="w-3.5 h-3.5" />
+                                                Copy Link
                                             </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            {['all', 'approved', 'pending', 'rejected'].map(s => (
-                                                <DropdownMenuItem key={s} onClick={() => setStatusFilter(s as any)} className="capitalize">
-                                                    {s}
-                                                </DropdownMenuItem>
-                                            ))}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="h-8 w-8 rounded-full p-0 text-zinc-400 hover:text-black"
+                                                onClick={() => window.open(`/collect/${selectedSpace.slug}`, '_blank')}
+                                                title="Open Public Page"
+                                                data-tour-id="spaces-settings"
+                                            >
+                                                <ExternalLink className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </h1>
+                                    <p className="text-base text-zinc-500 mt-1">
+                                        This is the public page where your users can submit their reviews.
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Grid */}
-                        <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-zinc-50/30 scrollbar-hide">
-                            {filteredTestimonials.length === 0 ? (
-                                <div className="h-full flex flex-col items-center justify-center text-zinc-400">
-                                    <MessageSquare className="w-12 h-12 mb-4 opacity-20" />
-                                    <p>No testimonials found here.</p>
+                        {/* Iframe Preview */}
+                        <div className="flex-1 bg-zinc-50/50 relative p-4 flex items-center justify-center overflow-hidden">
+                            {/* Device Frame */}
+                            <div className="w-full max-w-4xl h-full bg-white rounded-xl shadow-2xl border border-zinc-200 overflow-hidden flex flex-col">
+                                {/* Browser Chrome */}
+                                <div className="h-8 bg-zinc-50 border-b border-zinc-200 flex items-center px-3 gap-2 shrink-0">
+                                    <div className="flex gap-1.5">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-red-400/50" />
+                                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400/50" />
+                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/50" />
+                                    </div>
+                                    <div className="flex-1 flex justify-center">
+                                        <div className="bg-white border border-zinc-200 rounded-md px-3 py-0.5 max-w-sm w-full flex items-center justify-center">
+                                            <span className="text-[10px] text-zinc-400 flex items-center gap-1">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                {window.location.origin}/collect/{selectedSpace.slug}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                            ) : (
-                                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                                    <AnimatePresence mode="popLayout">
-                                        {filteredTestimonials.map((t) => (
-                                            <motion.div
-                                                key={t.id}
-                                                layout
-                                                initial={{ opacity: 0, scale: 0.95 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.95 }}
-                                                className="group bg-white rounded-xl p-5 border border-zinc-100 shadow-sm hover:shadow-md transition-all flex flex-col gap-4 relative"
-                                            >
-
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex items-center gap-3">
-                                                        <Avatar className="w-9 h-9 ring-1 ring-zinc-100">
-                                                            <AvatarImage src={t.avatar_url || ''} />
-                                                            <AvatarFallback className="text-xs bg-[#14873e] text-white font-bold">{t.name.charAt(0)}</AvatarFallback>
-                                                        </Avatar>
-                                                        <div>
-                                                            <h4 className="font-bold text-sm text-zinc-900 leading-tight">{t.name}</h4>
-                                                            <div className="flex gap-0.5 mt-0.5">
-                                                                {[...Array(5)].map((_, i) => (
-                                                                    <span key={i} className={`text-[10px] ${i < t.rating ? 'text-zinc-900' : 'text-zinc-200'}`}>★</span>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <button className="p-1 text-zinc-300 hover:text-zinc-900 rounded-md transition-colors opacity-0 group-hover:opacity-100">
-                                                                <MoreVertical className="w-4 h-4" />
-                                                            </button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem onClick={() => { if (confirm("Delete?")) deleteTestimonial(t.id); }} className="text-red-600">
-                                                                <Trash2 className="w-4 h-4 mr-2" /> Delete
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </div>
-
-                                                <div className="flex-1">
-                                                    {t.type === 'video' ? (
-                                                        <div
-                                                            className="w-full h-32 bg-zinc-900 rounded-lg flex items-center justify-center cursor-pointer group/play relative overflow-hidden"
-                                                            onClick={() => setSelectedVideo(t.video_url)}
-                                                        >
-                                                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center transition-transform group-hover/play:scale-110">
-                                                                <Play className="w-4 h-4 ml-0.5 fill-black" />
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <p className="text-sm text-zinc-600 italic line-clamp-4">"{t.content}"</p>
-                                                    )}
-                                                </div>
-
-                                                <div className="pt-3 border-t border-zinc-50 flex items-center justify-between gap-2">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${t.status === 'approved' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : t.status === 'rejected' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-orange-50 text-orange-600 border-orange-100'}`}>
-                                                            {t.status}
-                                                        </span>
-                                                        <span className="text-[10px] text-zinc-400 font-mono">
-                                                            {new Date(t.created_at).toLocaleDateString()}
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            onClick={() => updateTestimonial(t.id, 'approved')}
-                                                            className="h-7 px-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                                                        >
-                                                            <Check className="w-3.5 h-3.5" />
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            onClick={() => updateTestimonial(t.id, 'rejected')}
-                                                            className="h-7 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                        >
-                                                            <X className="w-3.5 h-3.5" />
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </motion.div>
-                                        ))}
-                                    </AnimatePresence>
-                                </div>
-                            )}
+                                {/* Iframe */}
+                                <iframe
+                                    src={`/collect/${selectedSpace.slug}`}
+                                    className="w-full h-full border-none bg-white"
+                                    title="Collection Page Preview"
+                                />
+                            </div>
                         </div>
-                    </>
+                    </div>
                 ) : (
                     <div className="h-full flex flex-col items-center justify-center text-zinc-400 gap-4">
                         <div className="w-16 h-16 rounded-2xl bg-zinc-50 flex items-center justify-center border border-zinc-100">
                             <Folder className="w-8 h-8 opacity-20" />
                         </div>
-                        <p>Select a space to view details</p>
+                        <p className="font-medium">No collection selected</p>
+                        <p className="text-xs text-zinc-400">Select a collection from the list or create a new one.</p>
+                        {spaces.length === 0 && (
+                            <Button onClick={() => setIsCreatingSpace(true)} className="mt-2 bg-[#14873e] text-white hover:bg-[#0f6b30]">
+                                <Plus className="w-4 h-4 mr-2" /> Create First Collection
+                            </Button>
+                        )}
                     </div>
                 )}
             </main>

@@ -9,8 +9,8 @@ const corsHeaders = {
 
 // Product ID to plan mapping
 const PRODUCT_PLAN_MAP: Record<string, string> = {
-  'pdt_0NWYVCyQdmrQ6theVIHik': 'pro',    // Vouchy Pro - $12/month
-  'pdt_0NWYW0CEpophu7xCowSWa': 'agency', // Vouchy Agency - $45/month
+  'pdt_0NVVmIlZrdWC90xs1ZgOm': 'pro',    // Vouchy Pro - $12/month
+  'pdt_0NVVmba1bevOgK6sfV8Wx': 'agency', // Vouchy Agency - $45/month
 };
 
 Deno.serve(async (req: Request) => {

@@ -25,6 +25,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ProductTour } from "./ProductTour";
 
 type View = "spaces" | "analytics" | "wall" | "settings" | "widget" | "space-settings" | "manage-spaces";
 
@@ -36,9 +37,9 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
     { id: "spaces", label: "Overview", icon: LayoutDashboard },
-    { id: "manage-spaces", label: "Manage Spaces", icon: Folder },
-    { id: "wall", label: "Wall of Love", icon: Heart },
-    { id: "widget", label: "Widget Lab", icon: FlaskConical },
+    { id: "manage-spaces", label: "Manage Collections", icon: Folder },
+    { id: "wall", label: "All Reviews", icon: Heart },
+    { id: "widget", label: "Website Embeds", icon: FlaskConical },
     { id: "settings", label: "Settings", icon: Settings },
 ];
 
@@ -64,6 +65,7 @@ export const DashboardLayout = ({
     const { signOut } = useAuth();
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     // Calculate recent activities
     const recentActivities = useMemo(() => {
@@ -105,25 +107,51 @@ export const DashboardLayout = ({
     return (
         <div className="h-screen bg-engineering-grid text-zinc-900 flex overflow-hidden font-sans selection:bg-[#ccf381] selection:text-black">
 
-            {/* Sidebar - Desktop (Slim Rail) */}
-            <aside className="hidden md:flex w-20 flex-col items-center fixed inset-y-0 left-0 z-50 py-8 border-r border-zinc-200/50 bg-white/60 backdrop-blur-xl">
-                {/* Logo */}
-                <div className="mb-12">
-                    {workspace?.logo_url ? (
-                        <img
-                            src={workspace.logo_url}
-                            alt={workspace.name || 'Workspace'}
-                            className="w-10 h-10 rounded-xl object-cover shadow-sm ring-1 ring-zinc-100"
-                        />
+            {/* Sidebar - Desktop (Expandable) */}
+            <aside
+                className={cn(
+                    "hidden md:flex flex-col fixed inset-y-0 left-0 z-50 bg-white/60 backdrop-blur-xl border-r border-zinc-200/50 transition-all duration-300 ease-in-out",
+                    isSidebarOpen ? "w-[280px]" : "w-20 items-center"
+                )}
+            >
+                {/* Header / Logo */}
+                <div className={cn(
+                    "h-24 flex items-center border-b border-zinc-100/50 mb-6",
+                    isSidebarOpen ? "px-6 justify-between" : "justify-center px-0"
+                )}>
+                    {isSidebarOpen ? (
+                        <div className="flex items-center gap-3 overflow-hidden">
+                            {workspace?.logo_url ? (
+                                <img
+                                    src={workspace.logo_url}
+                                    alt={workspace.name || 'Workspace'}
+                                    className="w-8 h-8 rounded-lg object-cover shadow-sm ring-1 ring-zinc-100"
+                                />
+                            ) : (
+                                <div className="w-8 h-8 rounded-lg bg-[#14873e] text-white flex items-center justify-center font-bold shadow-lg shadow-[#14873e]/20 shrink-0">
+                                    {workspace?.name?.charAt(0).toUpperCase() || 'V'}
+                                </div>
+                            )}
+                            <span className="font-bold text-lg tracking-tight truncate text-zinc-900">{workspace?.name || 'Vouchy'}</span>
+                        </div>
                     ) : (
-                        <div className="w-10 h-10 rounded-xl bg-[#14873e] text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-[#14873e]/20">
+                        <div className="w-9 h-9 rounded-xl bg-[#14873e] text-white flex items-center justify-center font-bold text-lg shadow-lg shadow-[#14873e]/20 hover:scale-105 transition-transform cursor-pointer" onClick={() => setIsSidebarOpen(true)}>
                             {workspace?.name?.charAt(0).toUpperCase() || 'V'}
                         </div>
                     )}
+
+                    {isSidebarOpen && (
+                        <button
+                            onClick={() => setIsSidebarOpen(false)}
+                            className="p-1 rounded-lg hover:bg-zinc-100 text-zinc-400 hover:text-zinc-600 transition-colors"
+                        >
+                            <Menu className="w-5 h-5 opacity-50" />
+                        </button>
+                    )}
                 </div>
 
-                {/* Navigation Rail */}
-                <div className="flex-1 flex flex-col gap-6 w-full items-center">
+                {/* Navigation */}
+                <div className={cn("flex-1 px-4 space-y-2", !isSidebarOpen && "px-3 items-center flex flex-col")}>
                     {NAV_ITEMS.map((item) => {
                         const isActive = activeView === item.id;
                         return (
@@ -131,38 +159,85 @@ export const DashboardLayout = ({
                                 key={item.id}
                                 onClick={() => setActiveView(item.id)}
                                 className={cn(
-                                    "relative group w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300",
+                                    "relative group flex items-center transition-all duration-200 rounded-xl overflow-hidden",
+                                    isSidebarOpen
+                                        ? "w-full px-5 py-4 gap-4"
+                                        : "w-12 h-12 justify-center",
                                     isActive
-                                        ? "bg-[#14873e] text-white shadow-[0_0_20px_-5px_rgba(20,135,62,0.5)]"
-                                        : "text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100"
+                                        ? "bg-[#14873e] text-white shadow-lg shadow-[#14873e]/20"
+                                        : "text-zinc-500 hover:bg-white hover:shadow-sm hover:text-zinc-900"
                                 )}
                             >
-                                <item.icon className="w-5 h-5" strokeWidth={isActive ? 2 : 1.5} />
+                                <item.icon
+                                    className={cn("shrink-0", isSidebarOpen ? "w-5 h-5" : "w-5 h-5")}
+                                    strokeWidth={isActive ? 2.2 : 2}
+                                />
 
-                                {/* Hover Label Tooltip */}
-                                <div className="absolute left-14 px-3 py-1.5 bg-black text-white text-xs font-semibold rounded-lg opacity-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap pointer-events-none shadow-xl z-50">
-                                    {item.label}
-                                    {/* Arrow */}
-                                    <div className="absolute top-1/2 -left-1 -translate-y-1/2 border-4 border-transparent border-r-black" />
-                                </div>
+                                {isSidebarOpen && (
+                                    <span className="text-sm font-bold tracking-wide truncate">
+                                        {item.label}
+                                    </span>
+                                )}
+
+                                {/* Collapsed Tooltip */}
+                                {!isSidebarOpen && (
+                                    <div className="absolute left-14 px-3 py-1.5 bg-zinc-900 text-white text-xs font-semibold rounded-lg opacity-0 -translate-x-2 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-200 whitespace-nowrap pointer-events-none shadow-xl z-50">
+                                        {item.label}
+                                        <div className="absolute top-1/2 -left-1 -translate-y-1/2 border-4 border-transparent border-r-zinc-900" />
+                                    </div>
+                                )}
                             </button>
                         )
                     })}
                 </div>
 
-                {/* User / Logout */}
-                <div className="mt-auto flex flex-col gap-4 items-center mb-4">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-xl w-10 h-10 text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                        onClick={() => signOut()}
-                        title="Sign Out"
-                    >
-                        <LogOut className="w-5 h-5" strokeWidth={1.5} />
-                    </Button>
+                {/* Footer / User */}
+                <div className={cn("mt-auto p-4 flex flex-col gap-2", !isSidebarOpen && "items-center px-0")}>
+                    {isSidebarOpen ? (
+                        <div className="p-3 rounded-2xl bg-zinc-50 border border-zinc-100 flex items-center gap-3">
+                            <Avatar className="w-8 h-8 ring-2 ring-white shadow-sm">
+                                <AvatarImage src={user?.user_metadata?.avatar_url} />
+                                <AvatarFallback className="bg-zinc-200 text-zinc-600 font-bold text-xs">{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 overflow-hidden min-w-0">
+                                <p className="text-xs font-bold text-zinc-900 truncate">{user?.email?.split('@')[0]}</p>
+                                <p className="text-[10px] text-zinc-500 truncate">Free Plan</p>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="w-7 h-7 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50"
+                                onClick={() => signOut()}
+                            >
+                                <LogOut className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    ) : (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-xl w-10 h-10 text-zinc-400 hover:text-red-600 hover:bg-red-50 mb-4"
+                            onClick={() => signOut()}
+                            title="Sign Out"
+                        >
+                            <LogOut className="w-5 h-5" />
+                        </Button>
+                    )}
+
+                    {!isSidebarOpen && (
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="mb-4 p-2 text-zinc-300 hover:text-zinc-600 transition-colors"
+                        >
+                            <Menu className="w-5 h-5" />
+                        </button>
+                    )}
                 </div>
             </aside>
+
+            {/* Product Tour */}
+            <ProductTour onStepChange={setActiveView} />
+
 
 
             {/* Mobile Top Bar */}
@@ -192,8 +267,10 @@ export const DashboardLayout = ({
                 </Avatar>
             </div>
 
-            {/* Main Content Area */}
-            <main className="flex-1 md:ml-20 min-h-screen relative p-4 md:p-10 pt-20 md:pt-10 pb-24 md:pb-10 overflow-y-auto w-full max-w-[1920px] mx-auto scrollbar-hide">
+            <main className={cn(
+                "flex-1 min-h-screen relative p-4 md:p-10 pt-20 md:pt-10 pb-24 md:pb-10 overflow-y-auto w-full max-w-[1920px] mx-auto scrollbar-hide transition-all duration-300 ease-in-out",
+                isSidebarOpen ? "md:ml-[280px]" : "md:ml-20"
+            )}>
                 {/* Top Header Row */}
                 <header className="hidden md:flex items-center justify-between mb-12">
                     <div>

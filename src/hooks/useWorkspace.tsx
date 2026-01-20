@@ -60,7 +60,7 @@ export const useWorkspace = () => {
           .eq("workspace_id", data.id)
           .maybeSingle();
 
-        setWidgetSettings(settings);
+        setWidgetSettings(settings as unknown as WidgetSettings);
       }
     } catch (error) {
       console.error("Error fetching workspace:", error);
@@ -99,7 +99,7 @@ export const useWorkspace = () => {
         .select()
         .single();
 
-      setWidgetSettings(settings);
+      setWidgetSettings(settings as unknown as WidgetSettings);
       return { data, error: null };
     } catch (error) {
       return { data: null, error };
@@ -137,7 +137,7 @@ export const useWorkspace = () => {
         .single();
 
       if (error) throw error;
-      setWidgetSettings(data);
+      setWidgetSettings(data as unknown as WidgetSettings);
       return { data, error: null };
     } catch (error) {
       return { data: null, error };

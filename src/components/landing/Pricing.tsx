@@ -23,7 +23,6 @@ const plans = [
     features: [
       "10 testimonials total",
       "1 active space",
-      "60 second video limit",
       "Vouchy branding",
     ],
     cta: "Get Started",
@@ -34,7 +33,7 @@ const plans = [
     price: "$12",
     period: "/mo",
     description: "The Essential plan for growing businesses",
-    productId: "pdt_0NWYVCyQdmrQ6theVIHik",
+    productId: "pdt_0NVVmIlZrdWC90xs1ZgOm",
     features: [
       "50 testimonials total",
       "3 active spaces",
@@ -51,7 +50,7 @@ const plans = [
     price: "$45",
     period: "/mo",
     description: "The Studio plan for teams & agencies",
-    productId: "pdt_0NWYW0CEpophu7xCowSWa",
+    productId: "pdt_0NVVmba1bevOgK6sfV8Wx",
     features: [
       "250 testimonials total",
       "15 active spaces",

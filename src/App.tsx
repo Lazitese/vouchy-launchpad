@@ -15,6 +15,15 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 import EmbedWidget from "./pages/EmbedWidget";
+import { ProtectedAdminRoute } from "./components/auth/ProtectedAdminRoute";
+import AdminDashboard from "./pages/Admin/Index";
+import AdminUsers from "./pages/Admin/Users";
+import AdminUserDetail from "./pages/Admin/UserDetail";
+import AdminWorkspaces from "./pages/Admin/Workspaces";
+import AdminWorkspaceDetail from "./pages/Admin/WorkspaceDetail";
+import AdminAnalytics from "./pages/Admin/Analytics";
+import AdminSettings from "./pages/Admin/Settings";
+import AdminPlans from "./pages/Admin/Plans";
 
 
 const queryClient = new QueryClient();
@@ -50,6 +59,74 @@ const App = () => (
               />
               <Route path="/collect/:slug" element={<Collect />} />
               <Route path="/embed/:workspaceId" element={<EmbedWidget />} />
+
+              {/* Admin Routes */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminDashboard />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminUsers />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/admin/users/:userId"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminUserDetail />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/admin/workspaces"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminWorkspaces />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/admin/workspaces/:workspaceId"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminWorkspaceDetail />
+                  </ProtectedAdminRoute>
+                }
+              />
+
+
+              <Route
+                path="/admin/activity"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminAnalytics />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/admin/plans"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminPlans />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/admin/settings"
+                element={
+                  <ProtectedAdminRoute>
+                    <AdminSettings />
+                  </ProtectedAdminRoute>
+                }
+              />
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

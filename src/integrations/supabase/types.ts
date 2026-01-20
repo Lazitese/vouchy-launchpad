@@ -7,6 +7,8 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
@@ -54,110 +56,129 @@ export type Database = {
           },
         ]
       }
+      plans: {
+        Row: {
+          active_spaces_limit: number
+          ai_credits: number
+          created_at: string
+          id: string
+          name: string
+          testimonial_limit: number
+          updated_at: string
+          video_duration_seconds: number
+        }
+        Insert: {
+          active_spaces_limit: number
+          ai_credits: number
+          created_at?: string
+          id: string
+          name: string
+          testimonial_limit: number
+          updated_at?: string
+          video_duration_seconds: number
+        }
+        Update: {
+          active_spaces_limit?: number
+          ai_credits?: number
+          created_at?: string
+          id?: string
+          name?: string
+          testimonial_limit?: number
+          updated_at?: string
+          video_duration_seconds?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           ai_credits_reset_at: string | null
-          ai_credits_used: number | null
+          ai_credits_used: number
           avatar_url: string | null
-          created_at: string | null
+          created_at: string
           email: string | null
           full_name: string | null
           id: string
+          override_active_spaces_limit: number | null
+          override_ai_credits: number | null
+          override_testimonial_limit: number | null
+          override_video_duration: number | null
           plan: string | null
           updated_at: string | null
         }
         Insert: {
           ai_credits_reset_at?: string | null
-          ai_credits_used?: number | null
+          ai_credits_used?: number
           avatar_url?: string | null
-          created_at?: string | null
+          created_at?: string
           email?: string | null
           full_name?: string | null
           id: string
+          override_active_spaces_limit?: number | null
+          override_ai_credits?: number | null
+          override_testimonial_limit?: number | null
+          override_video_duration?: number | null
           plan?: string | null
           updated_at?: string | null
         }
         Update: {
           ai_credits_reset_at?: string | null
-          ai_credits_used?: number | null
+          ai_credits_used?: number
           avatar_url?: string | null
-          created_at?: string | null
+          created_at?: string
           email?: string | null
           full_name?: string | null
           id?: string
+          override_active_spaces_limit?: number | null
+          override_ai_credits?: number | null
+          override_testimonial_limit?: number | null
+          override_video_duration?: number | null
           plan?: string | null
           updated_at?: string | null
         }
         Relationships: []
       }
-      workspaces: {
-        Row: {
-          id: string
-          user_id: string
-          name: string
-          logo_url: string | null
-          primary_color: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          name: string
-          logo_url?: string | null
-          primary_color?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          name?: string
-          logo_url?: string | null
-          primary_color?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "workspaces_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       spaces: {
         Row: {
+          appearance: Json | null
+          created_at: string
+          dark_mode: boolean | null
+          display_limit: number | null
           id: string
-          workspace_id: string
-          name: string
-          slug: string
-          questions: Json | null
-          is_active: boolean | null
-          created_at: string | null
+          layout: string | null
+          ordering: string | null
+          show_video_first: boolean | null
+          space_filtering: Json | null
           updated_at: string | null
+          user_id: string
+          workspace_id: string
         }
         Insert: {
+          appearance?: Json | null
+          created_at?: string
+          dark_mode?: boolean | null
+          display_limit?: number | null
           id?: string
-          workspace_id: string
-          name: string
-          slug: string
-          questions?: Json | null
-          is_active?: boolean | null
-          created_at?: string | null
+          layout?: string | null
+          ordering?: string | null
+          show_video_first?: boolean | null
+          space_filtering?: Json | null
           updated_at?: string | null
+          user_id: string
+          workspace_id: string
         }
         Update: {
+          appearance?: Json | null
+          created_at?: string
+          dark_mode?: boolean | null
+          display_limit?: number | null
           id?: string
-          workspace_id?: string
-          name?: string
-          slug?: string
-          questions?: Json | null
-          is_active?: boolean | null
-          created_at?: string | null
+          layout?: string | null
+          ordering?: string | null
+          show_video_first?: boolean | null
+          space_filtering?: Json | null
           updated_at?: string | null
+          user_id?: string
+          workspace_id?: string
         }
         Relationships: [
           {
@@ -166,63 +187,60 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "workspaces"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       testimonials: {
         Row: {
-          id: string
-          space_id: string
-          type: Database["public"]["Enums"]["testimonial_type"]
-          status: Database["public"]["Enums"]["testimonial_status"] | null
-          name: string
-          email: string | null
-          title: string | null
-          company: string | null
           avatar_url: string | null
+          company: string | null
           content: string | null
-          video_url: string | null
-          rating: number
-          ai_summary: string | null
-          golden_quote: string | null
+          created_at: string
+          email: string
+          id: string
           is_favorite: boolean | null
-          created_at: string | null
+          name: string
+          rating: number
+          space_id: string | null
+          status: Database["public"]["Enums"]["testimonial_status"]
+          title: string | null
+          type: Database["public"]["Enums"]["testimonial_type"]
+          updated_at: string | null
+          video_url: string | null
         }
         Insert: {
-          id?: string
-          space_id: string
-          type: Database["public"]["Enums"]["testimonial_type"]
-          status?: Database["public"]["Enums"]["testimonial_status"] | null
-          name: string
-          email?: string | null
-          title?: string | null
-          company?: string | null
           avatar_url?: string | null
+          company?: string | null
           content?: string | null
-          video_url?: string | null
-          rating: number
-          ai_summary?: string | null
-          golden_quote?: string | null
+          created_at?: string
+          email: string
+          id?: string
           is_favorite?: boolean | null
-          created_at?: string | null
+          name: string
+          rating?: number
+          space_id?: string | null
+          status?: Database["public"]["Enums"]["testimonial_status"]
+          title?: string | null
+          type?: Database["public"]["Enums"]["testimonial_type"]
+          updated_at?: string | null
+          video_url?: string | null
         }
         Update: {
-          id?: string
-          space_id?: string
-          type?: Database["public"]["Enums"]["testimonial_type"]
-          status?: Database["public"]["Enums"]["testimonial_status"] | null
-          name?: string
-          email?: string | null
-          title?: string | null
-          company?: string | null
           avatar_url?: string | null
+          company?: string | null
           content?: string | null
-          video_url?: string | null
-          rating?: number
-          ai_summary?: string | null
-          golden_quote?: string | null
+          created_at?: string
+          email?: string
+          id?: string
           is_favorite?: boolean | null
-          created_at?: string | null
+          name?: string
+          rating?: number
+          space_id?: string | null
+          status?: Database["public"]["Enums"]["testimonial_status"]
+          title?: string | null
+          type?: Database["public"]["Enums"]["testimonial_type"]
+          updated_at?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -231,86 +249,113 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "spaces"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       user_roles: {
         Row: {
-          created_at: string | null
+          created_at: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      widget_settings: {
+        Row: {
+          background_color: string | null
+          card_background: string | null
+          created_at: string | null
+          id: string
+          space_id: string | null
+          text_color: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          background_color?: string | null
+          card_background?: string | null
+          created_at?: string | null
+          id?: string
+          space_id?: string | null
+          text_color?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          background_color?: string | null
+          card_background?: string | null
+          created_at?: string | null
+          id?: string
+          space_id?: string | null
+          text_color?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "widget_settings_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          allow_white_label: boolean | null
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          plan: string | null
+          primary_color: string | null
+          slug: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
-          created_at?: string | null
+          allow_white_label?: boolean | null
+          created_at?: string
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          logo_url?: string | null
+          name: string
+          plan?: string | null
+          primary_color?: string | null
+          slug?: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
-          created_at?: string | null
+          allow_white_label?: boolean | null
+          created_at?: string
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
+          logo_url?: string | null
+          name?: string
+          plan?: string | null
+          primary_color?: string | null
+          slug?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "user_roles_user_id_fkey"
+            foreignKeyName: "workspaces_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
-        ]
-      }
-      widget_settings: {
-        Row: {
-          id: string
-          workspace_id: string
-          layout: string | null
-          dark_mode: boolean | null
-          show_video_first: boolean | null
-          appearance: Json | null
-          space_filtering: Json | null
-          display_limit: number | null
-          ordering: string | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: string
-          workspace_id: string
-          layout?: string | null
-          dark_mode?: boolean | null
-          show_video_first?: boolean | null
-          appearance?: Json | null
-          space_filtering?: Json | null
-          display_limit?: number | null
-          ordering?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: string
-          workspace_id?: string
-          layout?: string | null
-          dark_mode?: boolean | null
-          show_video_first?: boolean | null
-          appearance?: Json | null
-          space_filtering?: Json | null
-          display_limit?: number | null
-          ordering?: string | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "widget_settings_workspace_id_fkey"
-            columns: ["workspace_id"]
-            isOneToOne: false
-            referencedRelation: "workspaces"
-            referencedColumns: ["id"]
-          }
+          },
         ]
       }
     }
@@ -318,7 +363,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "user"
@@ -331,99 +379,5 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
-
-export type Tables<
-  PublicTableNameOrOptions extends
-  | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-  | { schema: "public" },
-  TableName extends PublicTableNameOrOptions extends { schema: "public" }
-  ? keyof (Database["public"]["Tables"] &
-    Database["public"]["Views"])
-  : never = never,
-> = PublicTableNameOrOptions extends { schema: "public" }
-  ? (Database["public"]["Tables"] &
-    Database["public"]["Views"])[TableName] extends {
-      Row: infer R
-    }
-  ? R
-  : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-    PublicSchema["Views"])
-  ? (PublicSchema["Tables"] &
-    PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-      Row: infer R
-    }
-  ? R
-  : never
-  : never
-
-export type TablesInsert<
-  PublicTableNameOrOptions extends
-  | keyof PublicSchema["Tables"]
-  | { schema: "public" },
-  TableName extends PublicTableNameOrOptions extends { schema: "public" }
-  ? keyof Database["public"]["Tables"]
-  : never = never,
-> = PublicTableNameOrOptions extends { schema: "public" }
-  ? Database["public"]["Tables"][TableName] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-  ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
-  : never
-
-export type TablesUpdate<
-  PublicTableNameOrOptions extends
-  | keyof PublicSchema["Tables"]
-  | { schema: "public" },
-  TableName extends PublicTableNameOrOptions extends { schema: "public" }
-  ? keyof Database["public"]["Tables"]
-  : never = never,
-> = PublicTableNameOrOptions extends { schema: "public" }
-  ? Database["public"]["Tables"][TableName] extends {
-    Update: infer U
-  }
-  ? U
-  : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-  ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
-    Update: infer U
-  }
-  ? U
-  : never
-  : never
-
-export type Enums<
-  PublicEnumNameOrOptions extends
-  | keyof PublicSchema["Enums"]
-  | { schema: "public" },
-  EnumName extends PublicEnumNameOrOptions extends { schema: "public" }
-  ? keyof Database["public"]["Enums"]
-  : never = never,
-> = PublicEnumNameOrOptions extends { schema: "public" }
-  ? Database["public"]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-  ? PublicSchema["Enums"][PublicEnumNameOrOptions]
-  : never
-
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-  | keyof PublicSchema["CompositeTypes"]
-  | { schema: "public" },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: "public"
-  }
-  ? keyof Database["public"]["CompositeTypes"]
-  : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: "public" }
-  ? Database["public"]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
-  ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-  : never
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
+export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T]

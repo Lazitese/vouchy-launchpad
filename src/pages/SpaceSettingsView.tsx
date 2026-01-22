@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { FormFieldsSettings } from "@/components/settings/FormFieldsSettings";
+import { FormSettings, mergeFormSettings } from "@/types/formSettings";
+
 
 interface SpaceSettingsViewProps {
     spaceId: string | null;
@@ -87,6 +90,28 @@ export const SpaceSettingsView = ({
         toast({ title: "Link copied" });
     };
 
+    const handleFormSettingsSave = async (formSettings: FormSettings) => {
+        if (!space) return;
+        setLoading(true);
+
+        const { error } = await updateSpace(space.id, { form_settings: formSettings });
+
+        setLoading(false);
+        if (error) {
+            toast({
+                variant: "destructive",
+                title: "Error updating form settings",
+                description: "Could not save changes.",
+            });
+        } else {
+            toast({
+                title: "Form settings updated",
+                description: "Your form customization has been saved.",
+            });
+        }
+    };
+
+
     if (!space) return null;
 
     return (
@@ -158,6 +183,13 @@ export const SpaceSettingsView = ({
                         </div>
                     </div>
                 </div>
+
+                {/* Form Customization */}
+                <FormFieldsSettings
+                    formSettings={mergeFormSettings(space.form_settings)}
+                    onSave={handleFormSettingsSave}
+                    loading={loading}
+                />
 
                 {/* Video Settings (Placeholder) */}
                 <div className="organic-card p-8 opacity-60 pointer-events-none relative">

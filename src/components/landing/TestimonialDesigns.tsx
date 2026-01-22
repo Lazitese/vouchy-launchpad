@@ -44,6 +44,14 @@ const CardPreviewContainer = ({ children, title, description, colorClass, delay 
 }
 
 const TestimonialDesigns = () => {
+  const [showAll, setShowAll] = useState(false);
+
+  // Designs that require scrolling (Marquee and Cinematic Slider)
+  const scrollBasedDesigns = [2, 4]; // Classic Quote and Video Stack indices
+
+  // Show only 4 designs initially if not expanded
+  const visibleDesigns = showAll ? 6 : 4;
+
   return (
     <section id="design-showcase" className='py-32 bg-white relative overflow-hidden'>
       {/* Dynamic Background */}
@@ -91,214 +99,246 @@ const TestimonialDesigns = () => {
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16 max-w-[1240px] mx-auto'>
 
           {/* Design 1: Minimal */}
-          <CardPreviewContainer
-            title="Minimalist"
-            description="A clean, distraction-free design that lets the content speak for itself. Perfect for modern SaaS."
-            colorClass="from-zinc-100 to-white"
-            delay={0}
-          >
-            {/* Minimal Card Component */}
-            <div className='bg-white p-6 rounded-2xl border border-zinc-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow duration-300'>
-              <div className='flex justify-between items-start mb-4'>
-                <div className='flex items-center gap-3'>
-                  <Avatar className="h-10 w-10 ring-2 ring-zinc-50">
-                    <AvatarImage src={demoTestimonial.avatar_url} />
-                    <AvatarFallback className="bg-zinc-100 text-zinc-500">SC</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className='font-bold text-sm text-zinc-900'>{demoTestimonial.name}</div>
-                    <div className='text-xs text-zinc-500'>{demoTestimonial.company}</div>
+          {visibleDesigns > 0 && (
+            <CardPreviewContainer
+              title="Minimalist"
+              description="A clean, distraction-free design that lets the content speak for itself. Perfect for modern SaaS."
+              colorClass="from-zinc-100 to-white"
+              delay={0}
+            >
+              {/* Minimal Card Component */}
+              <div className='bg-white p-6 rounded-2xl border border-zinc-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow duration-300'>
+                <div className='flex justify-between items-start mb-4'>
+                  <div className='flex items-center gap-3'>
+                    <Avatar className="h-10 w-10 ring-2 ring-zinc-50">
+                      <AvatarImage src={demoTestimonial.avatar_url} />
+                      <AvatarFallback className="bg-zinc-100 text-zinc-500">SC</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className='font-bold text-sm text-zinc-900'>{demoTestimonial.name}</div>
+                      <div className='text-xs text-zinc-500'>{demoTestimonial.company}</div>
+                    </div>
+                  </div>
+                  <div className='flex gap-0.5'>
+                    {[...Array(5)].map((_, i) => <Star key={i} size={12} className="fill-zinc-900 text-zinc-900" />)}
                   </div>
                 </div>
-                <div className='flex gap-0.5'>
-                  {[...Array(5)].map((_, i) => <Star key={i} size={12} className="fill-zinc-900 text-zinc-900" />)}
-                </div>
-              </div>
-              <p className='text-sm text-zinc-600 leading-relaxed font-medium'>
-                "{demoTestimonial.content}"
-              </p>
-            </div>
-          </CardPreviewContainer>
-
-          {/* Design 2: Classic Quote */}
-          <CardPreviewContainer
-            title="Classic Quote"
-            description="Traditional and trustworthy. Features a prominent quote mark to draw attention to the feedback."
-            colorClass="from-blue-50/50 to-white"
-            delay={1}
-          >
-            {/* Classic Card Component */}
-            <div className='bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-blue-50 relative'>
-              <Quote className='absolute text-blue-100 fill-current top-6 right-6 scale-125' size={48} />
-              <div className='relative z-10'>
-                <div className='flex text-blue-500 gap-1 mb-4'>
-                  {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
-                </div>
-                <p className='text-lg font-medium text-zinc-800 mb-6 leading-relaxed'>
+                <p className='text-sm text-zinc-600 leading-relaxed font-medium'>
                   "{demoTestimonial.content}"
                 </p>
-                <div className='flex items-center gap-3 border-t border-zinc-50 pt-4'>
-                  <Avatar className="h-9 w-9">
+              </div>
+            </CardPreviewContainer>
+          )}
+
+          {/* Design 2: Classic Quote */}
+          {visibleDesigns > 1 && (
+            <CardPreviewContainer
+              title="Classic Quote"
+              description="Traditional and trustworthy. Features a prominent quote mark to draw attention to the feedback."
+              colorClass="from-blue-50/50 to-white"
+              delay={1}
+            >
+              {/* Classic Card Component */}
+              <div className='bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-blue-50 relative'>
+                <Quote className='absolute text-blue-100 fill-current top-6 right-6 scale-125' size={48} />
+                <div className='relative z-10'>
+                  <div className='flex text-blue-500 gap-1 mb-4'>
+                    {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                  </div>
+                  <p className='text-lg font-medium text-zinc-800 mb-6 leading-relaxed'>
+                    "{demoTestimonial.content}"
+                  </p>
+                  <div className='flex items-center gap-3 border-t border-zinc-50 pt-4'>
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src={demoTestimonial.avatar_url} />
+                      <AvatarFallback>SC</AvatarFallback>
+                    </Avatar>
+                    <div className='flex flex-col'>
+                      <span className='text-sm font-bold text-zinc-900'>{demoTestimonial.name}</span>
+                      <span className='text-xs text-blue-600 font-medium'>{demoTestimonial.title}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardPreviewContainer>
+          )}
+
+          {/* Design 3: Dark Mode / Spotlight */}
+          {visibleDesigns > 2 && (
+            <CardPreviewContainer
+              title="Midnight Spotlight"
+              description="High-contrast dark mode card designed to stand out on any background. Ideal for feature sections."
+              colorClass="from-zinc-800 to-zinc-900"
+              delay={2}
+            >
+              {/* Spotlight Card Component */}
+              <div className='bg-zinc-950 p-8 rounded-3xl border border-zinc-800 shadow-2xl relative overflow-hidden group/card'>
+                {/* Glow effect */}
+                <div className="absolute -top-[100px] left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-purple-500/20 blur-[80px] rounded-full pointer-events-none" />
+
+                <div className='relative z-10 flex flex-col items-center text-center'>
+                  <Avatar className="h-14 w-14 ring-4 ring-zinc-900 mb-4 shadow-xl">
                     <AvatarImage src={demoTestimonial.avatar_url} />
                     <AvatarFallback>SC</AvatarFallback>
                   </Avatar>
-                  <div className='flex flex-col'>
-                    <span className='text-sm font-bold text-zinc-900'>{demoTestimonial.name}</span>
-                    <span className='text-xs text-blue-600 font-medium'>{demoTestimonial.title}</span>
+                  <div className='flex gap-1 text-purple-400 mb-4'>
+                    {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                  </div>
+                  <p className='text-zinc-200 text-base leading-relaxed mb-4'>
+                    "{demoTestimonial.content}"
+                  </p>
+                  <div>
+                    <div className='text-white font-bold text-sm'>{demoTestimonial.name}</div>
+                    <div className='text-zinc-500 text-xs mt-0.5'>{demoTestimonial.company}</div>
                   </div>
                 </div>
               </div>
-            </div>
-          </CardPreviewContainer>
-
-          {/* Design 3: Dark Mode / Spotlight */}
-          <CardPreviewContainer
-            title="Midnight Spotlight"
-            description="High-contrast dark mode card designed to stand out on any background. Ideal for feature sections."
-            colorClass="from-zinc-800 to-zinc-900"
-            delay={2}
-          >
-            {/* Spotlight Card Component */}
-            <div className='bg-zinc-950 p-8 rounded-3xl border border-zinc-800 shadow-2xl relative overflow-hidden group/card'>
-              {/* Glow effect */}
-              <div className="absolute -top-[100px] left-1/2 -translate-x-1/2 w-[200px] h-[200px] bg-purple-500/20 blur-[80px] rounded-full pointer-events-none" />
-
-              <div className='relative z-10 flex flex-col items-center text-center'>
-                <Avatar className="h-14 w-14 ring-4 ring-zinc-900 mb-4 shadow-xl">
-                  <AvatarImage src={demoTestimonial.avatar_url} />
-                  <AvatarFallback>SC</AvatarFallback>
-                </Avatar>
-                <div className='flex gap-1 text-purple-400 mb-4'>
-                  {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
-                </div>
-                <p className='text-zinc-200 text-base leading-relaxed mb-4'>
-                  "{demoTestimonial.content}"
-                </p>
-                <div>
-                  <div className='text-white font-bold text-sm'>{demoTestimonial.name}</div>
-                  <div className='text-zinc-500 text-xs mt-0.5'>{demoTestimonial.company}</div>
-                </div>
-              </div>
-            </div>
-          </CardPreviewContainer>
+            </CardPreviewContainer>
+          )}
 
           {/* Design 4: Bento Grid */}
-          <CardPreviewContainer
-            title="Bento Style"
-            description="Compact and structural. Fits perfectly into grid layouts and information-dense dashboards."
-            colorClass="from-emerald-50/50 to-white"
-            delay={3}
-          >
-            {/* Bento Card Component */}
-            <div className='bg-white p-5 rounded-[24px] border border-zinc-200/60 shadow-sm relative overflow-hidden'>
-              <div className="flex justify-between items-start mb-3">
-                <div className="bg-emerald-100/50 text-emerald-800 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full tracking-wider">
-                  Verified User
-                </div>
-                <Quote size={16} className="text-emerald-200 fill-current" />
-              </div>
-
-              <h4 className="font-bold text-lg text-zinc-900 mb-1 leading-tight">"Incredible results."</h4>
-              <p className="text-zinc-500 text-xs mb-4 line-clamp-2">
-                {demoTestimonial.content}
-              </p>
-
-              <div className="flex items-center gap-3 pt-3 border-t border-dashed border-zinc-100">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={demoTestimonial.avatar_url} />
-                  <AvatarFallback>SC</AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="text-xs font-bold text-zinc-900">{demoTestimonial.name}</div>
-                  <div className="flex text-emerald-500 gap-0.5 mt-0.5">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={8} fill="currentColor" />)}
+          {visibleDesigns > 3 && (
+            <CardPreviewContainer
+              title="Bento Style"
+              description="Compact and structural. Fits perfectly into grid layouts and information-dense dashboards."
+              colorClass="from-emerald-50/50 to-white"
+              delay={3}
+            >
+              {/* Bento Card Component */}
+              <div className='bg-white p-5 rounded-[24px] border border-zinc-200/60 shadow-sm relative overflow-hidden'>
+                <div className="flex justify-between items-start mb-3">
+                  <div className="bg-emerald-100/50 text-emerald-800 text-[10px] uppercase font-bold px-2 py-0.5 rounded-full tracking-wider">
+                    Verified User
                   </div>
+                  <Quote size={16} className="text-emerald-200 fill-current" />
                 </div>
-              </div>
-            </div>
-          </CardPreviewContainer>
 
-          {/* Design 5: Video Stack */}
-          <CardPreviewContainer
-            title="Video Stack"
-            description="Engaging video format with a playful stacked paper effect to encourage interaction."
-            colorClass="from-orange-50/50 to-white"
-            delay={4}
-          >
-            {/* Stack Card Component */}
-            <div className="relative pl-2 pb-2">
-              {/* Back layers */}
-              <div className="absolute inset-0 bg-white border border-zinc-200 rounded-2xl rotate-3 opacity-60 scale-95 origin-bottom-right" />
-              <div className="absolute inset-0 bg-white border border-zinc-200 rounded-2xl rotate-6 opacity-30 scale-90 origin-bottom-right" />
+                <h4 className="font-bold text-lg text-zinc-900 mb-1 leading-tight">"Incredible results."</h4>
+                <p className="text-zinc-500 text-xs mb-4 line-clamp-2">
+                  {demoTestimonial.content}
+                </p>
 
-              {/* Main Card */}
-              <div className="relative bg-white p-2 rounded-2xl border border-zinc-200 shadow-md">
-                <div className="aspect-video bg-zinc-900 rounded-xl relative overflow-hidden group/video cursor-pointer">
-                  <img
-                    src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                    alt="Video thumbnail"
-                    className="w-full h-full object-cover opacity-60 group-hover/video:opacity-40 transition-opacity"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-transform duration-300 group-hover/video:scale-110">
-                      <Play size={20} className="text-white fill-current translate-x-0.5" />
-                    </div>
-                  </div>
-                  <div className="absolute bottom-2 left-2 right-2 flex justify-between items-end">
-                    <div className="flex items-center gap-2">
-                      <Avatar className="h-5 w-5 border border-white/20">
-                        <AvatarImage src={demoTestimonial.avatar_url} />
-                        <AvatarFallback>SC</AvatarFallback>
-                      </Avatar>
-                      <span className="text-[10px] text-white font-medium">{demoTestimonial.name}</span>
+                <div className="flex items-center gap-3 pt-3 border-t border-dashed border-zinc-100">
+                  <Avatar className="h-8 w-8 rounded-lg">
+                    <AvatarImage src={demoTestimonial.avatar_url} />
+                    <AvatarFallback>SC</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="text-xs font-bold text-zinc-900">{demoTestimonial.name}</div>
+                    <div className="flex text-emerald-500 gap-0.5 mt-0.5">
+                      {[...Array(5)].map((_, i) => <Star key={i} size={8} fill="currentColor" />)}
                     </div>
                   </div>
                 </div>
-                <div className="px-1 pt-2 pb-1 flex justify-between items-center">
-                  <div className="flex text-orange-400">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={10} fill="currentColor" />)}
+              </div>
+            </CardPreviewContainer>
+          )}
+
+          {/* Design 5: Video Stack - Only show if expanded */}
+          {visibleDesigns > 4 && (
+            <CardPreviewContainer
+              title="Video Stack"
+              description="Engaging video format with a playful stacked paper effect to encourage interaction."
+              colorClass="from-orange-50/50 to-white"
+              delay={4}
+            >
+              {/* Stack Card Component */}
+              <div className="relative pl-2 pb-2">
+                {/* Back layers */}
+                <div className="absolute inset-0 bg-white border border-zinc-200 rounded-2xl rotate-3 opacity-60 scale-95 origin-bottom-right" />
+                <div className="absolute inset-0 bg-white border border-zinc-200 rounded-2xl rotate-6 opacity-30 scale-90 origin-bottom-right" />
+
+                {/* Main Card */}
+                <div className="relative bg-white p-2 rounded-2xl border border-zinc-200 shadow-md">
+                  <div className="aspect-video bg-zinc-900 rounded-xl relative overflow-hidden group/video cursor-pointer">
+                    <img
+                      src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                      alt="Video thumbnail"
+                      className="w-full h-full object-cover opacity-60 group-hover/video:opacity-40 transition-opacity"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition-transform duration-300 group-hover/video:scale-110">
+                        <Play size={20} className="text-white fill-current translate-x-0.5" />
+                      </div>
+                    </div>
+                    <div className="absolute bottom-2 left-2 right-2 flex justify-between items-end">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-5 w-5 border border-white/20">
+                          <AvatarImage src={demoTestimonial.avatar_url} />
+                          <AvatarFallback>SC</AvatarFallback>
+                        </Avatar>
+                        <span className="text-[10px] text-white font-medium">{demoTestimonial.name}</span>
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-[10px] text-zinc-400">0:45s</span>
+                  <div className="px-1 pt-2 pb-1 flex justify-between items-center">
+                    <div className="flex text-orange-400">
+                      {[...Array(5)].map((_, i) => <Star key={i} size={10} fill="currentColor" />)}
+                    </div>
+                    <span className="text-[10px] text-zinc-400">0:45s</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardPreviewContainer>
+            </CardPreviewContainer>
+          )}
 
-          {/* Design 6: Trust Badge / Avatar Top */}
-          <CardPreviewContainer
-            title="Trust Badge"
-            description="Centers the human element. Excellent for building trust on pricing or checkout pages."
-            colorClass="from-rose-50/50 to-white"
-            delay={5}
-          >
-            {/* Avatar Top Card Component */}
-            <div className="mt-8 bg-white rounded-2xl shadow-sm border border-rose-100 p-6 pt-0 text-center relative">
-              <div className="absolute -top-6 left-1/2 -translate-x-1/2">
-                <Avatar className="h-14 w-14 ring-4 ring-white shadow-md">
-                  <AvatarImage src={demoTestimonial.avatar_url} />
-                  <AvatarFallback>SC</AvatarFallback>
-                </Avatar>
-                <div className="absolute -bottom-1 -right-1 bg-rose-500 rounded-full p-1 border-2 border-white">
-                  <Heart size={8} className="text-white fill-current" />
+          {/* Design 6: Trust Badge / Avatar Top - Only show if expanded */}
+          {visibleDesigns > 5 && (
+            <CardPreviewContainer
+              title="Trust Badge"
+              description="Centers the human element. Excellent for building trust on pricing or checkout pages."
+              colorClass="from-rose-50/50 to-white"
+              delay={5}
+            >
+              {/* Avatar Top Card Component */}
+              <div className="mt-8 bg-white rounded-2xl shadow-sm border border-rose-100 p-6 pt-0 text-center relative">
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2">
+                  <Avatar className="h-14 w-14 ring-4 ring-white shadow-md">
+                    <AvatarImage src={demoTestimonial.avatar_url} />
+                    <AvatarFallback>SC</AvatarFallback>
+                  </Avatar>
+                  <div className="absolute -bottom-1 -right-1 bg-rose-500 rounded-full p-1 border-2 border-white">
+                    <Heart size={8} className="text-white fill-current" />
+                  </div>
+                </div>
+
+                <div className="mt-10 mb-3">
+                  <div className="font-bold text-zinc-900">{demoTestimonial.name}</div>
+                  <div className="text-xs text-rose-500 font-semibold">{demoTestimonial.company}</div>
+                </div>
+
+                <p className="text-sm text-zinc-600 italic leading-relaxed mb-4">
+                  "{demoTestimonial.content}"
+                </p>
+
+                <div className="inline-flex gap-1 bg-rose-50 px-2 py-1 rounded-full">
+                  {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-rose-500 text-rose-500" />)}
                 </div>
               </div>
-
-              <div className="mt-10 mb-3">
-                <div className="font-bold text-zinc-900">{demoTestimonial.name}</div>
-                <div className="text-xs text-rose-500 font-semibold">{demoTestimonial.company}</div>
-              </div>
-
-              <p className="text-sm text-zinc-600 italic leading-relaxed mb-4">
-                "{demoTestimonial.content}"
-              </p>
-
-              <div className="inline-flex gap-1 bg-rose-50 px-2 py-1 rounded-full">
-                {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-rose-500 text-rose-500" />)}
-              </div>
-            </div>
-          </CardPreviewContainer>
+            </CardPreviewContainer>
+          )}
 
         </div>
+
+        {/* See More Button */}
+        {!showAll && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex justify-center mt-16"
+          >
+            <button
+              onClick={() => setShowAll(true)}
+              className="group flex items-center gap-3 px-8 py-4 bg-white border-2 border-zinc-200 rounded-full hover:border-primary hover:bg-primary/5 transition-all duration-300 shadow-sm hover:shadow-md"
+            >
+              <span className="text-base font-bold text-zinc-900 group-hover:text-primary transition-colors">
+                Show All Designs
+              </span>
+              <ArrowRight className="w-5 h-5 text-zinc-400 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+            </button>
+          </motion.div>
+        )}
 
       </div>
     </section>

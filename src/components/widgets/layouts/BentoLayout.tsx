@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Play, Star, Quote } from "lucide-react";
+import { Play, Star, Quote, ChevronDown } from "lucide-react";
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialAvatar, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
 
@@ -12,6 +13,7 @@ interface BentoLayoutProps {
 }
 
 export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevice = "desktop", onVideoClick }: BentoLayoutProps) => {
+    const [showAll, setShowAll] = useState(false);
     const isMobile = previewDevice === "mobile";
 
     // Split items for mobile marquee logic
@@ -99,7 +101,7 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
                                 {t.name}
                             </p>
                             <p
-                                className={`text-[10px] truncate ${subtextClasses(darkMode)}`}
+                                className={`text-xs truncate ${subtextClasses(darkMode)}`}
                                 style={{ color: customStyles.roleColor || (darkMode ? "#9ca3af" : "#6b7280") }}
                             >
                                 {t.title || "@" + t.name.replace(/\s/g, '').toLowerCase()}
@@ -162,17 +164,37 @@ export const BentoLayout = ({ displayItems, darkMode, customStyles, previewDevic
         );
     }
 
+    const visibleTestimonials = showAll ? displayItems : displayItems.slice(0, 6);
+
     // Desktop/Tablet View: Standard Bento Grid
     return (
         <div className={`
             w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent
             ${isMobile ? "max-h-[600px] px-4" : "max-h-[650px] px-6"}
         `}>
-            <div className={`grid gap-6 auto-rows-fr pb-20 pt-4 ${previewDevice === "tablet" ? "grid-cols-2" : "grid-cols-3"}`}>
-                {displayItems.map((t, i) => (
+            <div className={`grid gap-6 auto-rows-fr pb-8 pt-4 ${previewDevice === "tablet" ? "grid-cols-2" : "grid-cols-3"}`}>
+                {visibleTestimonials.map((t, i) => (
                     <BentoCard key={t.id} t={t} i={i} isLarge={i === 0} />
                 ))}
             </div>
+
+            {/* See More Button */}
+            {displayItems.length > 6 && !showAll && (
+                <div className="flex justify-center pb-8">
+                    <button
+                        onClick={() => setShowAll(true)}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg border backdrop-blur-sm`}
+                        style={{
+                            backgroundColor: customStyles.cardBackgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
+                            color: customStyles.contentColor || customStyles.textColor || (darkMode ? '#ffffff' : '#000000'),
+                            borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'),
+                        }}
+                    >
+                        See More
+                        <ChevronDown className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

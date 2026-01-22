@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
-import { Play } from "lucide-react";
+import { Play, ChevronDown } from "lucide-react";
 
 interface PolaroidStackLayoutProps {
     displayItems: Testimonial[];
@@ -18,6 +19,7 @@ export const PolaroidStackLayout = ({
     previewDevice = "desktop",
     onVideoClick
 }: PolaroidStackLayoutProps) => {
+    const [showAll, setShowAll] = useState(false);
     const isMobile = previewDevice === "mobile";
 
     // Helper for colors
@@ -27,10 +29,12 @@ export const PolaroidStackLayout = ({
     const roleText = customStyles.roleColor || (darkMode ? '#9ca3af' : '#6b7280');
     const primary = customStyles.primaryColor || '#10b981';
 
+    const visibleTestimonials = showAll ? displayItems : displayItems.slice(0, 6);
+
     return (
         <div className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent p-4">
             <div className={`grid gap-8 ${previewDevice === "mobile" ? "grid-cols-1" : previewDevice === "tablet" ? "grid-cols-2" : "grid-cols-4"}`}>
-                {displayItems.map((testimonial, index) => {
+                {visibleTestimonials.map((testimonial, index) => {
                     const isEven = index % 2 === 0;
                     const rotation = (index * 7) % 3 - 1.5; // Subtle random rotation
 
@@ -169,6 +173,24 @@ export const PolaroidStackLayout = ({
                     );
                 })}
             </div>
+
+            {/* See More Button */}
+            {displayItems.length > 6 && !showAll && (
+                <div className="flex justify-center pb-8 pt-8">
+                    <button
+                        onClick={() => setShowAll(true)}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg border backdrop-blur-sm`}
+                        style={{
+                            backgroundColor: cardBg,
+                            color: mainText,
+                            borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'),
+                        }}
+                    >
+                        See More
+                        <ChevronDown className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

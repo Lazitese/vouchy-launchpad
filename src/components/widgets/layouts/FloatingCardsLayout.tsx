@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
-import { Play, X } from "lucide-react";
+import { Play, X, ChevronDown } from "lucide-react";
 
 interface FloatingCardsLayoutProps {
     displayItems: Testimonial[];
@@ -20,6 +20,7 @@ export const FloatingCardsLayout = ({
     onVideoClick
 }: FloatingCardsLayoutProps) => {
     const [playingId, setPlayingId] = useState<string | null>(null);
+    const [showAll, setShowAll] = useState(false);
     const isMobile = previewDevice === "mobile";
 
     // Helper for colors
@@ -29,10 +30,12 @@ export const FloatingCardsLayout = ({
     const roleText = customStyles.roleColor || (darkMode ? '#9ca3af' : '#6b7280');
     const primary = customStyles.primaryColor || '#10b981'; // emerald-500 as default
 
+    const visibleTestimonials = showAll ? displayItems : displayItems.slice(0, 6);
+
     return (
         <div className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent">
             <div className={`grid gap-6 pb-20 pt-4 px-6 ${previewDevice === "mobile" ? "grid-cols-1" : previewDevice === "tablet" ? "grid-cols-2" : "grid-cols-3"}`}>
-                {displayItems.map((testimonial, index) => {
+                {visibleTestimonials.map((testimonial, index) => {
                     const isVideo = testimonial.type === "video";
 
                     return (
@@ -167,6 +170,24 @@ export const FloatingCardsLayout = ({
                     );
                 })}
             </div>
+
+            {/* See More Button */}
+            {displayItems.length > 6 && !showAll && (
+                <div className="flex justify-center pb-8">
+                    <button
+                        onClick={() => setShowAll(true)}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg border backdrop-blur-sm`}
+                        style={{
+                            backgroundColor: cardBg,
+                            color: mainText,
+                            borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'),
+                        }}
+                    >
+                        See More
+                        <ChevronDown className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

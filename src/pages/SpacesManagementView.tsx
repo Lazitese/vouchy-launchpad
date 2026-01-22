@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import {
-    Plus, Settings, Trash2, Edit2, Check, X,
+    Plus, Settings, Trash2, Check, X,
     Video, MessageSquare, Star, MoreVertical,
     Search, Filter, Copy, ExternalLink, ChevronDown, Play, Folder, ArrowUpRight
 } from "lucide-react";
@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { MiniTour, SPACES_TOUR } from "@/components/dashboard/MiniTour";
+import { FormFieldsSettings } from "@/components/settings/FormFieldsSettings";
+import { FormSettings, mergeFormSettings } from "@/types/formSettings";
+
 
 interface SpacesManagementViewProps {
     spaces: Space[];
@@ -53,6 +56,8 @@ export const SpacesManagementView = ({
     const [editingSpaceName, setEditingSpaceName] = useState("");
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
     const [activeMobileTab, setActiveMobileTab] = useState<"spaces" | "testimonials">("spaces");
+    const [formSettingsLoading, setFormSettingsLoading] = useState(false);
+
 
     // Auto-select first space
     useEffect(() => {
@@ -107,6 +112,28 @@ export const SpacesManagementView = ({
         navigator.clipboard.writeText(url);
         toast({ title: "Link copied to clipboard" });
     };
+
+    const handleFormSettingsSave = async (formSettings: FormSettings) => {
+        if (!selectedSpaceId) return;
+        setFormSettingsLoading(true);
+
+        const { error } = await updateSpace(selectedSpaceId, { form_settings: formSettings });
+
+        setFormSettingsLoading(false);
+        if (error) {
+            toast({
+                variant: "destructive",
+                title: "Error updating form settings",
+                description: "Could not save changes.",
+            });
+        } else {
+            toast({
+                title: "Form settings updated",
+                description: "Your form customization has been saved.",
+            });
+        }
+    };
+
 
     return (
         <div className="flex flex-col md:flex-row md:h-[calc(100vh-8rem)] gap-6">
@@ -222,9 +249,6 @@ export const SpacesManagementView = ({
                                                 </button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onManageSpace(space.id); }}>
-                                                    <Edit2 className="w-4 h-4 mr-2" /> Edit
-                                                </DropdownMenuItem>
                                                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); window.open(`/collect/${space.slug}`, '_blank'); }}>
                                                     <ExternalLink className="w-4 h-4 mr-2" /> Open Page
                                                 </DropdownMenuItem>
@@ -285,39 +309,19 @@ export const SpacesManagementView = ({
                                         </div>
                                     </h1>
                                     <p className="text-base text-zinc-500 mt-1">
-                                        This is the public page where your users can submit their reviews.
+                                        Customize your collection form fields, theme, and messages.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Iframe Preview */}
-                        <div className="flex-1 bg-zinc-50/50 relative p-4 flex items-center justify-center overflow-hidden">
-                            {/* Device Frame */}
-                            <div className="w-full max-w-4xl h-full bg-white rounded-xl shadow-2xl border border-zinc-200 overflow-hidden flex flex-col">
-                                {/* Browser Chrome */}
-                                <div className="h-8 bg-zinc-50 border-b border-zinc-200 flex items-center px-3 gap-2 shrink-0">
-                                    <div className="flex gap-1.5">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-red-400/50" />
-                                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400/50" />
-                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/50" />
-                                    </div>
-                                    <div className="flex-1 flex justify-center">
-                                        <div className="bg-white border border-zinc-200 rounded-md px-3 py-0.5 max-w-sm w-full flex items-center justify-center">
-                                            <span className="text-[10px] text-zinc-400 flex items-center gap-1">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                                {window.location.origin}/collect/{selectedSpace.slug}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* Iframe */}
-                                <iframe
-                                    src={`/collect/${selectedSpace.slug}`}
-                                    className="w-full h-full border-none bg-white"
-                                    title="Collection Page Preview"
-                                />
-                            </div>
+                        {/* Form Customization */}
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <FormFieldsSettings
+                                formSettings={mergeFormSettings(selectedSpace.form_settings)}
+                                onSave={handleFormSettingsSave}
+                                loading={formSettingsLoading}
+                            />
                         </div>
                     </div>
                 ) : (

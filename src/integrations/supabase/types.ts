@@ -139,43 +139,37 @@ export type Database = {
       }
       spaces: {
         Row: {
-          appearance: Json | null
           created_at: string
-          dark_mode: boolean | null
-          display_limit: number | null
+          form_settings: Json | null
           id: string
-          layout: string | null
-          ordering: string | null
-          show_video_first: boolean | null
-          space_filtering: Json | null
+          is_active: boolean | null
+          name: string
+          questions: Json | null
+          slug: string
           updated_at: string | null
           user_id: string
           workspace_id: string
         }
         Insert: {
-          appearance?: Json | null
           created_at?: string
-          dark_mode?: boolean | null
-          display_limit?: number | null
+          form_settings?: Json | null
           id?: string
-          layout?: string | null
-          ordering?: string | null
-          show_video_first?: boolean | null
-          space_filtering?: Json | null
+          is_active?: boolean | null
+          name: string
+          questions?: Json | null
+          slug: string
           updated_at?: string | null
           user_id: string
           workspace_id: string
         }
         Update: {
-          appearance?: Json | null
           created_at?: string
-          dark_mode?: boolean | null
-          display_limit?: number | null
+          form_settings?: Json | null
           id?: string
-          layout?: string | null
-          ordering?: string | null
-          show_video_first?: boolean | null
-          space_filtering?: Json | null
+          is_active?: boolean | null
+          name?: string
+          questions?: Json | null
+          slug?: string
           updated_at?: string | null
           user_id?: string
           workspace_id?: string

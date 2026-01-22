@@ -17,6 +17,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { VideoRecorder } from "@/components/collect/VideoRecorder";
 import { TextForm } from "@/components/collect/TextForm";
 import { SEOHead } from "@/components/SEO/SEOHead";
+import { mergeFormSettings } from "@/types/formSettings";
+
 
 type Mode = "select" | "video" | "text" | "success";
 type PlanType = "free" | "pro" | "agency";
@@ -249,6 +251,7 @@ const Collect = () => {
               onBack={() => setMode("select")}
               submitting={submitting}
               spaceId={space.id}
+              formSettings={space.form_settings}
             />
           )}
 
@@ -260,31 +263,40 @@ const Collect = () => {
               onBack={() => setMode("select")}
               submitting={submitting}
               spaceId={space.id}
+              formSettings={space.form_settings}
             />
           )}
 
           {/* Success */}
-          {mode === "success" && (
-            <motion.div
-              key="success"
-              className="text-center bg-white/60 backdrop-blur-md p-10 rounded-3xl border border-primary/20 shadow-xl max-w-md w-full"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4 }}
-            >
-              <div
-                className="w-20 h-20 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center"
+          {mode === "success" && (() => {
+            const formSettings = mergeFormSettings(space.form_settings);
+            return (
+              <motion.div
+                key="success"
+                className="text-center bg-white/60 backdrop-blur-md p-10 rounded-3xl border shadow-xl max-w-md w-full"
+                style={{ borderColor: `${formSettings.theme.accentColor}33` }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
               >
-                <Check className="w-10 h-10 text-primary" strokeWidth={2} />
-              </div>
-              <h2 className="text-3xl font-bold text-zinc-900 mb-4 tracking-tight">
-                Thank you!
-              </h2>
-              <p className="text-zinc-500 text-lg leading-relaxed">
-                Your testimonial has been submitted. We appreciate you taking the time to share your experience.
-              </p>
-            </motion.div>
-          )}
+                <div
+                  className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: `${formSettings.theme.accentColor}1A` }}
+                >
+                  <Check className="w-10 h-10" style={{ color: formSettings.theme.accentColor }} strokeWidth={2} />
+                </div>
+                <h2
+                  className="text-3xl font-bold mb-4 tracking-tight"
+                  style={{ color: formSettings.theme.accentColor }}
+                >
+                  {formSettings.messages.successTitle}
+                </h2>
+                <p className="text-zinc-500 text-lg leading-relaxed">
+                  {formSettings.messages.successMessage}
+                </p>
+              </motion.div>
+            );
+          })()}
         </AnimatePresence>
       </main>
 

@@ -32,6 +32,7 @@ CREATE TABLE public.spaces (
     slug text NOT NULL UNIQUE,
     questions jsonb,
     is_active boolean DEFAULT true,
+    form_settings jsonb,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
 );

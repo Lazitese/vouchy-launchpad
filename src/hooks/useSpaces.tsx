@@ -10,6 +10,7 @@ export interface Space {
   slug: string;
   is_active: boolean;
   questions: string[];
+  form_settings?: any; // JSON object for form customization
   created_at: string;
   updated_at: string;
 }
@@ -64,7 +65,7 @@ export const useSpaces = () => {
     const slug = name
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "") + 
+      .replace(/(^-|-$)/g, "") +
       "-" + Date.now().toString(36);
 
     try {

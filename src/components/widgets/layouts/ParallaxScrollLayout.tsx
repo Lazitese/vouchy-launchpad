@@ -1,7 +1,8 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
+import { ChevronDown } from "lucide-react";
 
 interface ParallaxScrollLayoutProps {
     displayItems: Testimonial[];
@@ -19,6 +20,7 @@ export const ParallaxScrollLayout = ({
     onVideoClick
 }: ParallaxScrollLayoutProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [showAll, setShowAll] = useState(false);
     const isMobile = previewDevice === "mobile";
 
     // Helper for colors
@@ -28,13 +30,15 @@ export const ParallaxScrollLayout = ({
     const roleText = customStyles.roleColor || (darkMode ? '#9ca3af' : '#6b7280');
     const primary = customStyles.primaryColor || '#10b981';
 
+    const visibleTestimonials = showAll ? displayItems : displayItems.slice(0, 6);
+
     return (
         <div
             ref={containerRef}
             className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent p-4"
         >
-            <div className={`grid gap-8 pb-20 pt-4 ${isMobile ? "grid-cols-1 gap-y-12" : "grid-cols-2 gap-x-8 gap-y-12"}`}>
-                {displayItems.map((testimonial, index) => {
+            <div className={`grid gap-8 pb-8 pt-4 ${isMobile ? "grid-cols-1 gap-y-12" : "grid-cols-2 gap-x-8 gap-y-12"}`}>
+                {visibleTestimonials.map((testimonial, index) => {
                     const isEven = index % 2 === 0;
 
                     return (
@@ -55,6 +59,24 @@ export const ParallaxScrollLayout = ({
                     );
                 })}
             </div>
+
+            {/* See More Button */}
+            {displayItems.length > 6 && !showAll && (
+                <div className="flex justify-center pb-8">
+                    <button
+                        onClick={() => setShowAll(true)}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg border backdrop-blur-sm`}
+                        style={{
+                            backgroundColor: cardBg,
+                            color: mainText,
+                            borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'),
+                        }}
+                    >
+                        See More
+                        <ChevronDown className="w-4 h-4" />
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

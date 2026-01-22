@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Quote } from "lucide-react";
+import { Calendar, Quote, ChevronDown } from "lucide-react";
 import { CustomStyles, Testimonial } from "@/utils/widgetUtils";
 import { ExpandableContent, TestimonialAvatar, TestimonialStars, subtextClasses } from "@/components/widgets/TestimonialCard";
 
@@ -18,7 +19,10 @@ export const TimelineLayout = ({
     previewDevice = "desktop",
     onVideoClick
 }: TimelineLayoutProps) => {
+    const [showAll, setShowAll] = useState(false);
     const isMobile = previewDevice === "mobile";
+
+    const visibleTestimonials = showAll ? displayItems : displayItems.slice(0, 6);
 
     return (
         <div className={`w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-800 scrollbar-track-transparent ${isMobile ? "px-4" : "px-6"}`}>
@@ -27,8 +31,8 @@ export const TimelineLayout = ({
                 <div className={`absolute ${isMobile ? "left-[20px]" : "left-1/2 -translate-x-1/2"} top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary/20 via-primary/40 to-primary/20`} />
 
                 {/* Timeline Items */}
-                <div className="space-y-12">
-                    {displayItems.map((t, i) => {
+                <div className="space-y-12 mb-12">
+                    {visibleTestimonials.map((t, i) => {
                         const isLeft = i % 2 === 0;
                         const isVideo = t.type === 'video';
 
@@ -151,6 +155,24 @@ export const TimelineLayout = ({
                         );
                     })}
                 </div>
+
+                {/* See More Button */}
+                {displayItems.length > 6 && !showAll && (
+                    <div className="relative z-20 flex justify-center pb-8">
+                        <button
+                            onClick={() => setShowAll(true)}
+                            className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:scale-105 active:scale-95 shadow-lg border backdrop-blur-sm`}
+                            style={{
+                                backgroundColor: customStyles.cardBackgroundColor || (darkMode ? '#1e293b' : '#ffffff'),
+                                color: customStyles.contentColor || customStyles.textColor || (darkMode ? '#ffffff' : '#000000'),
+                                borderColor: customStyles.borderColor || (darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'),
+                            }}
+                        >
+                            See More
+                            <ChevronDown className="w-4 h-4" />
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

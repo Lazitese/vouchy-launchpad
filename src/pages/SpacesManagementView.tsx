@@ -55,7 +55,7 @@ export const SpacesManagementView = ({
     const [editingSpaceId, setEditingSpaceId] = useState<string | null>(null);
     const [editingSpaceName, setEditingSpaceName] = useState("");
     const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-    const [activeMobileTab, setActiveMobileTab] = useState<"spaces" | "testimonials">("spaces");
+    const [activeMobileTab, setActiveMobileTab] = useState<"spaces" | "form">("spaces");
     const [formSettingsLoading, setFormSettingsLoading] = useState(false);
 
 
@@ -151,14 +151,14 @@ export const SpacesManagementView = ({
                     Collections
                 </button>
                 <button
-                    onClick={() => setActiveMobileTab("testimonials")}
+                    onClick={() => setActiveMobileTab("form")}
                     className={cn(
                         "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all",
-                        activeMobileTab === "testimonials" ? "bg-white text-black shadow-sm" : "text-zinc-400"
+                        activeMobileTab === "form" ? "bg-white text-black shadow-sm" : "text-zinc-400"
                     )}
                 >
-                    <MessageSquare className="w-3.5 h-3.5" />
-                    Reviews
+                    <Settings className="w-3.5 h-3.5" />
+                    Form
                 </button>
             </div>
 
@@ -229,7 +229,7 @@ export const SpacesManagementView = ({
                                     key={space.id}
                                     onClick={() => {
                                         setSelectedSpaceId(space.id);
-                                        setActiveMobileTab("testimonials");
+                                        setActiveMobileTab("form");
                                     }}
                                     className={cn(
                                         "group relative p-4 rounded-xl border cursor-pointer transition-all duration-300",
@@ -276,7 +276,10 @@ export const SpacesManagementView = ({
             </aside>
 
             {/* MAIN CONTENT: Collection Preview */}
-            <main className="flex-1 flex flex-col min-w-0 bg-white/40 backdrop-blur-xl border border-zinc-200/50 rounded-2xl overflow-hidden shadow-sm hidden md:flex">
+            <main className={cn(
+                "flex-1 flex flex-col min-w-0 bg-white/40 backdrop-blur-xl border border-zinc-200/50 rounded-2xl overflow-hidden shadow-sm transition-all md:flex",
+                activeMobileTab === "form" ? "flex" : "hidden"
+            )}>
                 {selectedSpace ? (
                     <div className="flex flex-col h-full">
                         {/* Header */}
@@ -316,7 +319,7 @@ export const SpacesManagementView = ({
                         </div>
 
                         {/* Form Customization */}
-                        <div className="flex-1 overflow-y-auto p-6">
+                        <div className="flex-1 overflow-y-auto p-4 md:p-6">
                             <FormFieldsSettings
                                 formSettings={mergeFormSettings(selectedSpace.form_settings)}
                                 onSave={handleFormSettingsSave}

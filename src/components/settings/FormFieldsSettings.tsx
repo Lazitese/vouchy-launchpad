@@ -70,17 +70,17 @@ export const FormFieldsSettings = ({ formSettings, onSave, loading }: FormFields
 
     return (
         <div className="organic-card p-8">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                         <Settings2 className="w-5 h-5 text-primary" />
                     </div>
                     <div>
                         <h2 className="text-xl font-bold text-black">Form Customization</h2>
-                        <p className="text-sm text-gray-500">Configure fields, validation, and appearance</p>
+                        <p className="text-sm text-gray-500 hidden md:block">Configure fields, validation, and appearance</p>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
                     <Button
                         variant="outline"
                         onClick={() => setShowPreview(!showPreview)}
@@ -105,18 +105,19 @@ export const FormFieldsSettings = ({ formSettings, onSave, loading }: FormFields
             </div>
 
             <Tabs defaultValue="fields" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 mb-6">
-                    <TabsTrigger value="fields">
-                        <Settings2 className="w-4 h-4 mr-2" />
-                        Fields
+                <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
+                    {/* Mobile: Stack tabs vertically, Desktop: 3 columns */}
+                    <TabsTrigger value="fields" className="flex items-center justify-center py-3">
+                        <Settings2 className="w-4 h-4 mr-1 md:mr-2" />
+                        <span className="text-xs md:text-sm">Fields</span>
                     </TabsTrigger>
-                    <TabsTrigger value="theme">
-                        <Palette className="w-4 h-4 mr-2" />
-                        Theme
+                    <TabsTrigger value="theme" className="flex items-center justify-center py-3">
+                        <Palette className="w-4 h-4 mr-1 md:mr-2" />
+                        <span className="text-xs md:text-sm">Theme</span>
                     </TabsTrigger>
-                    <TabsTrigger value="messages">
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Messages
+                    <TabsTrigger value="messages" className="flex items-center justify-center py-3">
+                        <MessageSquare className="w-4 h-4 mr-1 md:mr-2" />
+                        <span className="text-xs md:text-sm">Messages</span>
                     </TabsTrigger>
                 </TabsList>
 
@@ -129,9 +130,9 @@ export const FormFieldsSettings = ({ formSettings, onSave, loading }: FormFields
                             animate={{ opacity: 1, y: 0 }}
                             className="p-6 bg-gray-50 rounded-xl border border-gray-200"
                         >
-                            <div className="flex items-center justify-between mb-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                                 <div className="flex items-center gap-3">
-                                    <h3 className="font-bold text-black">
+                                    <h3 className="font-bold text-black text-sm md:text-base">
                                         {fieldLabels[fieldName as keyof FormSettings['fields']]}
                                     </h3>
                                     <div className="flex items-center gap-2">
@@ -141,7 +142,7 @@ export const FormFieldsSettings = ({ formSettings, onSave, loading }: FormFields
                                                 updateFieldConfig(fieldName as keyof FormSettings['fields'], { enabled })
                                             }
                                         />
-                                        <span className="text-sm text-gray-500">
+                                        <span className="text-xs md:text-sm text-gray-500">
                                             {config.enabled ? "Enabled" : "Disabled"}
                                         </span>
                                     </div>
@@ -154,12 +155,12 @@ export const FormFieldsSettings = ({ formSettings, onSave, loading }: FormFields
                                         }
                                         disabled={!config.enabled}
                                     />
-                                    <span className="text-sm text-gray-500">Required</span>
+                                    <span className="text-xs md:text-sm text-gray-500">Required</span>
                                 </div>
                             </div>
 
                             {config.enabled && (
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label className="text-xs text-gray-600">Label</Label>
                                         <Input
@@ -378,7 +379,7 @@ export const FormFieldsSettings = ({ formSettings, onSave, loading }: FormFields
                                 </div>
                             )}
 
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {settings.fields.name.enabled && (
                                     <div className="h-10 bg-gray-100 rounded-lg flex items-center px-3">
                                         <span className="text-xs text-gray-400">{settings.fields.name.placeholder || settings.fields.name.label}</span>
